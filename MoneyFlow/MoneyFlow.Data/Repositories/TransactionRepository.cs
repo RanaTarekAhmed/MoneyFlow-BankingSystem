@@ -27,25 +27,26 @@ namespace MoneyFlow.Data.Repositories
 
         public async Task<List<Transaction>> GetAllAsync(Expression<Func<Transaction, bool>>? filter)
         {
-
+            var query = dp_context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) &&(t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
             if (filter != null)
             {
-                return await dp_context.Transactions.Where(filter).ToListAsync();
+               query=query.Where(filter);
             }
 
-            return await dp_context.Transactions.ToListAsync();
+            return await query.ToListAsync();
 
         }
 
         public async Task<Transaction?> GetAsync(Expression<Func<Transaction, bool>> filter)
         {
-            return await dp_context.Transactions.Where(filter).FirstOrDefaultAsync();
+            var query = dp_context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
+            return await query.Where(filter).FirstOrDefaultAsync();
 
         }
 
         public async Task UpdateStatusAsync(int id, TransactionStatus status)
         {
-            var transaction = await dp_context.Transactions.FirstOrDefaultAsync(x => x.Id == id);
+            var transaction = await dp_context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted)).FirstOrDefaultAsync(x => x.Id == id);
 
             if (transaction != null)
             {
