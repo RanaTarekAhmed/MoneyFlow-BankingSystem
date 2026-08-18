@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="MoneyFlow.Business/MoneyFlow.Business.csproj" />
+  <Project Path="MoneyFlow.Data/MoneyFlow.Data.csproj" />
   <Project Path="MoneyFlow.Presentation/MoneyFlow.Presentation.csproj" />
 </Solution>

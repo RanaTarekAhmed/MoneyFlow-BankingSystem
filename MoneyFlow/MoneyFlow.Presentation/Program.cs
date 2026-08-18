@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using MoneyFlow.Data.Database;
+
 namespace MoneyFlow.Presentation
 {
     public class Program
@@ -8,6 +11,15 @@ namespace MoneyFlow.Presentation
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Configure database connection and register DbContext
+            var connectionString =
+                builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' was not found.");
+
+            builder.Services.AddDbContext<MoneyFlowDbContext>(options =>
+                options.UseSqlServer(connectionString));
 
             var app = builder.Build();
 
