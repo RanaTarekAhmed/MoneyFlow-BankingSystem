@@ -1,0 +1,351 @@
+/* MoneyFlow — Auth Pages Styles (Login & Register) */
+
+/* ==========================================================================
+   Login Split Screen Layout
+   ========================================================================== */
+.mf-auth-split-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--mf-nav-height));
+  background-color: var(--mf-blue-light);
+}
+
+@media (min-width: 992px) {
+  .mf-auth-split-wrapper {
+    flex-direction: row;
+    min-height: calc(100vh - var(--mf-nav-height));
+  }
+}
+
+/* Left Brand Panel */
+.mf-login-brand-panel {
+  background: linear-gradient(155deg, var(--mf-navy) 0%, var(--mf-navy-mid) 50%, #004b93 100%);
+  color: #ffffff;
+  padding: 3.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 992px) {
+  .mf-login-brand-panel {
+    flex: 1;
+    padding: 4rem 3.5rem;
+    min-height: 700px;
+  }
+}
+
+.mf-login-brand-bg-pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(219, 241, 254, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(0, 45, 98, 0.4) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.mf-login-brand-card {
+  position: relative;
+  z-index: 2;
+  max-width: 520px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--mf-radius-xl);
+  padding: 2.75rem 2.25rem;
+  box-shadow: 0 20px 50px rgba(0, 25, 60, 0.25);
+}
+
+.mf-brand-card-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.mf-brand-card-logo-icon {
+  width: 36px;
+  height: 36px;
+  background: #ffffff;
+  border-radius: var(--mf-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+
+.mf-brand-card-logo-text {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.mf-login-brand-heading {
+  font-size: clamp(1.75rem, 3vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1.15rem;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.mf-login-brand-desc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0;
+}
+
+/* Right Form Panel */
+.mf-login-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  background-color: var(--mf-blue-light);
+}
+
+@media (min-width: 992px) {
+  .mf-login-form-panel {
+    padding: 4rem 3rem;
+  }
+}
+
+.mf-auth-form-card {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-lg);
+  box-shadow: var(--mf-shadow-card);
+  padding: 2.5rem 2.25rem;
+}
+
+.mf-auth-card-header {
+  margin-bottom: 2rem;
+}
+
+.mf-auth-card-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--mf-navy);
+  margin-bottom: 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.mf-auth-card-subtitle {
+  font-size: 0.95rem;
+  color: var(--mf-text-muted);
+  margin-bottom: 0;
+}
+
+.mf-form-group {
+  margin-bottom: 1.35rem;
+}
+
+.mf-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.mf-forgot-link {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--mf-navy);
+  text-decoration: none;
+}
+
+.mf-forgot-link:hover {
+  text-decoration: underline;
+  color: var(--mf-navy-mid);
+}
+
+.mf-auth-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.25rem 0 1.75rem;
+}
+
+.mf-btn-auth-submit {
+  width: 100%;
+  height: 48px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.mf-auth-switch-link {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(196, 198, 209, 0.4);
+  text-align: center;
+  font-size: 0.925rem;
+  color: var(--mf-text-muted);
+}
+
+.mf-auth-switch-link a {
+  font-weight: 700;
+  color: var(--mf-navy);
+  text-decoration: none;
+}
+
+.mf-auth-switch-link a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   Register Page Layout
+   ========================================================================== */
+.mf-register-page-wrapper {
+  background-color: var(--mf-blue-light);
+  padding: 3rem 1rem 5rem;
+  min-height: calc(100vh - var(--mf-nav-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mf-register-card {
+  width: 100%;
+  max-width: 680px;
+  background: #ffffff;
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius-lg);
+  box-shadow: var(--mf-shadow-card);
+  padding: 2.75rem 2.5rem;
+}
+
+@media (max-width: 575.98px) {
+  .mf-register-card {
+    padding: 2rem 1.25rem;
+    border-radius: var(--mf-radius);
+  }
+}
+
+.mf-register-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.mf-register-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
+  font-weight: 800;
+  color: var(--mf-navy);
+  margin-bottom: 0.45rem;
+  letter-spacing: -0.02em;
+}
+
+.mf-register-subtitle {
+  font-size: 1rem;
+  color: var(--mf-text-muted);
+  margin-bottom: 0;
+}
+
+.mf-register-section {
+  margin-bottom: 2rem;
+}
+
+.mf-register-section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--mf-text);
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--mf-border);
+}
+
+/* Password Strength Meter */
+.mf-password-meter-wrap {
+  margin-top: 0.5rem;
+}
+
+.mf-strength-bars {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 0.4rem;
+}
+
+.mf-strength-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: var(--mf-radius-full);
+  background-color: #c4c6d1;
+  transition: background-color 0.3s ease;
+}
+
+.mf-strength-bar.active-weak {
+  background-color: var(--mf-danger);
+}
+
+.mf-strength-bar.active-medium {
+  background-color: #f59e0b;
+}
+
+.mf-strength-bar.active-strong {
+  background-color: var(--mf-success);
+}
+
+.mf-strength-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mf-text-muted);
+  display: block;
+}
+
+/* Password Requirements Checklist */
+.mf-password-reqs {
+  margin-top: 0.75rem;
+  background: var(--mf-blue-light);
+  border: 1px solid rgba(196, 198, 209, 0.4);
+  border-radius: var(--mf-radius);
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+}
+
+.mf-password-reqs-title {
+  font-weight: 700;
+  color: var(--mf-navy);
+  margin-bottom: 0.35rem;
+}
+
+.mf-password-reqs-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.25rem;
+}
+
+@media (min-width: 576px) {
+  .mf-password-reqs-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.mf-req-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--mf-text-muted);
+}
+
+.mf-req-item.met {
+  color: var(--mf-success);
+  font-weight: 600;
+}
+
+.mf-req-item-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}

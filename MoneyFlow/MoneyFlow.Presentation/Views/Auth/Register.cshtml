@@ -1,0 +1,242 @@
+@{
+    ViewData["Title"] = "Create Account - MoneyFlow";
+    ViewData["BodyClass"] = "mf-page-auth";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+}
+
+<div class="mf-register-page-wrapper">
+    <div class="mf-register-card" id="register-card">
+        <!-- Header -->
+        <div class="mf-register-header">
+            <h1 class="mf-register-title">Create your Account</h1>
+            <p class="mf-register-subtitle">Join MoneyFlow to manage your financial future.</p>
+        </div>
+
+        <form id="register-form" method="post" onsubmit="return false;" novalidate>
+            <!-- 1. Personal Information Section -->
+            <div class="mf-register-section">
+                <h2 class="mf-register-section-title">Personal Information</h2>
+                
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <label class="mf-form-label" for="reg-firstname">First Name</label>
+                        <input type="text" 
+                               class="mf-form-control" 
+                               id="reg-firstname" 
+                               name="firstName" 
+                               placeholder="John" 
+                               autocomplete="given-name" 
+                               required />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="mf-form-label" for="reg-lastname">Last Name</label>
+                        <input type="text" 
+                               class="mf-form-control" 
+                               id="reg-lastname" 
+                               name="lastName" 
+                               placeholder="Doe" 
+                               autocomplete="family-name" 
+                               required />
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="mf-form-label" for="reg-dob">Date of Birth</label>
+                        <div class="mf-input-wrapper mf-input-has-icon-right">
+                            <input type="date" 
+                                   class="mf-form-control" 
+                                   id="reg-dob" 
+                                   name="dateOfBirth" 
+                                   autocomplete="bday" 
+                                   required />
+                            <span class="mf-input-icon-btn pe-none" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label class="mf-form-label" for="reg-national-id">National ID</label>
+                        <input type="text" 
+                               class="mf-form-control" 
+                               id="reg-national-id" 
+                               name="nationalId" 
+                               placeholder="AB123456C" 
+                               autocomplete="off" 
+                               required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Contact Information Section -->
+            <div class="mf-register-section">
+                <h2 class="mf-register-section-title">Contact Information</h2>
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="mf-form-label" for="reg-email">Email Address</label>
+                        <div class="mf-input-wrapper mf-input-has-icon-left">
+                            <span class="mf-input-icon-left" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                            </span>
+                            <input type="email" 
+                                   class="mf-form-control" 
+                                   id="reg-email" 
+                                   name="email" 
+                                   placeholder="john.doe@example.com" 
+                                   autocomplete="email" 
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="mf-form-label" for="reg-address">Residential Address</label>
+                        <div class="mf-input-wrapper mf-input-has-icon-left">
+                            <span class="mf-input-icon-left" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                            </span>
+                            <input type="text" 
+                                   class="mf-form-control" 
+                                   id="reg-address" 
+                                   name="address" 
+                                   placeholder="123 Financial Way" 
+                                   autocomplete="street-address" 
+                                   required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Security Section -->
+            <div class="mf-register-section mb-4">
+                <h2 class="mf-register-section-title">Security</h2>
+                
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="mf-form-label" for="reg-password">Password</label>
+                        <div class="mf-input-wrapper mf-input-has-icon-left mf-input-has-icon-right">
+                            <span class="mf-input-icon-left" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input type="password" 
+                                   class="mf-form-control" 
+                                   id="reg-password" 
+                                   name="password" 
+                                   placeholder="••••••••" 
+                                   autocomplete="new-password" 
+                                   required />
+                            <button type="button" 
+                                    class="mf-input-icon-btn mf-password-toggle-btn" 
+                                    data-target="reg-password" 
+                                    aria-label="Toggle password visibility" 
+                                    id="btn-toggle-reg-password">
+                                <svg class="mf-eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="mf-eye-closed d-none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- 3-Segment Password Strength Meter -->
+                        <div class="mf-password-meter-wrap" id="reg-password-meter">
+                            <div class="mf-strength-bars">
+                                <div class="mf-strength-bar" id="str-bar-1"></div>
+                                <div class="mf-strength-bar" id="str-bar-2"></div>
+                                <div class="mf-strength-bar" id="str-bar-3"></div>
+                            </div>
+                            <span class="mf-strength-label" id="str-label">Password strength: Weak</span>
+                        </div>
+
+                        <!-- Password Requirements Checklist -->
+                        <div class="mf-password-reqs">
+                            <div class="mf-password-reqs-title">Password must contain:</div>
+                            <ul class="mf-password-reqs-list">
+                                <li class="mf-req-item" id="req-length">
+                                    <svg class="mf-req-item-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+                                    <span>At least 8 characters</span>
+                                </li>
+                                <li class="mf-req-item" id="req-uppercase">
+                                    <svg class="mf-req-item-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+                                    <span>One uppercase letter</span>
+                                </li>
+                                <li class="mf-req-item" id="req-number">
+                                    <svg class="mf-req-item-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+                                    <span>One number</span>
+                                </li>
+                                <li class="mf-req-item" id="req-special">
+                                    <svg class="mf-req-item-icon" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>
+                                    <span>One special character</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="mf-form-label" for="reg-confirm-password">Confirm Password</label>
+                        <div class="mf-input-wrapper mf-input-has-icon-left mf-input-has-icon-right">
+                            <span class="mf-input-icon-left" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </span>
+                            <input type="password" 
+                                   class="mf-form-control" 
+                                   id="reg-confirm-password" 
+                                   name="confirmPassword" 
+                                   placeholder="••••••••" 
+                                   autocomplete="new-password" 
+                                   required />
+                            <button type="button" 
+                                    class="mf-input-icon-btn mf-password-toggle-btn" 
+                                    data-target="reg-confirm-password" 
+                                    aria-label="Toggle confirm password visibility" 
+                                    id="btn-toggle-reg-confirm-password">
+                                <svg class="mf-eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="mf-eye-closed d-none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn mf-btn-primary mf-btn-auth-submit" id="btn-register-submit">
+                <span>Create Account</span>
+            </button>
+
+            <!-- Switch to Login Link -->
+            <div class="mf-auth-switch-link">
+                <span>Already have an account?</span>
+                <a asp-controller="Auth" asp-action="Login" id="link-goto-login">Login</a>
+            </div>
+        </form>
+    </div>
+</div>

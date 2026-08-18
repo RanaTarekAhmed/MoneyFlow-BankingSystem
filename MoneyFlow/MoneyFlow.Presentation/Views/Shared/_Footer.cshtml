@@ -1,0 +1,78 @@
+@* MoneyFlow shared footer *@
+<footer class="mf-footer" id="footer-section">
+    <div class="container mf-footer-container">
+        <div class="row g-4 py-5 mf-footer-main">
+            <!-- Brand Column -->
+            <div class="col-lg-5 mf-footer-brand-col">
+                <a class="mf-brand-logo mf-footer-logo" asp-controller="Home" asp-action="Index" id="footer-brand-logo">
+                    <span class="mf-logo-icon-wrap" aria-hidden="true">
+                        <svg class="mf-logo-svg" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 8.5H22L12 2Z" />
+                            <rect x="4.25" y="10.5" width="3" height="8.5" rx="1.5" />
+                            <rect x="10.5" y="10.5" width="3" height="8.5" rx="1.5" />
+                            <rect x="16.75" y="10.5" width="3" height="8.5" rx="1.5" />
+                            <rect x="2" y="21" width="20" height="2" rx="1" />
+                        </svg>
+                    </span>
+                    <span class="mf-brand-name">MoneyFlow</span>
+                </a>
+                <p class="mf-footer-tagline">
+                    Empowering your financial future through precision and agility.
+                    Modern banking for the discerning user.
+                </p>
+            </div>
+
+            <!-- Links Column -->
+            <div class="col-6 col-lg-3 mf-footer-links-col">
+                <h4 class="mf-footer-heading">Quick Links</h4>
+                <ul class="mf-footer-links list-unstyled">
+                    <li><a asp-controller="Home" asp-action="Index" id="footer-link-home">Home</a></li>
+                    <li><a href="/Home/Index/#about" id="footer-link-about">About</a></li>
+                    <li><a href="/Home/Index/#services" id="footer-link-services">Services</a></li>
+                    <li><a href="/Home/Index/#security" id="footer-link-security">Security</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy" id="footer-link-privacy">Privacy Policy</a></li>
+                </ul>
+            </div>
+
+            <!-- App Badges Column -->
+            <div class="col-6 col-lg-4 mf-footer-apps-col">
+                <h4 class="mf-footer-heading">Experience On Mobile</h4>
+                <div class="d-flex flex-column gap-2 mf-app-badges">
+                    <a href="#" class="mf-app-badge" aria-label="Download on the App Store" id="btn-app-store">
+                        <div class="mf-app-badge-icon" aria-hidden="true">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.62-.75 1.04-1.8 0.92-2.85-.9.04-1.99.6-2.61 1.34-.55.63-1.03 1.66-.9 2.69 1 .08 2.03-.51 2.59-1.18z"/>
+                            </svg>
+                        </div>
+                        <div class="mf-app-badge-text">
+                            <span class="mf-app-badge-sub">Download on the</span>
+                            <span class="mf-app-badge-title">App Store</span>
+                        </div>
+                    </a>
+                    <a href="#" class="mf-app-badge" aria-label="Get it on Google Play" id="btn-google-play">
+                        <div class="mf-app-badge-icon" aria-hidden="true">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3.609 1.814L13.792 12 3.61 22.186c-.365-.37-.61-.92-.61-1.606V3.42c0-.686.245-1.236.609-1.606zm11.235 11.234l2.197 2.197-11.832 6.782 9.635-8.979zm0-2.096L5.209 1.973l11.832 6.782-2.197 2.197zm1.488 1.488l2.946-1.688c.895-.513.895-1.349 0-1.862l-2.946-1.688-1.748 1.748 1.748 1.69z"/>
+                            </svg>
+                        </div>
+                        <div class="mf-app-badge-text">
+                            <span class="mf-app-badge-sub">GET IT ON</span>
+                            <span class="mf-app-badge-title">Google Play</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mf-footer-bottom py-3 border-top">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                <p class="mb-0 text-muted small">&copy; @DateTime.Now.Year MoneyFlow. Empowering your financial future through precision and agility.</p>
+                <div class="mf-footer-extra-links d-flex gap-3 small text-muted">
+                    <span>AES-256 Secured</span>
+                    <span>•</span>
+                    <span>FDIC Insured Partner</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
