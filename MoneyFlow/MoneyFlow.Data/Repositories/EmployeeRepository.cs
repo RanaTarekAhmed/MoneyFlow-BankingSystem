@@ -77,7 +77,16 @@ namespace MoneyFlow.Data.Repositories
         {
             try
             {
-                Db.Employees.Update(employee);
+                var oldEmployee = Db.Employees.FirstOrDefault(e => e.Id == employee.Id);
+
+                if (oldEmployee == null)
+                    return false;
+
+                oldEmployee.Update(
+                    employee.Salary,
+                    employee.HireDate
+                );
+
                 Db.SaveChanges();
                 return true;
             }
@@ -86,7 +95,6 @@ namespace MoneyFlow.Data.Repositories
                 return false;
             }
         }
-
         public bool Delete(int id)
         {
             try
