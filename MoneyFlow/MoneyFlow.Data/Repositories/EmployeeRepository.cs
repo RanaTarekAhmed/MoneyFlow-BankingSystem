@@ -9,107 +9,60 @@ namespace MoneyFlow.Data.Repositories
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly MoneyFlowDbContext Db;
-        
         public EmployeeRepository(MoneyFlowDbContext db)
         {
             Db = db;
         }
         
-        public List<Employee> GetAll(Expression<Func<Employee, bool>>? filter = null)
+        public async Task<List<Employee>> GetAllAsync(Expression<Func<Employee, bool>>? filter = null)
         {
-            try
+            var query = Db.Employees.Where(e => !e.IsDeleted);
+            if (filter != null)
             {
-                if (filter != null)
-                {
-                    var result = Db.Employees.Where(filter).ToList();
-                    return result;
-                }
-                else
-                {
-                    var result = Db.Employees.ToList();
-                    return result;
-                }
+                query = query.Where(filter);
             }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await query.ToListAsync();
         }
 
-        public Employee Get(Expression<Func<Employee, bool>>? filter = null)
+        public async Task<Employee?> GetAsync(Expression<Func<Employee, bool>>? filter = null)
         {
-            try
+            var query = Db.Employees.Where(e => !e.IsDeleted);
+            if (filter != null)
             {
-                if (filter != null)
-                {
-                    var result = Db.Employees.Where(filter).FirstOrDefault();
-                    return result;
-                }
-                else
-                {
-                    var result = Db.Employees.FirstOrDefault();
-                    return result;
-                }
+                return await query.FirstOrDefaultAsync(filter);
             }
-            catch (Exception)
-            {
-                return null;
-            }
+            return await query.FirstOrDefaultAsync();
         }
 
-        public bool Add(Employee employee)
+        public async Task AddAsync(Employee employee)
         {
-            try
-            {
-                var result = Db.Employees.Add(employee);
-                Db.SaveChanges();
-                if (result.Entity.Id > 0)
-                    return true;
-                return false;
-            }
-            catch (Exception)
+            await Db.Employees.AddAsync(employee);
+            await Db.SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdateAsync(Employee employee)
+        {
+            var oldEmployee = await Db.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == employee.Id);
+            if (oldEmployee == null)
             {
                 return false;
             }
+            oldEmployee.Update(employee.Salary, employee.HireDate);
+            await Db.SaveChangesAsync();
+            return true;
         }
 
-        public bool Update(Employee employee)
+        public async Task<bool> DeleteAsync(int id)
         {
-            try
-            {
-                var oldEmployee = Db.Employees.FirstOrDefault(e => e.Id == employee.Id);
+            var employee = await Db.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == id);
 
-                if (oldEmployee == null)
-                    return false;
-
-                oldEmployee.Update(
-                    employee.Salary,
-                    employee.HireDate
-                );
-
-                Db.SaveChanges();
-                return true;
-            }
-            catch (Exception)
+            if (employee == null)
             {
                 return false;
             }
-        }
-        public bool Delete(int id)
-        {
-            try
-            {
-                var employee = Db.Employees.FirstOrDefault(e => e.Id == id);
-                if (employee == null) return false;
-                employee.Delete();
-                Db.SaveChanges();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            employee.Delete();
+            await Db.SaveChangesAsync();
+            return true;
         }
     }
 }
-

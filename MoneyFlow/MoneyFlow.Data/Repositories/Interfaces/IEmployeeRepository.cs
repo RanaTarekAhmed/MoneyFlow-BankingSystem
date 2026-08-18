@@ -1,13 +1,14 @@
 using MoneyFlow.Data.Entities;
 using System.Linq.Expressions;
 
-namespace MoneyFlow.Data.Repositories.Interfaces;
-
-public interface IEmployeeRepository
+namespace MoneyFlow.Data.Repositories.Interfaces
 {
-    List<Employee> GetAll(Expression<Func<Employee, bool>>? filter = null);
-    Employee Get(Expression<Func<Employee, bool>>? filter = null);
-    bool Add(Employee employee);
-    bool Update(Employee employee);
-    bool Delete(int id);
+    public interface IEmployeeRepository
+    {
+        Task<List<Employee>> GetAllAsync(Expression<Func<Employee, bool>>? filter = null);
+        Task<Employee?> GetAsync(Expression<Func<Employee, bool>>? filter = null);
+        Task AddAsync(Employee employee);
+        Task<bool> UpdateAsync(Employee employee);
+        Task<bool> DeleteAsync(int id);
+    }
 }
