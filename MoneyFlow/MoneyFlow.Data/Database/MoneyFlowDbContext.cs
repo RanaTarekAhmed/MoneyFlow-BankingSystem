@@ -12,11 +12,11 @@ namespace MoneyFlow.Data.Database
         {
         }
 
-        DbSet<Customer> Customers { get; set; }
-        DbSet<Employee> Employees { get; set; }
-        DbSet<Account> Accounts { get; set; }
-        DbSet<Transaction> Transactions { get; set; }
-        DbSet<EmailNotification> EmailNotifications { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<EmailNotification> EmailNotifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
