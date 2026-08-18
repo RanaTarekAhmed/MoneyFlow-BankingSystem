@@ -1,8 +1,309 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home - Institutional Digital Banking";
+    ViewData["BodyClass"] = "mf-page-home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
+
+<!-- 1. Hero Section -->
+<section class="mf-hero-section" id="home" aria-label="Hero Introduction">
+    <div class="container mf-hero-container">
+        <div class="row align-items-center">
+            <!-- Left Hero Content -->
+            <div class="col-lg-6 mf-hero-content-col">
+                <div class="mf-hero-badge" id="hero-badge-trust">
+                    <span class="mf-hero-badge-icon" aria-hidden="true">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                        </svg>
+                    </span>
+                    <span>Trusted by over 1M users</span>
+                </div>
+
+                <h1 class="mf-hero-title">Banking Made Simple, Secure, and Smarter.</h1>
+                
+                <p class="mf-hero-subtitle">
+                    Manage your accounts, transfer money, and keep track of your transactions — all in one secure place. 
+                    Experience institutional-grade finance with everyday ease.
+                </p>
+
+                <div class="mf-hero-actions">
+                    <a class="btn mf-btn-primary btn-lg" asp-controller="Auth" asp-action="Register" id="hero-cta-get-started">
+                        <span>Get Started</span>
+                        <svg class="mf-btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a class="btn mf-btn-secondary btn-lg" asp-controller="Auth" asp-action="Login" id="hero-cta-login">Login</a>
+                </div>
+
+                <div class="mf-hero-social">
+                    <div class="mf-hero-avatars" aria-hidden="true">
+                        <div class="mf-avatar mf-avatar-1">JD</div>
+                        <div class="mf-avatar mf-avatar-2">AS</div>
+                        <div class="mf-avatar mf-avatar-3">MR</div>
+                    </div>
+                    <div class="mf-hero-rating">
+                        <div class="mf-stars-row" aria-label="5 stars rating">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                        </div>
+                        <span class="mf-rating-text">4.9/5 from 10k+ reviews</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Hero Visual -->
+            <div class="col-lg-6 mf-hero-visual-col">
+                <div class="mf-hero-glow-bg" aria-hidden="true"></div>
+
+                <!-- Floating Security Badge -->
+                <div class="mf-security-float-badge" id="hero-badge-aes">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                    </svg>
+                    <span>AES-256 Encrypted</span>
+                </div>
+
+                <!-- Dashboard Preview Card -->
+                <div class="mf-dashboard-card-preview" id="hero-dashboard-preview">
+                    <div class="mf-dash-header">
+                        <div class="mf-dash-user">
+                            <div class="mf-dash-icon" aria-hidden="true">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                    <line x1="2" y1="10" x2="22" y2="10"/>
+                                </svg>
+                            </div>
+                            <span class="mf-dash-title">Total Balance</span>
+                        </div>
+                        <div class="mf-dash-menu" aria-hidden="true">
+                            <svg width="16" height="4" viewBox="0 0 16 4" fill="currentColor">
+                                <circle cx="2" cy="2" r="2"/>
+                                <circle cx="8" cy="2" r="2"/>
+                                <circle cx="14" cy="2" r="2"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div class="mf-dash-amount-wrap">
+                        <div class="mf-dash-amount">$124,500.00</div>
+                        <span class="mf-dash-trend">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M7 14l5-5 5 5z"/>
+                            </svg>
+                            +2.4% this month
+                        </span>
+                    </div>
+
+                    <div class="mf-dash-actions-grid">
+                        <button type="button" class="mf-dash-btn mf-dash-btn-send" id="btn-hero-send">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                            <span>Send</span>
+                        </button>
+                        <button type="button" class="mf-dash-btn mf-dash-btn-recv" id="btn-hero-receive">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                            <span>Receive</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. Features Bento Grid Section -->
+<section class="mf-features-section" id="services" aria-label="Platform Features">
+    <div class="container mf-hero-container">
+        <div class="mf-features-header">
+            <span class="mf-section-tag">INSTITUTIONAL CAPABILITIES</span>
+            <h2 class="mf-section-heading">Powerful features for seamless banking</h2>
+        </div>
+
+        <div class="mf-bento-grid">
+            <!-- Feature 1: Account Management (Wide Card) -->
+            <article class="mf-bento-card mf-bento-card-wide" id="feature-card-accounts">
+                <div class="mf-bento-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <line x1="8" y1="21" x2="16" y2="21"/>
+                        <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                </div>
+                <h3 class="mf-bento-title">Account Management</h3>
+                <p class="mf-bento-desc">
+                    View all your assets in one unified dashboard. Track checking, savings, and investment accounts 
+                    with real-time updates and granular analytics.
+                </p>
+                <div class="mf-bento-bg-accent" aria-hidden="true">
+                    <svg width="180" height="180" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    </svg>
+                </div>
+            </article>
+
+            <!-- Feature 2: Easy Money Transfers -->
+            <article class="mf-bento-card" id="feature-card-transfers">
+                <div class="mf-bento-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 1l4 4-4 4"></path>
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+                        <path d="M7 23l-4-4 4-4"></path>
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+                    </svg>
+                </div>
+                <h3 class="mf-bento-title">Easy Money Transfers</h3>
+                <p class="mf-bento-desc">
+                    Send money domestically or internationally with zero hidden fees and instant settlement options.
+                </p>
+            </article>
+
+            <!-- Feature 3: Transaction History -->
+            <article class="mf-bento-card" id="feature-card-history">
+                <div class="mf-bento-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <h3 class="mf-bento-title">Transaction History</h3>
+                <p class="mf-bento-desc">
+                    Searchable, categorizeable, and exportable transaction records spanning up to 7 years of financial data.
+                </p>
+            </article>
+
+            <!-- Feature 4: Secure Banking (Wide Dark Card) -->
+            <article class="mf-bento-card mf-bento-card-wide mf-bento-card-dark" id="feature-card-security">
+                <div class="mf-bento-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                </div>
+                <h3 class="mf-bento-title">Secure Banking</h3>
+                <p class="mf-bento-desc">
+                    Bank with confidence knowing your assets are protected by biometric authentication, multi-factor security, 
+                    and continuous fraud monitoring.
+                </p>
+                <div class="mf-bento-bg-accent" aria-hidden="true">
+                    <svg width="180" height="180" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+                    </svg>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Security Focused Section -->
+<section class="mf-security-section" id="security" aria-label="Security Architecture">
+    <div class="container mf-hero-container">
+        <div class="row align-items-center g-5">
+            <!-- Left Shield Illustration -->
+            <div class="col-lg-5">
+                <div class="mf-shield-container" aria-hidden="true">
+                    <div class="mf-shield-pulse-ring-2"></div>
+                    <div class="mf-shield-pulse-ring-1"></div>
+                    
+                    <div class="mf-central-shield">
+                        <svg class="mf-shield-core-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L3 7V13C3 18.25 6.84 23.14 12 24C17.16 23.14 21 18.25 21 13V7L12 2Z" fill="#00193C" />
+                            <path d="M10.5 13.5L8.5 11.5L7.5 12.5L10.5 15.5L16.5 9.5L15.5 8.5L10.5 13.5Z" fill="#DBF1FE" />
+                        </svg>
+                    </div>
+
+                    <!-- Orbiting Security Badges -->
+                    <div class="mf-orbit-badge mf-orbit-badge-top" title="Biometric Security">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 004.07 9"/>
+                        </svg>
+                    </div>
+                    <div class="mf-orbit-badge mf-orbit-badge-bottom" title="Verified Safe">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    <div class="mf-orbit-badge mf-orbit-badge-right" title="Encryption Keys">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="7.5" cy="15.5" r="5.5"/>
+                            <path d="M21 2l-9.6 9.6M15.5 7.5l3 3M18.5 4.5l3 3"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Security Details -->
+            <div class="col-lg-7" id="about">
+                <span class="mf-section-tag">SECURITY</span>
+                <h2 class="mf-section-heading mb-3">Your Security Comes First</h2>
+                <p class="mf-section-desc mb-4">
+                    We employ enterprise-grade security measures to ensure your financial data remains 
+                    private and protected against modern threats.
+                </p>
+
+                <div class="mf-security-items">
+                    <div class="mf-security-item-card">
+                        <svg class="mf-security-check-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <h4>Advanced Authentication</h4>
+                            <p>Multi-factor authentication and biometric login options keep unauthorized users out.</p>
+                        </div>
+                    </div>
+
+                    <div class="mf-security-item-card">
+                        <svg class="mf-security-check-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <h4>Data Protection</h4>
+                            <p>End-to-end encryption and secure data centers protect your information at every step.</p>
+                        </div>
+                    </div>
+
+                    <div class="mf-security-item-card">
+                        <svg class="mf-security-check-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        <div>
+                            <h4>Role-Based Access</h4>
+                            <p>Granular permissions let you control who can view and manage your accounts and transactions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Final CTA Section -->
+<section class="mf-cta-section" aria-label="Get Started Banner">
+    <div class="mf-cta-bg-glow" aria-hidden="true"></div>
+    <div class="container mf-hero-container position-relative">
+        <div class="mf-cta-bar"></div>
+        <h2 class="mf-cta-title">Ready to take control of your banking?</h2>
+        <p class="mf-cta-subtitle">
+            Join thousands of users who trust MoneyFlow for secure, intelligent financial management. 
+            Create your free account in minutes.
+        </p>
+        <a class="btn mf-btn-white btn-lg" asp-controller="Auth" asp-action="Register" id="cta-btn-create-account">
+            <span>Create Your Account</span>
+            <svg class="mf-btn-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+        </a>
+        <p class="mf-cta-footer-note">No credit card required · Free to get started</p>
+    </div>
+</section>

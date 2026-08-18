@@ -1,0 +1,52 @@
+@* MoneyFlow shared navbar *@
+<header class="mf-header-wrapper">
+    <nav class="navbar navbar-expand-lg mf-navbar">
+        <div class="container mf-navbar-container">
+            <a class="mf-brand-logo" asp-controller="Home" asp-action="Index" id="nav-brand-logo">
+                <span class="mf-logo-icon-wrap" aria-hidden="true">
+                    <svg class="mf-logo-svg" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 8.5H22L12 2Z" />
+                        <rect x="4.25" y="10.5" width="3" height="8.5" rx="1.5" />
+                        <rect x="10.5" y="10.5" width="3" height="8.5" rx="1.5" />
+                        <rect x="16.75" y="10.5" width="3" height="8.5" rx="1.5" />
+                        <rect x="2" y="21" width="20" height="2" rx="1" />
+                    </svg>
+                </span>
+                <span class="mf-brand-name">MoneyFlow</span>
+            </a>
+
+            <button class="navbar-toggler mf-nav-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mfNavbarNav"
+                    aria-controls="mfNavbarNav" aria-expanded="false" aria-label="Toggle navigation" id="nav-toggler-btn">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mfNavbarNav">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 mf-nav-links">
+                    <li class="nav-item">
+                        <a class="nav-link mf-nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Index" && ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                           asp-controller="Home" asp-action="Index" id="nav-link-home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mf-nav-link" href="/Home/Index/#services" id="nav-link-features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mf-nav-link" href="/Home/Index/#security" id="nav-link-security">Security</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link mf-nav-link" href="/Home/Index/#about" id="nav-link-about">About</a>
+                    </li>
+                </ul>
+                
+                <div class="mf-navbar-actions">
+                    <a class="mf-btn-login" asp-controller="Auth" asp-action="Login" id="nav-btn-login">Login</a>
+                    <a class="btn mf-btn-primary mf-nav-cta" asp-controller="Auth" asp-action="Register" id="nav-btn-register">
+                        <span>Get Started</span>
+                        <svg class="mf-btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
