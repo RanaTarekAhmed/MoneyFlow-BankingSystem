@@ -15,90 +15,53 @@ public class EmailNotificationRepository : IEmailNotificationRepository
         Db = db;
     }
 
-    public List<EmailNotification> GetAll(Expression<Func<EmailNotification, bool>>? filter = null)
+    public async Task<List<EmailNotification>> GetAllAsync(Expression<Func<EmailNotification, bool>>? filter = null)
     {
-        try
+        var query = Db.EmailNotifications.AsQueryable();
+        if (filter != null)
         {
-            if (filter != null)
-            {
-                var result = Db.EmailNotifications.Where(filter).ToList();
-                return result;
-            }
-            else
-            {
-                var result = Db.EmailNotifications.ToList();
-                return result;
-            }
+            query = query.Where(filter);
         }
-        catch (Exception)
-        {
-            return null;
-        }
+        return await query.ToListAsync();
     }
 
-    public EmailNotification Get(Expression<Func<EmailNotification, bool>>? filter = null)
+    public async Task<EmailNotification?> GetAsync(Expression<Func<EmailNotification, bool>>? filter = null)
     {
-        try
+        var query = Db.EmailNotifications.AsQueryable();
+        if (filter != null)
         {
-            if (filter != null)
-            {
-                var result = Db.EmailNotifications.Where(filter).FirstOrDefault();
-                return result;
-            }
-            else
-            {
-                var result = Db.EmailNotifications.FirstOrDefault();
-                return result;
-            }
+            return await query.FirstOrDefaultAsync(filter);
         }
-        catch (Exception)
-        {
-            return null;
-        }
+        return await query.FirstOrDefaultAsync();
     }
 
-    public bool Add(EmailNotification emailNotification)
+    public async Task AddAsync(EmailNotification emailNotification)
     {
-        try
-        {
-            var result = Db.EmailNotifications.Add(emailNotification);
-            Db.SaveChanges();
-            if (result.Entity.Id > 0) return true;
-            return false;
-        }
-        catch (Exception)
+        await Db.EmailNotifications.AddAsync(emailNotification);
+        await Db.SaveChangesAsync();
+    }
+
+    public async Task<bool> UpdateAsync(EmailNotification emailNotification)
+    {
+        var existingNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == emailNotification.Id);
+        if (existingNotification == null)
         {
             return false;
         }
+        Db.EmailNotifications.Update(emailNotification);
+        await Db.SaveChangesAsync();
+        return true;
     }
 
-    public bool Update(EmailNotification emailNotification)
+    public async Task<bool> DeleteAsync(int id)
     {
-        try
-        {
-            Db.EmailNotifications.Update(emailNotification);
-            Db.SaveChanges();
-            return true;
-        }
-        catch (Exception)
+        var emailNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == id);
+        if (emailNotification == null)
         {
             return false;
         }
-    }
-
-    public bool Delete(int id)
-    {
-        try
-        {
-            var emailNotification = Db.EmailNotifications.FirstOrDefault(e => e.Id == id);
-            if (emailNotification == null) return false;
-            emailNotification.Delete();
-            Db.SaveChanges();
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        emailNotification.Delete();
+        await Db.SaveChangesAsync();
+        return true;
     }
 }

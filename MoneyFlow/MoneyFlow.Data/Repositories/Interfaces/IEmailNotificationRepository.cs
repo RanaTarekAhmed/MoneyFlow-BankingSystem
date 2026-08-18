@@ -5,9 +5,9 @@ namespace MoneyFlow.Data.Repositories.Interfaces;
 
 public interface IEmailNotificationRepository
 {
-    List<EmailNotification> GetAll(Expression<Func<EmailNotification, bool>>? filter = null);
-    EmailNotification Get(Expression<Func<EmailNotification, bool>>? filter = null);
-    bool Add(EmailNotification emailNotification);
-    bool Update(EmailNotification emailNotification);
-    bool Delete(int id);
+    Task<List<EmailNotification>> GetAllAsync(Expression<Func<EmailNotification, bool>>? filter = null);
+    Task<EmailNotification?> GetAsync(Expression<Func<EmailNotification, bool>>? filter = null);
+    Task AddAsync(EmailNotification emailNotification);
+    Task<bool> UpdateAsync(EmailNotification emailNotification);
+    Task<bool> DeleteAsync(int id);
 }
