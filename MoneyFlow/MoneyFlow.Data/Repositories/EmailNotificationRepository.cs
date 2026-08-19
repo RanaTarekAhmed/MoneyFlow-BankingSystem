@@ -41,27 +41,25 @@ public class EmailNotificationRepository : IEmailNotificationRepository
         await Db.SaveChangesAsync();
     }
 
-    public async Task<bool> UpdateAsync(EmailNotification emailNotification)
+    public async Task UpdateAsync(EmailNotification emailNotification)
     {
         var existingNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == emailNotification.Id && !e.IsDeleted);
         if (existingNotification == null)
         {
-            return false;
+            return;
         }
         Db.EmailNotifications.Update(emailNotification);
         await Db.SaveChangesAsync();
-        return true;
     }
 
-    public async Task<bool> DeleteAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var emailNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
         if (emailNotification == null)
         {
-            return false;
+            return;
         }
         emailNotification.Delete();
         await Db.SaveChangesAsync();
-        return true;
     }
 }
