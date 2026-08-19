@@ -17,7 +17,7 @@ public class EmailNotificationRepository : IEmailNotificationRepository
 
     public async Task<List<EmailNotification>> GetAllAsync(Expression<Func<EmailNotification, bool>>? filter = null)
     {
-        var query = Db.EmailNotifications.AsQueryable();
+        var query = Db.EmailNotifications.Where(e => !e.IsDeleted).AsQueryable();
         if (filter != null)
         {
             query = query.Where(filter);
@@ -27,7 +27,7 @@ public class EmailNotificationRepository : IEmailNotificationRepository
 
     public async Task<EmailNotification?> GetAsync(Expression<Func<EmailNotification, bool>>? filter = null)
     {
-        var query = Db.EmailNotifications.AsQueryable();
+        var query = Db.EmailNotifications.Where(e => !e.IsDeleted).AsQueryable();
         if (filter != null)
         {
             return await query.FirstOrDefaultAsync(filter);
@@ -43,7 +43,7 @@ public class EmailNotificationRepository : IEmailNotificationRepository
 
     public async Task<bool> UpdateAsync(EmailNotification emailNotification)
     {
-        var existingNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == emailNotification.Id);
+        var existingNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == emailNotification.Id && !e.IsDeleted);
         if (existingNotification == null)
         {
             return false;
@@ -55,7 +55,7 @@ public class EmailNotificationRepository : IEmailNotificationRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var emailNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == id);
+        var emailNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
         if (emailNotification == null)
         {
             return false;
