@@ -40,29 +40,27 @@ namespace MoneyFlow.Data.Repositories
             await Db.SaveChangesAsync();
         }
 
-        public async Task<bool> UpdateAsync(Employee employee)
+        public async Task UpdateAsync(Employee employee)
         {
             var oldEmployee = await Db.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == employee.Id);
             if (oldEmployee == null)
             {
-                return false;
+                return;
             }
             oldEmployee.Update(employee.Salary, employee.HireDate);
             await Db.SaveChangesAsync();
-            return true;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             var employee = await Db.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == id);
 
             if (employee == null)
             {
-                return false;
+                return;
             }
             employee.Delete();
             await Db.SaveChangesAsync();
-            return true;
         }
     }
 }
