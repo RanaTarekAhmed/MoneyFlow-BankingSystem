@@ -35,12 +35,11 @@ namespace MoneyFlow.Data.Entities
 			CreatedAt = now;
 		}
 
-		public void Update(AccountType accountType, AccountStatus status, decimal balance)
+		public void Update(AccountType accountType, AccountStatus status/*, decimal balance*/)
 		{
 			AccountType = accountType;
 			Status = status;
-			Balance = balance;
-
+			//Balance = balance;
 			UpdatedAt = DateTime.UtcNow;
 		}
 
@@ -49,5 +48,42 @@ namespace MoneyFlow.Data.Entities
 			IsDeleted = true;
 			DeletedAt = DateTime.UtcNow;
 		}
-	}
+
+
+
+		//To be used in SERVICE layer
+		/*
+        public void Deposit(decimal amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Deposit amount must be greater than zero.");
+
+            Balance += amount;
+            UpdatedAt = DateTime.Now;
+        }
+
+        public void Withdraw(decimal amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentException("Withdrawal amount must be greater than zero.");
+
+            if (amount > Balance)
+                throw new InvalidOperationException("Insufficient balance.");
+
+            Balance -= amount;
+            UpdatedAt = DateTime.Now;
+        }
+
+        public void Transfer(Account destinationAccount, decimal amount)
+        {
+            if (destinationAccount == null)
+                throw new ArgumentNullException(nameof(destinationAccount));
+
+            if (destinationAccount == this)
+                throw new InvalidOperationException("Cannot transfer money to the same account.");
+
+            Withdraw(amount);
+            destinationAccount.Deposit(amount);
+        }*/
+    }
 }
