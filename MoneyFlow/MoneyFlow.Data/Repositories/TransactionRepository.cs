@@ -11,23 +11,23 @@ namespace MoneyFlow.Data.Repositories
 {
     public class TransactionRepository : ITransactionRepository
     {
-        private readonly MoneyFlowDbContext dp_context;
+        private readonly MoneyFlowDbContext _context;
 
-        public TransactionRepository(MoneyFlowDbContext DP)
+        public TransactionRepository(MoneyFlowDbContext context)
         {
-            dp_context = DP;
+            _context = context;
         }
         public async Task AddAsync(Transaction transaction)
         {
 
-            await dp_context.Transactions.AddAsync(transaction);
-            await dp_context.SaveChangesAsync();
+            await _context.Transactions.AddAsync(transaction);
+            await _context.SaveChangesAsync();
 
         }
 
         public async Task<List<Transaction>> GetAllAsync(Expression<Func<Transaction, bool>>? filter)
         {
-            var query = dp_context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) &&(t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
+            var query = _context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) &&(t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
             if (filter != null)
             {
                query=query.Where(filter);
@@ -39,20 +39,20 @@ namespace MoneyFlow.Data.Repositories
 
         public async Task<Transaction?> GetAsync(Expression<Func<Transaction, bool>> filter)
         {
-            var query = dp_context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
+            var query = _context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
             return await query.Where(filter).FirstOrDefaultAsync();
 
         }
 
         public async Task UpdateStatusAsync(int id, TransactionStatus status)
         {
-            var transaction = await dp_context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted)).FirstOrDefaultAsync(x => x.Id == id);
+            var transaction = await _context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted)).FirstOrDefaultAsync(x => x.Id == id);
 
             if (transaction != null)
             {
                 transaction.UpdateStatus(status);
 
-                await dp_context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
 
         }

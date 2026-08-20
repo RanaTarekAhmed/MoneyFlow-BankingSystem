@@ -8,15 +8,15 @@ namespace MoneyFlow.Data.Repositories
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        private readonly MoneyFlowDbContext Db;
-        public EmployeeRepository(MoneyFlowDbContext db)
+        private readonly MoneyFlowDbContext _context;
+        public EmployeeRepository(MoneyFlowDbContext context)
         {
-            Db = db;
+            _context = context;
         }
         
         public async Task<List<Employee>> GetAllAsync(Expression<Func<Employee, bool>>? filter = null)
         {
-            var query = Db.Employees.Where(e => !e.IsDeleted);
+            var query = _context.Employees.Where(e => !e.IsDeleted);
             if (filter != null)
             {
                 query = query.Where(filter);
@@ -26,7 +26,7 @@ namespace MoneyFlow.Data.Repositories
 
         public async Task<Employee?> GetAsync(Expression<Func<Employee, bool>>? filter = null)
         {
-            var query = Db.Employees.Where(e => !e.IsDeleted);
+            var query = _context.Employees.Where(e => !e.IsDeleted);
             if (filter != null)
             {
                 return await query.FirstOrDefaultAsync(filter);
@@ -36,31 +36,31 @@ namespace MoneyFlow.Data.Repositories
 
         public async Task AddAsync(Employee employee)
         {
-            await Db.Employees.AddAsync(employee);
-            await Db.SaveChangesAsync();
+            await _context.Employees.AddAsync(employee);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Employee employee)
         {
-            var oldEmployee = await Db.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == employee.Id);
+            var oldEmployee = await _context.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == employee.Id);
             if (oldEmployee == null)
             {
                 return;
             }
             oldEmployee.Update(employee.Salary, employee.HireDate);
-            await Db.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(int id)
         {
-            var employee = await Db.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == id);
+            var employee = await _context.Employees.FirstOrDefaultAsync(e => !e.IsDeleted && e.Id == id);
 
             if (employee == null)
             {
                 return;
             }
             employee.Delete();
-            await Db.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

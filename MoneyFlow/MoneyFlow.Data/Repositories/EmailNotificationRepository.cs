@@ -8,16 +8,16 @@ namespace MoneyFlow.Data.Repositories;
 
 public class EmailNotificationRepository : IEmailNotificationRepository
 {
-    private readonly MoneyFlowDbContext Db;
+    private readonly MoneyFlowDbContext _context;
 
-    public EmailNotificationRepository(MoneyFlowDbContext db)
+    public EmailNotificationRepository(MoneyFlowDbContext context)
     {
-        Db = db;
+        _context = context;
     }
 
     public async Task<List<EmailNotification>> GetAllAsync(Expression<Func<EmailNotification, bool>>? filter = null)
     {
-        var query = Db.EmailNotifications.Where(e => !e.IsDeleted).AsQueryable();
+        var query = _context.EmailNotifications.Where(e => !e.IsDeleted).AsQueryable();
         if (filter != null)
         {
             query = query.Where(filter);
@@ -27,7 +27,7 @@ public class EmailNotificationRepository : IEmailNotificationRepository
 
     public async Task<EmailNotification?> GetAsync(Expression<Func<EmailNotification, bool>>? filter = null)
     {
-        var query = Db.EmailNotifications.Where(e => !e.IsDeleted).AsQueryable();
+        var query = _context.EmailNotifications.Where(e => !e.IsDeleted).AsQueryable();
         if (filter != null)
         {
             return await query.FirstOrDefaultAsync(filter);
@@ -37,29 +37,29 @@ public class EmailNotificationRepository : IEmailNotificationRepository
 
     public async Task AddAsync(EmailNotification emailNotification)
     {
-        await Db.EmailNotifications.AddAsync(emailNotification);
-        await Db.SaveChangesAsync();
+        await _context.EmailNotifications.AddAsync(emailNotification);
+        await _context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(EmailNotification emailNotification)
     {
-        var existingNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == emailNotification.Id && !e.IsDeleted);
+        var existingNotification = await _context.EmailNotifications.FirstOrDefaultAsync(e => e.Id == emailNotification.Id && !e.IsDeleted);
         if (existingNotification == null)
         {
             return;
         }
-        Db.EmailNotifications.Update(emailNotification);
-        await Db.SaveChangesAsync();
+        _context.EmailNotifications.Update(emailNotification);
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        var emailNotification = await Db.EmailNotifications.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
+        var emailNotification = await _context.EmailNotifications.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
         if (emailNotification == null)
         {
             return;
         }
         emailNotification.Delete();
-        await Db.SaveChangesAsync();
+        await _context.SaveChangesAsync();
     }
 }
