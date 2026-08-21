@@ -1,5 +1,7 @@
+@model RegisterVM
+
 @{
-    ViewData["Title"] = "Create Account - MoneyFlow";
+    ViewData["Title"] = "Create Account";
     ViewData["BodyClass"] = "mf-page-auth";
 }
 
@@ -15,41 +17,38 @@
             <p class="mf-register-subtitle">Join MoneyFlow to manage your financial future.</p>
         </div>
 
-        <form id="register-form" method="post" onsubmit="return false;" novalidate>
+        <form asp-action="Register" id="register-form" method="post" novalidate>
             <!-- 1. Personal Information Section -->
             <div class="mf-register-section">
                 <h2 class="mf-register-section-title">Personal Information</h2>
                 
                 <div class="row g-3">
                     <div class="col-sm-6">
-                        <label class="mf-form-label" for="reg-firstname">First Name</label>
+                        <label class="mf-form-label" asp-for="FirstName">First Name</label>
                         <input type="text" 
-                               class="mf-form-control" 
-                               id="reg-firstname" 
-                               name="firstName" 
+                               class="mf-form-control"
+                               asp-for="FirstName"
                                placeholder="John" 
                                autocomplete="given-name" 
                                required />
                     </div>
 
                     <div class="col-sm-6">
-                        <label class="mf-form-label" for="reg-lastname">Last Name</label>
+                        <label class="mf-form-label" asp-for="LastName">Last Name</label>
                         <input type="text" 
-                               class="mf-form-control" 
-                               id="reg-lastname" 
-                               name="lastName" 
+                               class="mf-form-control"
+                               asp-for="LastName"
                                placeholder="Doe" 
                                autocomplete="family-name" 
                                required />
                     </div>
 
                     <div class="col-sm-6">
-                        <label class="mf-form-label" for="reg-dob">Date of Birth</label>
+                        <label class="mf-form-label" asp-for="DateOfBirth">Date of Birth</label>
                         <div class="mf-input-wrapper mf-input-has-icon-right">
                             <input type="date" 
-                                   class="mf-form-control" 
-                                   id="reg-dob" 
-                                   name="dateOfBirth" 
+                                   class="mf-form-control"
+                                   asp-for="DateOfBirth"
                                    autocomplete="bday" 
                                    required />
                             <span class="mf-input-icon-btn pe-none" aria-hidden="true">
@@ -64,11 +63,10 @@
                     </div>
 
                     <div class="col-sm-6">
-                        <label class="mf-form-label" for="reg-national-id">National ID</label>
+                        <label class="mf-form-label" asp-for="NationalId">National ID</label>
                         <input type="text" 
-                               class="mf-form-control" 
-                               id="reg-national-id" 
-                               name="nationalId" 
+                               class="mf-form-control"
+                               asp-for="NationalId"
                                placeholder="AB123456C" 
                                autocomplete="off" 
                                required />
@@ -82,7 +80,7 @@
                 
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="mf-form-label" for="reg-email">Email Address</label>
+                        <label class="mf-form-label" asp-for="Email">Email Address</label>
                         <div class="mf-input-wrapper mf-input-has-icon-left">
                             <span class="mf-input-icon-left" aria-hidden="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -91,9 +89,8 @@
                                 </svg>
                             </span>
                             <input type="email" 
-                                   class="mf-form-control" 
-                                   id="reg-email" 
-                                   name="email" 
+                                   class="mf-form-control"
+                                   asp-for="Email"
                                    placeholder="john.doe@example.com" 
                                    autocomplete="email" 
                                    required />
@@ -101,7 +98,7 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="mf-form-label" for="reg-address">Residential Address</label>
+                        <label class="mf-form-label" asp-for="Address">Residential Address</label>
                         <div class="mf-input-wrapper mf-input-has-icon-left">
                             <span class="mf-input-icon-left" aria-hidden="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -110,9 +107,8 @@
                                 </svg>
                             </span>
                             <input type="text" 
-                                   class="mf-form-control" 
-                                   id="reg-address" 
-                                   name="address" 
+                                   class="mf-form-control"
+                                   asp-for="Address"
                                    placeholder="123 Financial Way" 
                                    autocomplete="street-address" 
                                    required />
@@ -127,7 +123,7 @@
                 
                 <div class="row g-3">
                     <div class="col-12">
-                        <label class="mf-form-label" for="reg-password">Password</label>
+                        <label class="mf-form-label" asp-for="Password">Password</label>
                         <div class="mf-input-wrapper mf-input-has-icon-left mf-input-has-icon-right">
                             <span class="mf-input-icon-left" aria-hidden="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -136,9 +132,9 @@
                                 </svg>
                             </span>
                             <input type="password" 
-                                   class="mf-form-control" 
-                                   id="reg-password" 
-                                   name="password" 
+                                   class="mf-form-control"
+                                   asp-for="Password"
+                                   id="reg-password"
                                    placeholder="••••••••" 
                                    autocomplete="new-password" 
                                    required />
@@ -193,7 +189,7 @@
                     </div>
 
                     <div class="col-12">
-                        <label class="mf-form-label" for="reg-confirm-password">Confirm Password</label>
+                        <label class="mf-form-label" asp-for="ConfirmPassword">Confirm Password</label>
                         <div class="mf-input-wrapper mf-input-has-icon-left mf-input-has-icon-right">
                             <span class="mf-input-icon-left" aria-hidden="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -202,9 +198,9 @@
                                 </svg>
                             </span>
                             <input type="password" 
-                                   class="mf-form-control" 
-                                   id="reg-confirm-password" 
-                                   name="confirmPassword" 
+                                   class="mf-form-control"
+                                   asp-for="ConfirmPassword"
+                                   id="reg-confirm-password"
                                    placeholder="••••••••" 
                                    autocomplete="new-password" 
                                    required />
