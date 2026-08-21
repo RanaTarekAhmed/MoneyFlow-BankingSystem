@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Authentication;
 
@@ -20,12 +21,38 @@ namespace MoneyFlowSandbox.Controllers
             return View();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            var result = await _authService.LoginAsync(model);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid Email or Password");
+                return View(model);
+            }
+            return RedirectToAction("Index", "Account");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _authService.LogoutAsync();
+
+            return RedirectToAction("Login");
+        }
+
         [HttpGet]
         public async Task<IActionResult> Register()
         {
             return View();
         }
 
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM model)

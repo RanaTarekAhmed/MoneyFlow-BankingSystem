@@ -11,22 +11,34 @@ namespace MoneyFlow.Business.Services
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ICustomerRepository _customerRepository;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-		public AuthService(UserManager<ApplicationUser> userManager, ICustomerRepository customerRepository)
+        public AuthService(UserManager<ApplicationUser> userManager, ICustomerRepository customerRepository , SignInManager<ApplicationUser> signInManager)
 		{
 			_userManager = userManager;
 			_customerRepository = customerRepository;
+			_signInManager = signInManager;
 		}
 
-		public Task<SignInResult> LoginAsync(LoginVM model)
+		public async Task<SignInResult> LoginAsync(LoginVM model)
 		{
-			throw new NotImplementedException();
-		}
+            var user = await _userManager.FindByEmailAsync(model.Email);
 
-		public Task LogoutAsync()
+            if (user == null)
+                return SignInResult.Failed;
+
+            var result = await _signInManager.PasswordSignInAsync(
+                user,
+                model.Password,
+                model.RememberMe,
+                lockoutOnFailure: true);
+            return result;
+        }
+
+		public async Task LogoutAsync()
 		{
-			throw new NotImplementedException();
-		}
+            await _signInManager.SignOutAsync();
+        }
 
 		public async Task<IdentityResult> RegisterAsync(RegisterVM model)
 		{
