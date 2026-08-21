@@ -384,11 +384,90 @@ body {
   color: var(--mf-navy);
 }
 
-/* Error States */
+/* ==========================================================================
+   Error / Validation States
+   ASP.NET Core MVC generates:
+     .input-validation-error  → on the <input> when invalid
+     .input-validation-valid  → on the <input> when valid
+   ========================================================================== */
+
+/* ── Standalone inputs (no wrapper) ── */
+.mf-form-control.input-validation-error {
+  border-color: var(--mf-danger) !important;
+  border-width: 1.5px;
+  background-color: #ffffff;
+  color: var(--mf-text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* ── Red focus ring for invalid inputs ── */
+.mf-form-control.input-validation-error:focus {
+  border-color: var(--mf-danger) !important;
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.12);
+  outline: none;
+}
+
+/* ── Wrapper inputs (icon-left / icon-right variants) ──
+   Apply the error frame to the wrapper so the icon is contained within it  */
+.mf-input-wrapper:has(.input-validation-error) {
+  border-radius: var(--mf-radius);
+  outline: 1.5px solid var(--mf-danger);
+}
+
+/* Strip the individual border so the wrapper outline is the single frame */
+.mf-input-wrapper:has(.input-validation-error) .mf-form-control {
+  border-color: transparent !important;
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
+/* Red focus ring on the wrapper when the inner input is focused */
+.mf-input-wrapper:has(.input-validation-error:focus) {
+  outline: 1.5px solid var(--mf-danger);
+  box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.12);
+}
+
+/* Icon colour shifts to danger inside an errored wrapper */
+.mf-input-wrapper:has(.input-validation-error) .mf-input-icon-left,
+.mf-input-wrapper:has(.input-validation-error) .mf-input-icon-btn {
+  color: var(--mf-danger);
+  opacity: 0.7;
+}
+
+/* ── Restore normal styles once the field becomes valid ── */
+.mf-form-control.input-validation-valid {
+  border-color: #c4c6d1;
+  background-color: #ffffff;
+  box-shadow: none;
+}
+
+.mf-form-control.input-validation-valid:focus {
+  border-color: var(--mf-navy-mid);
+  box-shadow: 0 0 0 3px rgba(0, 45, 98, 0.12);
+}
+
+.mf-input-wrapper:has(.input-validation-valid) {
+  outline: none;
+  box-shadow: none;
+}
+
+.mf-input-wrapper:has(.input-validation-valid) .mf-form-control {
+  border-color: #c4c6d1 !important;
+  background-color: #ffffff;
+}
+
+.mf-input-wrapper:has(.input-validation-valid) .mf-input-icon-left,
+.mf-input-wrapper:has(.input-validation-valid) .mf-input-icon-btn {
+  color: #64748b;
+  opacity: 1;
+}
+
+/* ── Legacy helper classes (keep backward-compat) ── */
 .mf-form-control.is-invalid-state,
 .is-invalid-state .mf-form-control {
   border-color: var(--mf-danger) !important;
-  border-width: 2px;
+  border-width: 1.5px;
+  background-color: #ffffff;
 }
 
 .mf-error-feedback {
@@ -399,6 +478,20 @@ body {
   font-size: 0.8125rem;
   font-weight: 500;
   margin-top: 0.35rem;
+}
+
+/* ── ASP.NET MVC Validation Message Spans ── */
+.field-validation-error {
+  display: block;
+  color: var(--mf-danger);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+.field-validation-valid {
+  display: none;
 }
 
 /* Form Checkbox */

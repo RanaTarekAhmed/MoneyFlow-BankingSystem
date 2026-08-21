@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const reqLength = document.getElementById('req-length');
         const reqUppercase = document.getElementById('req-uppercase');
+        const reqLowercase = document.getElementById('req-lowercase');
         const reqNumber = document.getElementById('req-number');
         const reqSpecial = document.getElementById('req-special');
 
@@ -65,15 +66,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const hasMinLen = val.length >= 8;
             const hasUpper = /[A-Z]/.test(val);
+            const hasLower = /[a-z]/.test(val);
             const hasNumber = /[0-9]/.test(val);
             const hasSpecial = /[^A-Za-z0-9]/.test(val);
 
             updateReqItem(reqLength, hasMinLen);
             updateReqItem(reqUppercase, hasUpper);
+            updateReqItem(reqLowercase, hasLower);
             updateReqItem(reqNumber, hasNumber);
             updateReqItem(reqSpecial, hasSpecial);
 
-            const score = [hasMinLen, hasUpper, hasNumber, hasSpecial].filter(Boolean).length;
+            const score = [hasMinLen, hasUpper, hasLower, hasNumber, hasSpecial].filter(Boolean).length;
 
             // Reset bars
             [bar1, bar2, bar3].forEach(bar => {
@@ -85,14 +88,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (score <= 2) {
+            if (score <= 3) {
                 if (bar1) bar1.classList.add('active-weak');
                 if (strLabel) strLabel.textContent = 'Password strength: Weak';
-            } else if (score === 3) {
+            } else if (score === 4) {
                 if (bar1) bar1.classList.add('active-medium');
                 if (bar2) bar2.classList.add('active-medium');
                 if (strLabel) strLabel.textContent = 'Password strength: Medium';
-            } else if (score === 4) {
+            } else if (score === 5) {
                 if (bar1) bar1.classList.add('active-strong');
                 if (bar2) bar2.classList.add('active-strong');
                 if (bar3) bar3.classList.add('active-strong');
