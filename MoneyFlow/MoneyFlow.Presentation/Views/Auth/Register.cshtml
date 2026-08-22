@@ -18,6 +18,12 @@
 		</div>
 
 		<form asp-action="Register" id="register-form" method="post">
+			<!-- Validation Summary -->
+			<div asp-validation-summary="ModelOnly"
+				 class="text-danger"
+				 role="alert">
+			</div>
+
 			<!-- 1. Personal Information Section -->
 			<div class="mf-register-section">
 				<h2 class="mf-register-section-title">Personal Information</h2>
