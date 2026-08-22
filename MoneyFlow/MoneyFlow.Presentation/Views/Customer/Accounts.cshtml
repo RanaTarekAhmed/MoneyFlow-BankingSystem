@@ -1,0 +1,208 @@
+@{
+	Layout = "_CustomerLayout";
+	ViewData["Title"] = "My Accounts";
+}
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+	<div>
+		<h1 class="mf-page-greeting">My Accounts</h1>
+		<p class="mf-page-subtitle">Manage your balances, account details, and active bank accounts.</p>
+	</div>
+	<div>
+		<a href="/Customer/Transfer" class="btn mf-btn-primary" id="btn-accounts-transfer-money">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M17 1l4 4-4 4"/>
+				<path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+			</svg>
+			<span>Transfer Funds</span>
+		</a>
+	</div>
+</div>
+
+<!-- Account Summary Row -->
+<div class="row g-4 mb-4">
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="2" y="4" width="20" height="16" rx="2"/>
+						<line x1="2" y1="10" x2="22" y2="10"/>
+					</svg>
+				</span>
+				<span>Total Liquid Balance</span>
+			</div>
+			<div class="mf-metric-value-wrap">
+				<span class="mf-metric-value">$34,160<span class="cents">.00</span></span>
+			</div>
+			<p class="mf-metric-note">Combined across 2 active accounts</p>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="2" y="5" width="20" height="14" rx="2"/>
+						<line x1="2" y1="10" x2="22" y2="10"/>
+					</svg>
+				</span>
+				<span>Checking Balance</span>
+			</div>
+			<div class="mf-metric-value-wrap">
+				<span class="mf-metric-value">$8,420<span class="cents">.50</span></span>
+			</div>
+			<p class="mf-metric-note">Primary Everyday Account (•••• 4821)</p>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z"/>
+					</svg>
+				</span>
+				<span>Savings Balance</span>
+			</div>
+			<div class="mf-metric-value-wrap">
+				<span class="mf-metric-value">$25,739<span class="cents">.50</span></span>
+			</div>
+			<p class="mf-metric-note">Vault Savings Account (•••• 9210)</p>
+		</div>
+	</div>
+</div>
+
+<!-- Accounts Detailed Bento Grid -->
+<div class="row g-4 mb-4">
+	<!-- Card 1: Checking Account -->
+	<div class="col-12 col-lg-6">
+		<div class="mf-card h-100 d-flex flex-column justify-content-between p-4" id="account-card-checking">
+			<div>
+				<div class="d-flex align-items-start justify-content-between mb-3">
+					<div class="d-flex align-items-center gap-3">
+						<div class="mf-account-badge-icon checking">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="2" y="5" width="20" height="14" rx="2"/>
+								<line x1="2" y1="10" x2="22" y2="10"/>
+							</svg>
+						</div>
+						<div>
+							<h2 class="h5 fw-bold text-dark mb-0">Checking Account</h2>
+							<span class="text-muted small">Standard Checking</span>
+						</div>
+					</div>
+					<span class="mf-status-badge active"><span class="dot"></span>Active</span>
+				</div>
+
+				<div class="my-4">
+					<span class="text-uppercase small fw-bold text-muted d-block mb-1">Available Balance</span>
+					<div class="h2 fw-extrabold text-dark mb-1">$8,420.50</div>
+					<div class="text-muted small">Account Number: <span class="fw-semibold text-dark">•••• 4821</span></div>
+				</div>
+
+				<div class="p-3 bg-light rounded-3 mb-4">
+					<div class="d-flex justify-content-between text-muted small py-1">
+						<span>Account Type</span>
+						<span class="fw-semibold text-dark">Checking</span>
+					</div>
+					<div class="d-flex justify-content-between text-muted small py-1">
+						<span>Open Date</span>
+						<span class="fw-semibold text-dark">January 15, 2023</span>
+					</div>
+					<div class="d-flex justify-content-between text-muted small py-1">
+						<span>Currency</span>
+						<span class="fw-semibold text-dark">USD ($)</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="d-flex flex-wrap gap-2 pt-3 border-top">
+				<a 
+					href="/Customer/AccountDetails?type=checking"
+					class="d-flex justify-content-center align-items-center btn btn-sm btn-outline-secondary flex-grow-1" 
+					id="btn-details-checking">
+					View Details
+				</a>
+				<a 
+					href="/Customer/Transactions?account=checking" 
+					class="d-flex justify-content-center align-items-center btn btn-sm btn-outline-secondary flex-grow-1"
+					id="btn-history-checking">
+					History
+				</a>
+				<a href="/Customer/Transfer?from=checking" class="btn btn-sm mf-btn-primary flex-grow-1" id="btn-transfer-checking">
+					Transfer
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Card 2: Savings Account -->
+	<div class="col-12 col-lg-6">
+		<div class="mf-card h-100 d-flex flex-column justify-content-between p-4" id="account-card-savings">
+			<div>
+				<div class="d-flex align-items-start justify-content-between mb-3">
+					<div class="d-flex align-items-center gap-3">
+						<div class="mf-account-badge-icon savings">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z"/>
+								<line x1="2" y1="9" x2="4" y2="9"/>
+								<circle cx="15" cy="11" r="1"/>
+							</svg>
+						</div>
+						<div>
+							<h2 class="h5 fw-bold text-dark mb-0">Savings Account</h2>
+							<span class="text-muted small">High-Yield Reserve</span>
+						</div>
+					</div>
+					<span class="mf-status-badge active"><span class="dot"></span>Active</span>
+				</div>
+
+				<div class="my-4">
+					<span class="text-uppercase small fw-bold text-muted d-block mb-1">Available Balance</span>
+					<div class="h2 fw-extrabold text-dark mb-1">$25,739.50</div>
+					<div class="text-muted small">Account Number: <span class="fw-semibold text-dark">•••• 9210</span></div>
+				</div>
+
+				<div class="p-3 bg-light rounded-3 mb-4">
+					<div class="d-flex justify-content-between text-muted small py-1">
+						<span>Account Type</span>
+						<span class="fw-semibold text-dark">Savings</span>
+					</div>
+					<div class="d-flex justify-content-between text-muted small py-1">
+						<span>Open Date</span>
+						<span class="fw-semibold text-dark">March 10, 2023</span>
+					</div>
+					<div class="d-flex justify-content-between text-muted small py-1">
+						<span>Currency</span>
+						<span class="fw-semibold text-dark">USD ($)</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="d-flex flex-wrap gap-2 pt-3 border-top">
+				<a 
+					href="/Customer/AccountDetails?type=savings"
+					class="d-flex justify-content-center align-items-center btn btn-sm btn-outline-secondary flex-grow-1" 
+					id="btn-details-savings">
+					View Details
+				</a>
+				<a 
+					href="/Customer/Transactions?account=savings" 
+					class="d-flex justify-content-center align-items-center btn btn-sm btn-outline-secondary flex-grow-1"
+					id="btn-history-savings">
+					History
+				</a>
+				<a 
+					href="/Customer/Transfer?from=savings"
+					class="btn btn-sm mf-btn-primary flex-grow-1"
+					id="btn-transfer-savings">
+					Transfer
+				</a>
+			</div>
+		</div>
+	</div>
+</div>

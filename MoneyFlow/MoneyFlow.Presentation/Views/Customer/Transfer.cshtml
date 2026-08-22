@@ -1,0 +1,234 @@
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Transfer Money";
+}
+
+<!-- Page Header -->
+<div class="mf-page-header">
+    <h1 class="mf-page-greeting">Transfer Money</h1>
+    <p class="mf-page-subtitle">Securely move funds between your accounts or to external recipients with instant settlement.</p>
+</div>
+
+<!-- Main Transfer Form Section -->
+<div class="row g-4" id="transferFormContainer">
+    <!-- Left 8 Columns: Transfer Stepper Form -->
+    <div class="col-12 col-lg-8">
+        <div class="mf-card p-4 p-md-5" id="transferMainCard">
+            <form id="mfTransferForm" onsubmit="return false;">
+                <!-- Step 1: Account Selection -->
+                <div class="mb-5" id="transferStep1">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span class="mf-step-num">1</span>
+                        <h2 class="h5 fw-bold text-dark mb-0">Account Details</h2>
+                    </div>
+
+                    <div class="row g-3 align-items-center position-relative">
+                        <!-- From Account -->
+                        <div class="col-12 col-md-6">
+                            <label class="mf-form-label" for="fromAccountSelect">From Account</label>
+                            <select class="form-select mf-form-control" id="fromAccountSelect" required>
+                                <option value="Checking (•••• 4821)" selected>Checking (•••• 4821) — $8,420.50</option>
+                                <option value="Savings (•••• 9210)">Savings (•••• 9210) — $25,739.50</option>
+                            </select>
+                        </div>
+
+                        <!-- To Account -->
+                        <div class="col-12 col-md-6">
+                            <label class="mf-form-label" for="toAccountInput">To Account / Recipient</label>
+                            <div class="mf-input-wrapper">
+                                <input type="text" class="form-control mf-form-control" id="toAccountInput" placeholder="Account Number or Email" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4 text-muted" />
+
+                <!-- Step 2: Transfer Amount & Details -->
+                <div class="mb-4" id="transferStep2">
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span class="mf-step-num">2</span>
+                        <h2 class="h5 fw-bold text-dark mb-0">Transfer Amount</h2>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="mf-form-label" for="transferAmountInput">Amount</label>
+                        <div class="mf-amount-hero-input">
+                            <span class="mf-amount-currency">$</span>
+                            <input type="number" step="0.01" min="1" max="100000" class="form-control mf-amount-input" id="transferAmountInput" placeholder="0.00" required />
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="small text-muted">Available balance: <strong class="text-dark">$8,420.50</strong></span>
+                            <!-- Quick Chips -->
+                            <div class="mf-quick-chips">
+                                <button type="button" class="mf-chip-btn" data-amount="50">+$50</button>
+                                <button type="button" class="mf-chip-btn" data-amount="100">+$100</button>
+                                <button type="button" class="mf-chip-btn" data-amount="500">+$500</button>
+                                <button type="button" class="mf-chip-btn" data-amount="1000">+$1,000</button>
+                                <button type="button" class="mf-chip-btn" data-amount="8420.50">Max</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="mf-form-label" for="transferDescriptionInput">
+                            Description <span class="fw-normal text-muted">(Optional)</span>
+                        </label>
+                        <textarea class="form-control mf-form-control" id="transferDescriptionInput" rows="2" placeholder="What is this transfer for?" style="height: auto;"></textarea>
+                    </div>
+                </div>
+
+                <!-- Form Action Buttons -->
+                <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+                    <a href="/Customer/Index" class="btn btn-light px-4 py-2 fw-semibold">Cancel</a>
+                    <button type="button" class="btn mf-btn-primary px-4 py-2" id="btnReviewTransfer">
+                        <span>Review Transfer</span>
+                        <svg class="mf-btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Transfer Success Receipt Card (Initially Hidden) -->
+            <div class="mf-receipt-card d-none" id="transferSuccessCard">
+                <div class="mf-success-icon-badge">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h2 class="h4 fw-bold text-navy mb-1">Transfer Completed!</h2>
+                <p class="text-muted small mb-4">Your funds have been transferred successfully.</p>
+
+                <div class="p-3 bg-light rounded-3 mb-4 text-start">
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Amount Transferred</span>
+                        <span class="mf-receipt-item-value fs-5 text-success" id="receiptAmount">$0.00</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Recipient Account</span>
+                        <span class="mf-receipt-item-value" id="receiptTo">•••• 8832</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Transaction Number</span>
+                        <span class="mf-receipt-item-value font-monospace" id="receiptTxnNumber">TXN-8472910</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Timestamp</span>
+                        <span class="mf-receipt-item-value" id="receiptTime">Just now</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Transfer Fee</span>
+                        <span class="mf-receipt-item-value text-success">$0.00 (Free)</span>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row gap-2 justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary" id="btnNewTransfer">Make Another Transfer</button>
+                    <a href="/Customer/Transactions" class="btn mf-btn-primary">View in Transactions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right 4 Columns: Security Tip & Recent Recipients -->
+    <div class="col-12 col-lg-4">
+        <!-- Security Tip Card -->
+        <div class="mf-card mb-4" style="border-left: 4px solid var(--mf-success);">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="text-success">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </span>
+                <h3 class="h6 fw-bold mb-0 text-dark">Security Tip</h3>
+            </div>
+            <p class="text-muted small mb-0">
+                Always double-check recipient details before sending funds. Transfers to external accounts settle instantly and cannot be reversed once processed.
+            </p>
+        </div>
+
+        <!-- Recent Recipients Quick Select -->
+        <div class="mf-card">
+            <h3 class="h6 fw-bold text-dark text-uppercase tracking-wider small mb-3">Recent Recipients</h3>
+            <div class="d-flex flex-column gap-2">
+                <button type="button" class="btn btn-light text-start p-2 d-flex align-items-center gap-3 mf-quick-recipient-btn" data-account="10294883208832">
+                    <span class="mf-user-avatar" style="width: 36px; height: 36px; font-size: 0.8rem;">JD</span>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-bold text-dark small text-truncate">Jane Doe</div>
+                        <small class="text-muted font-monospace">•••• 8832</small>
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+
+                <button type="button" class="btn btn-light text-start p-2 d-flex align-items-center gap-3 mf-quick-recipient-btn" data-account="9910482019910">
+                    <span class="mf-user-avatar" style="width: 36px; height: 36px; font-size: 0.8rem; background: var(--mf-navy-mid);">VI</span>
+                    <div class="flex-grow-1 overflow-hidden">
+                        <div class="fw-bold text-dark small text-truncate">Vanguard Vault</div>
+                        <small class="text-muted font-monospace">•••• 9910</small>
+                    </div>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review & Confirmation Bootstrap Modal -->
+<div class="modal fade" id="transferReviewModal" tabindex="-1" aria-labelledby="transferReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="modal-header border-bottom px-4 pt-4 pb-3">
+                <h2 class="modal-title h5 fw-bold text-navy" id="transferReviewModalLabel">Review Transfer Details</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body px-4 py-3">
+                <p class="text-muted small mb-3">Please review the details below carefully before confirming.</p>
+                <div class="bg-light p-3 rounded-3 mb-3">
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">From Account</span>
+                        <span class="mf-receipt-item-value" id="revFromAccount">Checking (•••• 4821)</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">To Recipient</span>
+                        <span class="mf-receipt-item-value" id="revToAccount">•••• 8832</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Transfer Amount</span>
+                        <span class="mf-receipt-item-value text-primary fs-5" id="revAmount">$0.00</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Transfer Fee</span>
+                        <span class="mf-receipt-item-value text-success">$0.00 (Free)</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Total Debit</span>
+                        <span class="mf-receipt-item-value fw-bold text-navy" id="revTotal">$0.00</span>
+                    </div>
+                    <div class="mf-receipt-item-row">
+                        <span class="mf-receipt-item-label">Description</span>
+                        <span class="mf-receipt-item-value text-muted" id="revDescription">None</span>
+                    </div>
+                </div>
+                <div class="alert alert-info py-2 small mb-0 d-flex align-items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <span>Transfers process immediately and cannot be cancelled.</span>
+                </div>
+            </div>
+            <div class="modal-footer border-top px-4 pb-4 pt-3">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Make Changes</button>
+                <button type="button" class="btn mf-btn-primary" id="btnConfirmTransfer">
+                    <span>Confirm &amp; Send Funds</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

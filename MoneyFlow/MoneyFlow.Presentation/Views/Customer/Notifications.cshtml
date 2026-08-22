@@ -1,0 +1,104 @@
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Notifications";
+}
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+        <h1 class="mf-page-greeting">Notifications</h1>
+        <p class="mf-page-subtitle">Stay informed about your deposits, withdrawals, transfers, and security updates.</p>
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-2" id="btnMarkAllRead">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Mark All as Read</span>
+        </button>
+    </div>
+</div>
+
+<!-- Notification Category Filter Tabs -->
+<div class="mf-nav-tabs-custom">
+    <button type="button" class="mf-tab-btn mf-notif-tab active" data-filter="all">All (4)</button>
+    <button type="button" class="mf-tab-btn mf-notif-tab" data-filter="unread">Unread (2)</button>
+    <button type="button" class="mf-tab-btn mf-notif-tab" data-filter="transfer">Transfers</button>
+    <button type="button" class="mf-tab-btn mf-notif-tab" data-filter="security">Security</button>
+</div>
+
+<!-- Notifications List -->
+<div class="d-flex flex-column" id="notificationsListContainer">
+    <!-- Notification 1: Deposit (Unread) -->
+    <div class="mf-notification-item unread" data-category="transfer">
+        <div class="mf-notif-icon deposit">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"/>
+                <polyline points="5 12 12 5 19 12"/>
+            </svg>
+        </div>
+        <div class="mf-notif-body">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="mf-notif-title">Deposit Received &bull; +$5,000.00</div>
+                <span class="mf-badge-dot"></span>
+            </div>
+            <p class="mf-notif-desc">
+                A cash deposit of <strong>$5,000.00</strong> was received and successfully credited to your Checking Account (•••• 4821).
+            </p>
+            <div class="mf-notif-time">Today at 14:32 EST &bull; TXN-8472910</div>
+        </div>
+    </div>
+
+    <!-- Notification 2: Security Alert (Unread) -->
+    <div class="mf-notification-item unread" data-category="security">
+        <div class="mf-notif-icon security">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+        </div>
+        <div class="mf-notif-body">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="mf-notif-title">Security Alert: New Sign-in Detected</div>
+                <span class="mf-badge-dot"></span>
+            </div>
+            <p class="mf-notif-desc">
+                A new sign-in was registered from Chrome on Windows (IP: 197.38.112.44). If this was not you, please change your password immediately.
+            </p>
+            <div class="mf-notif-time">Today at 09:15 EST</div>
+        </div>
+    </div>
+
+    <!-- Notification 3: Transfer Completed (Read) -->
+    <div class="mf-notification-item" data-category="transfer">
+        <div class="mf-notif-icon transfer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 1l4 4-4 4"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+            </svg>
+        </div>
+        <div class="mf-notif-body">
+            <div class="mf-notif-title">Transfer Sent &bull; $2,500.00</div>
+            <p class="mf-notif-desc">
+                Your transfer of <strong>$2,500.00</strong> to Vault Savings Account (•••• 9210) was processed successfully.
+            </p>
+            <div class="mf-notif-time">Oct 23, 2023 at 08:45 EST &bull; TXN-8472850</div>
+        </div>
+    </div>
+
+    <!-- Notification 4: Withdrawal Processed (Read) -->
+    <div class="mf-notification-item" data-category="transfer">
+        <div class="mf-notif-icon withdrawal">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <polyline points="19 12 12 19 5 12"/>
+            </svg>
+        </div>
+        <div class="mf-notif-body">
+            <div class="mf-notif-title">Cash Withdrawal &bull; $1,000.00</div>
+            <p class="mf-notif-desc">
+                A cash withdrawal of <strong>$1,000.00</strong> was completed from your Checking Account (•••• 4821) at Branch ATM #402.
+            </p>
+            <div class="mf-notif-time">Oct 23, 2023 at 09:15 EST &bull; TXN-8472885</div>
+        </div>
+    </div>
+</div>

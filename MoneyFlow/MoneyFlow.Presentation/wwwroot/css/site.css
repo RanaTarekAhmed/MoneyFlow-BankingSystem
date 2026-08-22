@@ -387,11 +387,11 @@ body {
 /* ==========================================================================
    Error / Validation States
    ASP.NET Core MVC generates:
-     .input-validation-error  → on the <input> when invalid
-     .input-validation-valid  → on the <input> when valid
+     .input-validation-error  => on the <input> when invalid
+     .input-validation-valid  => on the <input> when valid
    ========================================================================== */
 
-/* ── Standalone inputs (no wrapper) ── */
+/* -- Standalone inputs (no wrapper) -- */
 .mf-form-control.input-validation-error {
   border-color: var(--mf-danger) !important;
   border-width: 1.5px;
@@ -400,14 +400,14 @@ body {
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* ── Red focus ring for invalid inputs ── */
+/* -- Red focus ring for invalid inputs -- */
 .mf-form-control.input-validation-error:focus {
   border-color: var(--mf-danger) !important;
   box-shadow: 0 0 0 3px rgba(186, 26, 26, 0.12);
   outline: none;
 }
 
-/* ── Wrapper inputs (icon-left / icon-right variants) ──
+/* -- Wrapper inputs (icon-left / icon-right variants) --
    Apply the error frame to the wrapper so the icon is contained within it  */
 .mf-input-wrapper:has(.input-validation-error) {
   border-radius: var(--mf-radius);
@@ -434,7 +434,7 @@ body {
   opacity: 0.7;
 }
 
-/* ── Restore normal styles once the field becomes valid ── */
+/* -- Restore normal styles once the field becomes valid -- */
 .mf-form-control.input-validation-valid {
   border-color: #c4c6d1;
   background-color: #ffffff;
@@ -462,7 +462,7 @@ body {
   opacity: 1;
 }
 
-/* ── Legacy helper classes (keep backward-compat) ── */
+/* -- Legacy helper classes (keep backward-compat) -- */
 .mf-form-control.is-invalid-state,
 .is-invalid-state .mf-form-control {
   border-color: var(--mf-danger) !important;
@@ -480,7 +480,7 @@ body {
   margin-top: 0.35rem;
 }
 
-/* ── ASP.NET MVC Validation Message Spans ── */
+/* -- ASP.NET MVC Validation Message Spans -- */
 .field-validation-error {
   display: block;
   color: var(--mf-danger);
@@ -610,4 +610,246 @@ body {
 
 .mf-footer-bottom {
   border-color: rgba(196, 198, 209, 0.4) !important;
+}
+
+/* ==========================================================================
+   MoneyFlow — Reusable Toast Notification System
+   ========================================================================== */
+
+.mf-toast-container {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1095;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: calc(100% - 3rem);
+  max-width: 400px;
+  pointer-events: none;
+}
+
+.mf-toast {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 1rem 1rem 1.1rem 1.15rem;
+  background-color: #ffffff;
+  border-radius: var(--mf-radius-lg);
+  border: 1px solid var(--mf-border);
+  border-left: 4px solid var(--mf-navy-mid);
+  box-shadow: 0 10px 30px -5px rgba(0, 25, 60, 0.12), 0 2px 6px 0 rgba(0, 25, 60, 0.04);
+  overflow: hidden;
+  will-change: transform, opacity, max-height;
+  animation: mfToastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mf-toast.mf-toast-hiding {
+  animation: mfToastSlideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Toast State Variants */
+.mf-toast-success {
+  border-left-color: var(--mf-success);
+}
+.mf-toast-success .mf-toast-icon-wrap {
+  background-color: rgba(88, 167, 86, 0.12);
+  color: #1e7e34;
+}
+.mf-toast-success .mf-toast-progress-bar {
+  background-color: var(--mf-success);
+}
+
+.mf-toast-error {
+  border-left-color: var(--mf-danger);
+}
+.mf-toast-error .mf-toast-icon-wrap {
+  background-color: var(--mf-danger-bg);
+  color: var(--mf-danger);
+}
+.mf-toast-error .mf-toast-progress-bar {
+  background-color: var(--mf-danger);
+}
+
+.mf-toast-warning {
+  border-left-color: #d97706;
+}
+.mf-toast-warning .mf-toast-icon-wrap {
+  background-color: rgba(234, 179, 8, 0.15);
+  color: #b45309;
+}
+.mf-toast-warning .mf-toast-progress-bar {
+  background-color: #d97706;
+}
+
+.mf-toast-info {
+  border-left-color: var(--mf-navy-mid);
+}
+.mf-toast-info .mf-toast-icon-wrap {
+  background-color: var(--mf-blue-card);
+  color: var(--mf-navy-mid);
+}
+.mf-toast-info .mf-toast-progress-bar {
+  background-color: var(--mf-navy-mid);
+}
+
+/* Toast Icon */
+.mf-toast-icon-wrap {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+
+.mf-toast-icon-wrap svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Toast Text Body */
+.mf-toast-body {
+  flex: 1;
+  min-width: 0;
+  padding-right: 0.25rem;
+}
+
+.mf-toast-title {
+  font-weight: 700;
+  font-size: 0.925rem;
+  color: var(--mf-navy);
+  line-height: 1.3;
+  margin-bottom: 0.2rem;
+  letter-spacing: -0.01em;
+}
+
+.mf-toast-message {
+  font-size: 0.85rem;
+  color: var(--mf-text-muted);
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+/* Toast Close Button */
+.mf-toast-close {
+  background: transparent;
+  border: none;
+  padding: 0.35rem;
+  margin: -0.35rem -0.35rem 0 0;
+  color: var(--mf-text-muted);
+  border-radius: var(--mf-radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease, background-color 0.15s ease, transform 0.15s ease;
+  line-height: 1;
+}
+
+.mf-toast-close:hover {
+  color: var(--mf-navy);
+  background-color: rgba(0, 25, 60, 0.06);
+}
+
+.mf-toast-close:focus-visible {
+  outline: 2px solid var(--mf-navy-mid);
+  outline-offset: 1px;
+}
+
+.mf-toast-close svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Toast Auto-Dismiss Progress Bar */
+.mf-toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: rgba(0, 25, 60, 0.06);
+}
+
+.mf-toast-progress-bar {
+  height: 100%;
+  width: 100%;
+  transform-origin: left;
+  transition: width linear;
+}
+
+/* Animations */
+@keyframes mfToastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(45px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes mfToastSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    max-height: 180px;
+    margin-bottom: 0.75rem;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(45px) scale(0.92);
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-width: 0;
+  }
+}
+
+/* Responsive Adaptation for Mobile */
+@media (max-width: 576px) {
+  .mf-toast-container {
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
+  }
+
+  @keyframes mfToastSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-25px) scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  @keyframes mfToastSlideOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      max-height: 180px;
+      margin-bottom: 0.75rem;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-25px) scale(0.92);
+      max-height: 0;
+      margin-bottom: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-width: 0;
+    }
+  }
 }

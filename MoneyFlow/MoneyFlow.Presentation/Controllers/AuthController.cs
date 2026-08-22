@@ -96,7 +96,9 @@ namespace MoneyFlowSandbox.Controllers
 				return View(model);
 			}
 
-			return RedirectToAction("Login");
+            TempData["Success"] = "Account created successfully. Please log in.";
+
+            return RedirectToAction("Login");
 		}
 	}
 }

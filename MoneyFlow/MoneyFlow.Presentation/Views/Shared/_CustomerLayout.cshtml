@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - MoneyFlow Digital Banking</title>
-    <meta name="description" content="MoneyFlow - Banking Made Simple, Secure, and Smarter. Institutional-grade digital finance with everyday ease." />
+    <title>@ViewData["Title"] - MoneyFlow Customer Portal</title>
+    <meta name="description" content="MoneyFlow Digital Banking Customer Portal. Institutional-grade digital finance with everyday ease." />
     
     <link rel="icon" type="image/png" href="~/favicon.png" />
 
@@ -16,32 +16,33 @@
     <!-- Bootstrap 5 CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     
-    <!-- MoneyFlow Global Styles -->
+    <!-- MoneyFlow Global Styles & Portal Styles -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/customer-portal.css" asp-append-version="true" />
     @await RenderSectionAsync("Styles", required: false)
 </head>
-<body class="@ViewData["BodyClass"]">
-    @if (ViewData["ShowNavbar"] as bool? ?? true)
-    {
-        @await Html.PartialAsync("_Navbar")
-    }
+<body class="mf-portal-body @ViewData["BodyClass"]">
+    <div class="mf-portal-wrapper">
+        <!-- Persistent / Offcanvas Sidebar Navigation -->
+        @await Html.PartialAsync("_CustomerSidebar")
 
-    <main role="main" id="main-content">
-        @RenderBody()
-    </main>
+        <!-- Main Portal Container -->
+        <div class="mf-portal-main">
+            <!-- Sticky Glassmorphism Topbar -->
+            @await Html.PartialAsync("_CustomerTopbar")
 
-    @if (ViewData["ShowFooter"] as bool? ?? true)
-    {
-        @await Html.PartialAsync("_Footer")
-    }
+            <!-- Page Body Content -->
+            <main role="main" class="mf-portal-content" id="customer-main-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
 
-    <!-- Toast Notifications Container -->
-    @await Html.PartialAsync("_ToastNotification")
-
-    <!-- Bootstrap & Scripts -->
+    <!-- Bootstrap & Portal Client Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/customer-portal.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,312 @@
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Dashboard";
+}
+
+<!-- Welcome & Financial Overview Header -->
+<div class="mf-page-header">
+    <h1 class="mf-page-greeting">Good morning, John</h1>
+    <p class="mf-page-subtitle">Here's your financial overview. Your accounts are secure and up to date.</p>
+</div>
+
+<!-- Financial Summary Metric Cards -->
+<div class="row g-4 mb-4">
+    <!-- Total Balance Card -->
+    <div class="col-12 col-md-4">
+        <div class="mf-card mf-metric-card" id="metric-total-balance">
+            <div>
+                <div class="mf-metric-header">
+                    <span class="mf-metric-header-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2"/>
+                            <line x1="2" y1="10" x2="22" y2="10"/>
+                        </svg>
+                    </span>
+                    <span>Total Balance</span>
+                </div>
+                <div class="mf-metric-value-wrap">
+                    <span class="mf-metric-value">$34,160<span class="cents">.00</span></span>
+                </div>
+            </div>
+            <p class="mf-metric-note">Combined across all accounts</p>
+        </div>
+    </div>
+
+    <!-- Active Accounts Card -->
+    <div class="col-12 col-md-4">
+        <div class="mf-card mf-metric-card" id="metric-active-accounts">
+            <div>
+                <div class="mf-metric-header">
+                    <span class="mf-metric-header-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 10h16M4 14h16M4 18h16M4 6h16"/>
+                        </svg>
+                    </span>
+                    <span>Active Accounts</span>
+                </div>
+                <div class="mf-metric-value-wrap">
+                    <span class="mf-metric-value">2</span>
+                </div>
+            </div>
+            <p class="mf-metric-note">Checking &amp; Savings</p>
+        </div>
+    </div>
+
+    <!-- Recent Transactions Summary Card -->
+    <div class="col-12 col-md-4">
+        <div class="mf-card mf-metric-card" id="metric-recent-summary">
+            <div>
+                <div class="mf-metric-header">
+                    <span class="mf-metric-header-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </span>
+                    <span>Recent Transactions</span>
+                </div>
+                <div class="mf-metric-value-wrap">
+                    <span class="mf-metric-value">4 <span class="ms-2 cents">this week</span></span>
+                </div>
+                <div class="mf-progress-bar-wrap">
+                    <div class="mf-progress-bar">
+                        <div class="mf-progress-fill" style="width: 75%;"></div>
+                    </div>
+                </div>
+            </div>
+            <p class="mf-metric-note mt-2">Activity is higher than last week</p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Bento Grid (2-Column Layout) -->
+<div class="row g-4">
+    <!-- Left Column: My Accounts & Recent Transactions -->
+    <div class="col-12 col-lg-8">
+        <!-- My Accounts Section -->
+        <div class="mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="h5 fw-bold text-dark mb-0">My Accounts</h2>
+                <a href="/Customer/Accounts" class="mf-card-action">View All Accounts</a>
+            </div>
+
+            <!-- Checking Account Item Card -->
+            <a href="/Customer/AccountDetails?type=checking" class="mf-account-item-card" id="dash-account-checking">
+                <div class="mf-account-item-left">
+                    <div class="mf-account-badge-icon checking">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <line x1="2" y1="10" x2="22" y2="10"/>
+                        </svg>
+                    </div>
+                    <div class="mf-account-details-col">
+                        <div class="mf-account-title-row">
+                            <span class="mf-account-title">Checking</span>
+                            <span class="mf-status-badge active"><span class="dot"></span>Active</span>
+                        </div>
+                        <span class="mf-account-number">•••• 4821 &bull; Opened Jan 15, 2023</span>
+                    </div>
+                </div>
+                <div class="mf-account-item-right">
+                    <div>
+                        <div class="mf-account-balance-val">$8,420.50</div>
+                        <div class="mf-account-balance-lbl">Available Balance</div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Savings Account Item Card -->
+            <a href="/Customer/AccountDetails?type=savings" class="mf-account-item-card" id="dash-account-savings">
+                <div class="mf-account-item-left">
+                    <div class="mf-account-badge-icon savings">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z"/>
+                            <line x1="2" y1="9" x2="4" y2="9"/>
+                            <circle cx="15" cy="11" r="1"/>
+                        </svg>
+                    </div>
+                    <div class="mf-account-details-col">
+                        <div class="mf-account-title-row">
+                            <span class="mf-account-title">Savings</span>
+                            <span class="mf-status-badge active"><span class="dot"></span>Active</span>
+                        </div>
+                        <span class="mf-account-number">•••• 9210 &bull; Opened Mar 10, 2023</span>
+                    </div>
+                </div>
+                <div class="mf-account-item-right">
+                    <div>
+                        <div class="mf-account-balance-val">$25,739.50</div>
+                        <div class="mf-account-balance-lbl">Available Balance</div>
+                    </div>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent Transactions Section -->
+        <div>
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="h5 fw-bold text-dark mb-0">Recent Transactions</h2>
+                <a href="/Customer/Transactions" class="mf-card-action">View All</a>
+            </div>
+
+            <div class="mf-transaction-list shadow-sm">
+                <!-- Transaction 1: Deposit -->
+                <a href="/Customer/TransactionDetails?id=TXN-8472910" class="mf-transaction-row">
+                    <div class="mf-txn-left">
+                        <div class="mf-txn-icon-wrap deposit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"/>
+                                <polyline points="5 12 12 5 19 12"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="mf-txn-title">Cash Deposit</div>
+                            <div class="mf-txn-meta">Oct 24, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
+                        </div>
+                    </div>
+                    <div class="mf-txn-right">
+                        <span class="mf-txn-amount positive">+ $5,000.00</span>
+                        <span class="mf-txn-code">TXN-8472910</span>
+                    </div>
+                </a>
+
+                <!-- Transaction 2: Withdrawal -->
+                <a href="/Customer/TransactionDetails?id=TXN-8472885" class="mf-transaction-row">
+                    <div class="mf-txn-left">
+                        <div class="mf-txn-icon-wrap withdrawal">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <polyline points="19 12 12 19 5 12"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="mf-txn-title">Cash Withdrawal</div>
+                            <div class="mf-txn-meta">Oct 23, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
+                        </div>
+                    </div>
+                    <div class="mf-txn-right">
+                        <span class="mf-txn-amount negative">- $1,000.00</span>
+                        <span class="mf-txn-code">TXN-8472885</span>
+                    </div>
+                </a>
+
+                <!-- Transaction 3: Transfer Out -->
+                <a href="/Customer/TransactionDetails?id=TXN-8472850" class="mf-transaction-row">
+                    <div class="mf-txn-left">
+                        <div class="mf-txn-icon-wrap transfer">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 1l4 4-4 4"/>
+                                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="mf-txn-title">Transfer to Account •••• 4821</div>
+                            <div class="mf-txn-meta">Oct 23, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
+                        </div>
+                    </div>
+                    <div class="mf-txn-right">
+                        <span class="mf-txn-amount negative">- $2,500.00</span>
+                        <span class="mf-txn-code">TXN-8472850</span>
+                    </div>
+                </a>
+
+                <!-- Transaction 4: Transfer In -->
+                <a href="/Customer/TransactionDetails?id=TXN-8471504" class="mf-transaction-row">
+                    <div class="mf-txn-left">
+                        <div class="mf-txn-icon-wrap deposit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"/>
+                                <polyline points="5 12 12 5 19 12"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="mf-txn-title">Transfer from Account •••• 7392</div>
+                            <div class="mf-txn-meta">Oct 22, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
+                        </div>
+                    </div>
+                    <div class="mf-txn-right">
+                        <span class="mf-txn-amount positive">+ $3,000.00</span>
+                        <span class="mf-txn-code">TXN-8471504</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Quick Actions & Security Snapshot -->
+    <div class="col-12 col-lg-4">
+        <!-- Quick Actions Panel -->
+        <div class="mf-card mb-4">
+            <h2 class="mf-card-title mb-3">Quick Actions</h2>
+            <div class="mf-quick-actions-grid">
+                <a href="/Customer/Transfer" class="mf-quick-action-btn" id="qa-transfer">
+                    <span class="mf-action-icon-circle transfer">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 1l4 4-4 4"/>
+                            <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                            <path d="M7 23l-4-4 4-4"/>
+                            <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                        </svg>
+                    </span>
+                    <span>Transfer Money</span>
+                </a>
+
+                <a href="/Customer/Accounts" class="mf-quick-action-btn" id="qa-accounts">
+                    <span class="mf-action-icon-circle accounts">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <line x1="2" y1="10" x2="22" y2="10"/>
+                        </svg>
+                    </span>
+                    <span>My Accounts</span>
+                </a>
+
+                <a href="/Customer/Transactions" class="mf-quick-action-btn" id="qa-transactions">
+                    <span class="mf-action-icon-circle transactions">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                    </span>
+                    <span>Transactions</span>
+                </a>
+
+                <a href="/Customer/Profile" class="mf-quick-action-btn" id="qa-profile">
+                    <span class="mf-action-icon-circle profile">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                    </span>
+                    <span>Profile</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Security & Protection Card -->
+        <div class="mf-card" style="border-left: 4px solid var(--mf-success);">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="mf-action-icon-circle" style="background: rgba(88, 167, 86, 0.15); color: #1e7e34; width: 40px; height: 40px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </span>
+                <div>
+                    <h3 class="h6 fw-bold mb-0 text-dark">Bank-Grade Protection</h3>
+                    <small class="text-success fw-semibold">256-bit Encryption Active</small>
+                </div>
+            </div>
+            <p class="text-muted small mb-3">Your funds are institutional-grade protected. Multi-factor authentication is enabled for all transfers and sensitive operations.</p>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                <span class="small text-muted">Last login: Today, 09:15 EST</span>
+                <a href="/Customer/Settings" class="small fw-semibold text-primary">Manage</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,131 @@
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Customer Profile";
+}
+
+<!-- Profile Hero Card -->
+<div class="mf-profile-header-card">
+    <div class="d-flex align-items-center gap-3">
+        <div class="mf-profile-avatar-large">JD</div>
+        <div>
+            <h1 class="h3 fw-bold mb-1 text-white">John Doe</h1>
+            <p class="mb-1 opacity-75 small">Customer ID: <span class="font-monospace fw-bold">CUST-849201</span></p>
+            <span class="badge bg-white text-navy fw-bold small px-2 py-1">Verified Personal Customer</span>
+        </div>
+    </div>
+    <div class="text-md-end opacity-90 small">
+        <div>Member Since: <strong>January 15, 2023</strong></div>
+        <div>Primary Account: <strong>Checking (•••• 4821)</strong></div>
+    </div>
+</div>
+
+<!-- Alert for successfully updated profile -->
+<div class="alert alert-success d-none mb-4" id="profileUpdateSuccess" role="alert">
+    <strong>Success!</strong> Your profile information has been updated.
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Personal Information (View / Edit Mode) -->
+    <div class="col-12 col-lg-7">
+        <div class="mf-card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h2 class="h5 fw-bold text-dark mb-0">Personal Information</h2>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="btnEditProfile">Edit Details</button>
+            </div>
+
+            <!-- View Mode -->
+            <div id="profileViewMode">
+                <div class="mf-info-row">
+                    <span class="mf-info-label">First Name</span>
+                    <span class="mf-info-val">John</span>
+                </div>
+                <div class="mf-info-row">
+                    <span class="mf-info-label">Last Name</span>
+                    <span class="mf-info-val">Doe</span>
+                </div>
+                <div class="mf-info-row">
+                    <span class="mf-info-label">Email Address</span>
+                    <span class="mf-info-val">john.doe@example.com</span>
+                </div>
+                <div class="mf-info-row">
+                    <span class="mf-info-label">Residential Address</span>
+                    <span class="mf-info-val text-end">124 Financial Plaza, Suite 400, New York, NY 10005</span>
+                </div>
+                <div class="mf-info-row">
+                    <span class="mf-info-label">Date of Birth</span>
+                    <span class="mf-info-val">May 14, 1990</span>
+                </div>
+                <div class="mf-info-row">
+                    <span class="mf-info-label">National ID</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="mf-info-val font-monospace" id="maskedNationalId" data-full-id="29508120194857">••••••••••4857</span>
+                        <button type="button" class="btn btn-sm btn-link text-decoration-none p-0" id="btnToggleNId">Show</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Mode (Initially Hidden) -->
+            <form id="profileEditForm" class="d-none" onsubmit="return false;">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <label class="mf-form-label" for="editFirstName">First Name</label>
+                        <input type="text" class="form-control mf-form-control" id="editFirstName" value="John" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="mf-form-label" for="editLastName">Last Name</label>
+                        <input type="text" class="form-control mf-form-control" id="editLastName" value="Doe" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="mf-form-label" for="editEmail">Email Address</label>
+                        <input type="email" class="form-control mf-form-control" id="editEmail" value="john.doe@example.com" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="mf-form-label" for="editAddress">Residential Address</label>
+                        <input type="text" class="form-control mf-form-control" id="editAddress" value="124 Financial Plaza, Suite 400, New York, NY 10005" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="mf-form-label" for="editDob">Date of Birth</label>
+                        <input type="date" class="form-control mf-form-control" id="editDob" value="1990-05-14" required />
+                    </div>
+                    <div class="col-12 d-flex justify-content-end gap-2 pt-3">
+                        <button type="button" class="btn btn-light" id="btnCancelEdit">Cancel</button>
+                        <button type="submit" class="btn mf-btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Column: Change Password & Security -->
+    <div class="col-12 col-lg-5">
+        <div class="mf-card p-4">
+            <h2 class="h5 fw-bold text-dark mb-3">Change Password</h2>
+            <form id="changePasswordForm" onsubmit="alert('Password updated successfully!'); return false;">
+                <div class="mb-3">
+                    <label class="mf-form-label" for="currentPassword">Current Password</label>
+                    <input type="password" class="form-control mf-form-control" id="currentPassword" placeholder="••••••••" required />
+                </div>
+                <div class="mb-3">
+                    <label class="mf-form-label" for="newPasswordInput">New Password</label>
+                    <input type="password" class="form-control mf-form-control" id="newPasswordInput" placeholder="••••••••" required />
+                </div>
+                <div class="mb-3">
+                    <label class="mf-form-label" for="confirmPasswordInput">Confirm New Password</label>
+                    <input type="password" class="form-control mf-form-control" id="confirmPasswordInput" placeholder="••••••••" required />
+                </div>
+
+                <!-- Password Requirements Checklist -->
+                <div class="p-3 bg-light rounded-3 mb-4 small">
+                    <span class="fw-bold text-dark d-block mb-1">Password must include:</span>
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-1 text-muted">
+                        <li id="req-length">&bull; At least 8 characters</li>
+                        <li id="req-number">&bull; At least one number (0-9)</li>
+                        <li id="req-special">&bull; At least one special character (!@@#$%^&*)</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="btn mf-btn-primary w-100">Update Password</button>
+            </form>
+        </div>
+    </div>
+</div>

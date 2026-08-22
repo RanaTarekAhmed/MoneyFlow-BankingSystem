@@ -1,0 +1,39 @@
+@*
+    MoneyFlow Reusable Toast Notification Component
+    Supports TempData (Success, Error, Warning, Info) and client-side JavaScript API (MoneyFlowToast)
+*@
+
+<div id="mfToastContainer" class="mf-toast-container" aria-live="polite" aria-atomic="true">
+    @* Server-Side TempData Toast Initializer *@
+    @{
+        var successMsg = TempData["Success"]?.ToString() ?? TempData["SuccessMessage"]?.ToString();
+        var errorMsg = TempData["Error"]?.ToString() ?? TempData["ErrorMessage"]?.ToString();
+        var warningMsg = TempData["Warning"]?.ToString() ?? TempData["WarningMessage"]?.ToString();
+        var infoMsg = TempData["Info"]?.ToString() ?? TempData["InfoMessage"]?.ToString() ?? TempData["Message"]?.ToString();
+
+        var customType = TempData["ToastType"]?.ToString()?.ToLower();
+        var customTitle = TempData["ToastTitle"]?.ToString();
+        var customMsg = TempData["ToastMessage"]?.ToString();
+    }
+
+    @if (!string.IsNullOrEmpty(successMsg))
+    {
+        <div class="mf-server-toast d-none" data-type="success" data-title="Success" data-message="@successMsg"></div>
+    }
+    @if (!string.IsNullOrEmpty(errorMsg))
+    {
+        <div class="mf-server-toast d-none" data-type="error" data-title="Action Failed" data-message="@errorMsg"></div>
+    }
+    @if (!string.IsNullOrEmpty(warningMsg))
+    {
+        <div class="mf-server-toast d-none" data-type="warning" data-title="Warning" data-message="@warningMsg"></div>
+    }
+    @if (!string.IsNullOrEmpty(infoMsg))
+    {
+        <div class="mf-server-toast d-none" data-type="info" data-title="Information" data-message="@infoMsg"></div>
+    }
+    @if (!string.IsNullOrEmpty(customMsg))
+    {
+        <div class="mf-server-toast d-none" data-type="@(customType ?? "info")" data-title="@(customTitle ?? "Notification")" data-message="@customMsg"></div>
+    }
+</div>
