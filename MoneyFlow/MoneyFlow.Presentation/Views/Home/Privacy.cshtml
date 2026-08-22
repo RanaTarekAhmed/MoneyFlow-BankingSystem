@@ -1,6 +1,570 @@
-﻿@{
+@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+@section Styles {
+    <link rel="stylesheet" href="~/css/privacy.css" asp-append-version="true" />
+}
+
+<!-- Privacy Policy Hero Section -->
+<section class="mf-privacy-hero" aria-label="Privacy Policy Overview">
+    <div class="container mf-privacy-hero-container">
+        <!-- Badges & Meta -->
+        <div class="mf-privacy-badge-wrap">
+            <span class="mf-privacy-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Legal & Data Governance
+            </span>
+            <span class="mf-privacy-meta">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                Last Updated: August 2026
+            </span>
+            <span class="mf-privacy-meta">•</span>
+            <span class="mf-privacy-meta">Version 2.4</span>
+        </div>
+
+        <h1 class="mf-privacy-title">MoneyFlow Privacy Policy</h1>
+        <p class="mf-privacy-subtitle">
+            At MoneyFlow, safeguarding your privacy and personal financial information is foundational to everything we build. 
+            This policy outlines our rigorous standards for data collection, encryption, regulatory compliance, and your statutory rights.
+        </p>
+
+        <!-- Key Commitments Highlights Banner -->
+        <div class="mf-privacy-highlights">
+            <div class="mf-highlight-card">
+                <div class="mf-highlight-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="mf-highlight-title">AES-256 Encryption</div>
+                    <p class="mf-highlight-desc">All financial data encrypted at rest and in transit via TLS 1.3.</p>
+                </div>
+            </div>
+
+            <div class="mf-highlight-card">
+                <div class="mf-highlight-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                    </svg>
+                </div>
+                <div>
+                    <div class="mf-highlight-title">Zero Data Selling</div>
+                    <p class="mf-highlight-desc">We never sell, rent, or monetize your personal or transaction data.</p>
+                </div>
+            </div>
+
+            <div class="mf-highlight-card">
+                <div class="mf-highlight-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <polyline points="17 11 19 13 23 9"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <div class="mf-highlight-title">User Consent & Control</div>
+                    <p class="mf-highlight-desc">Complete autonomy over your data export, permissions, and settings.</p>
+                </div>
+            </div>
+
+            <div class="mf-highlight-card">
+                <div class="mf-highlight-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 11 12 14 22 4"></polyline>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="mf-highlight-title">Strict Compliance</div>
+                    <p class="mf-highlight-desc">Fully compliant with GLBA, GDPR, CCPA/CPRA, and banking regulations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Privacy Policy Main Content Area -->
+<section class="mf-privacy-main">
+    <div class="container mf-privacy-layout-container">
+        <div class="row g-4 g-lg-5">
+            <!-- Left Sticky Sidebar (Table of Contents) -->
+            <aside class="col-lg-4 col-xl-3 d-none d-lg-block">
+                <div class="mf-privacy-sidebar-wrap">
+                    <div class="mf-privacy-toc-card">
+                        <div class="mf-toc-header">
+                            <h2 class="mf-toc-title">Table of Contents</h2>
+                            <span class="badge bg-primary text-white rounded-pill" style="font-size: 0.7rem; background-color: var(--mf-navy-mid) !important;">10 Topics</span>
+                        </div>
+                        <nav aria-label="Privacy Policy Sections">
+                            <ul class="mf-toc-list" id="privacy-toc-nav">
+                                <li>
+                                    <a href="#section-1" class="mf-toc-link active" id="toc-link-1">
+                                        <span class="mf-toc-num">1</span>
+                                        <span>Introduction & Scope</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-2" class="mf-toc-link" id="toc-link-2">
+                                        <span class="mf-toc-num">2</span>
+                                        <span>Information We Collect</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-3" class="mf-toc-link" id="toc-link-3">
+                                        <span class="mf-toc-num">3</span>
+                                        <span>How We Use Information</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-4" class="mf-toc-link" id="toc-link-4">
+                                        <span class="mf-toc-num">4</span>
+                                        <span>Sharing & Disclosure</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-5" class="mf-toc-link" id="toc-link-5">
+                                        <span class="mf-toc-num">5</span>
+                                        <span>Bank-Grade Security</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-6" class="mf-toc-link" id="toc-link-6">
+                                        <span class="mf-toc-num">6</span>
+                                        <span>Your Privacy Rights</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-7" class="mf-toc-link" id="toc-link-7">
+                                        <span class="mf-toc-num">7</span>
+                                        <span>Cookies & Tracking</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-8" class="mf-toc-link" id="toc-link-8">
+                                        <span class="mf-toc-num">8</span>
+                                        <span>Retention & Destruction</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-9" class="mf-toc-link" id="toc-link-9">
+                                        <span class="mf-toc-num">9</span>
+                                        <span>International Transfers</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#section-10" class="mf-toc-link" id="toc-link-10">
+                                        <span class="mf-toc-num">10</span>
+                                        <span>Contact Our DPO</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <!-- Utilities -->
+                        <div class="mf-toc-utilities">
+                            <button type="button" class="mf-btn-toc-util" id="btn-print-policy" onclick="window.print();" aria-label="Print or Save Policy as PDF">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                    <rect x="6" y="14" width="12" height="8"></rect>
+                                </svg>
+                                <span>Print / Save PDF</span>
+                            </button>
+                            <a href="#section-10" class="mf-btn-toc-util" id="btn-toc-contact">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <polyline points="22,6 12,13 2,6"></polyline>
+                                </svg>
+                                <span>Privacy Officer</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Right Main Content -->
+            <div class="col-12 col-lg-8 col-xl-9 mf-privacy-content">
+                
+                <!-- Section 1: Introduction -->
+                <article class="mf-policy-section" id="section-1">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">1</span>
+                        <h2 class="mf-policy-heading">Introduction & Scope of Policy</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        Welcome to MoneyFlow ("MoneyFlow", "we", "us", or "our"). This Privacy Policy applies to all users of our digital banking platform, web application, mobile interfaces, APIs, and associated financial services (collectively, the "Services").
+                    </p>
+                    <p class="mf-policy-text">
+                        As a financial institution, MoneyFlow operates under strict regulatory frameworks designed to protect consumer financial privacy, including the <strong>Gramm-Leach-Bliley Act (GLBA)</strong>, the <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act as amended by CPRA (CCPA)</strong>, and federal/international banking standards.
+                    </p>
+                    <div class="mf-policy-callout">
+                        <div class="mf-policy-callout-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            Key Takeaway
+                        </div>
+                        <p class="mf-policy-callout-desc">
+                            By creating an account or accessing MoneyFlow, you acknowledge that you have read, understood, and consented to the collection, processing, and storage practices detailed herein.
+                        </p>
+                    </div>
+                </article>
+
+                <!-- Section 2: Information We Collect -->
+                <article class="mf-policy-section" id="section-2">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">2</span>
+                        <h2 class="mf-policy-heading">Information We Collect</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        To provide banking services, satisfy Anti-Money Laundering (AML) requirements, and secure your transactions, we collect distinct categories of personal and financial information:
+                    </p>
+
+                    <h3 class="mf-policy-subheading">A. Direct Identification & Contact Information</h3>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>Personal Identification:</strong> Full legal name, date of birth, nationality, Social Security Number (SSN), National ID, or Tax Identification Number (TIN).
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Contact Details:</strong> Residential and billing addresses, verified email address, and primary phone number.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Government Verification:</strong> High-resolution copies of passport, driver’s license, or national identification cards required during Know-Your-Customer (KYC) onboarding.
+                        </li>
+                    </ul>
+
+                    <h3 class="mf-policy-subheading">B. Financial & Transactional Records</h3>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>Account Details:</strong> Checking and savings account numbers, routing numbers, account balances, and credit/debit card metadata.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Transfer & Payment Logs:</strong> Timestamps, transfer amounts, recipient account details, currency exchange rates, memo descriptions, and settlement confirmations.
+                        </li>
+                    </ul>
+
+                    <h3 class="mf-policy-subheading">C. Technical & Security Telemetry</h3>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>Device & Network Data:</strong> IP addresses, browser user-agent, operating system version, hardware fingerprinting, and geographic location derived from network endpoints.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Authentication Logs:</strong> Password verification hashes, multi-factor authentication (MFA) tokens, biometric challenge tokens, and failed login attempt logs for automated threat mitigation.
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- Section 3: How We Use Information -->
+                <article class="mf-policy-section" id="section-3">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">3</span>
+                        <h2 class="mf-policy-heading">How We Use Your Information</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        We process your data strictly on legitimate legal bases, including contractual necessity, compliance with legal obligations, and our legitimate interest in fraud detection and system reliability:
+                    </p>
+                    
+                    <div class="mf-policy-table-responsive">
+                        <table class="mf-policy-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 30%;">Purpose of Processing</th>
+                                    <th style="width: 40%;">Data Categories Utilized</th>
+                                    <th style="width: 30%;">Lawful Basis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Core Account Operations</strong></td>
+                                    <td>Identity, account numbers, deposit balances, transaction records.</td>
+                                    <td>Contractual Performance</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fraud Detection & AML Compliance</strong></td>
+                                    <td>IP telemetry, transaction velocities, KYC identity documents.</td>
+                                    <td>Legal & Regulatory Mandate</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Security & Threat Prevention</strong></td>
+                                    <td>Device fingerprints, login timestamps, failed auth attempts.</td>
+                                    <td>Legitimate Interest (Security)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Customer Communications</strong></td>
+                                    <td>Email address, registered phone number for alerts & 2FA codes.</td>
+                                    <td>Contractual / Explicit Consent</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <!-- Section 4: Sharing & Disclosure -->
+                <article class="mf-policy-section" id="section-4">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">4</span>
+                        <h2 class="mf-policy-heading">Information Sharing & Third-Party Disclosure</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        <strong>MoneyFlow does not sell, rent, or trade your personal information to marketing brokers, data aggregators, or unauthorized third parties under any circumstances.</strong>
+                    </p>
+                    <p class="mf-policy-text">
+                        We share information solely with verified entities under strict contractual data protection agreements:
+                    </p>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>Clearing Networks & Banking Rails:</strong> Interbank transfer clearing houses (ACH, Fedwire, SWIFT, SEPA) to execute domestic and international remittances.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Depository & Custody Partners:</strong> FDIC-insured banking partners providing custodial deposits and underlying account infrastructure.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Regulatory Authorities:</strong> FinCEN, CFPB, Federal Reserve, or law enforcement bodies when explicitly compelled by binding subpoena, court order, or statutory reporting obligations.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Auditors & Compliance Evaluators:</strong> Independent certified public accounting firms conducting SOC 2 Type II, ISO 27001, and GLBA compliance examinations.
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- Section 5: Bank-Grade Security -->
+                <article class="mf-policy-section" id="section-5">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">5</span>
+                        <h2 class="mf-policy-heading">Bank-Grade Data Security & Storage</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        MoneyFlow employs defense-in-depth architectural safeguards designed to meet and exceed tier-1 commercial banking benchmarks:
+                    </p>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>End-to-End Cryptography:</strong> 256-bit Advanced Encryption Standard (AES-256) for data stored on immutable physical storage; Transport Layer Security (TLS 1.3) with perfect forward secrecy for network traffic.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Least-Privilege Role-Based Access (RBAC):</strong> Employee access to production customer data is strictly segregated, multi-person approved, and continuously audited with real-time SIEM alerts.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Continuous Vulnerability Testing:</strong> Routine external third-party penetration testing, static/dynamic code analysis, and 24/7 automated intrusion prevention systems.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Disaster Recovery & Redundancy:</strong> Geographically distributed data centers featuring automatic failover and hot-standby replication to guarantee zero data loss.
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- Section 6: Your Privacy Rights -->
+                <article class="mf-policy-section" id="section-6">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">6</span>
+                        <h2 class="mf-policy-heading">Your Legal Privacy Rights & Controls</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        Depending on your jurisdiction (including GDPR, CCPA/CPRA, and state consumer privacy laws), you enjoy clear statutory rights regarding your personal records:
+                    </p>
+
+                    <div class="mf-policy-table-responsive">
+                        <table class="mf-policy-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Your Right</th>
+                                    <th style="width: 50%;">Description</th>
+                                    <th style="width: 25%;">Fulfillment Window</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Right to Access</strong></td>
+                                    <td>Request a full copy of the personal and financial data MoneyFlow holds concerning your profile.</td>
+                                    <td>Within 30 Calendar Days</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Right to Rectification</strong></td>
+                                    <td>Correct inaccurate, outdated, or incomplete personal details via profile settings or support.</td>
+                                    <td>Instant to 5 Business Days</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Right to Data Portability</strong></td>
+                                    <td>Obtain your transaction history in structured, standard machine-readable formats (JSON/CSV).</td>
+                                    <td>Instant via Dashboard</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Right to Erasure / Deletion</strong></td>
+                                    <td>Request account termination and deletion of records (subject to mandatory banking retention statutes).</td>
+                                    <td>Within 30 Calendar Days</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+
+                <!-- Section 7: Cookies & Tracking -->
+                <article class="mf-policy-section" id="section-7">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">7</span>
+                        <h2 class="mf-policy-heading">Cookies & Technical Identifiers</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        MoneyFlow uses minimal, privacy-respecting cookies and local storage items necessary to deliver authenticated banking:
+                    </p>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>Strictly Essential Cookies:</strong> Encrypted session identifiers and Anti-Forgery (CSRF) tokens that maintain your secure login state and prevent unauthorized request forgery.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Security & Anti-Fraud Cookies:</strong> Temporary tokens used by fraud engines to recognize recognized trusted devices and prompt for secondary authentication during anomalies.
+                        </li>
+                    </ul>
+                    <p class="mf-policy-text">
+                        We do not utilize cross-site tracking cookies or third-party behavioral advertising pixels within your authenticated customer dashboard.
+                    </p>
+                </article>
+
+                <!-- Section 8: Retention & Destruction -->
+                <article class="mf-policy-section" id="section-8">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">8</span>
+                        <h2 class="mf-policy-heading">Data Retention & Secure Destruction</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        We retain your personal and financial records only for as long as necessary to fulfill banking operations and comply with mandatory financial regulations:
+                    </p>
+                    <ul class="mf-policy-list">
+                        <li class="mf-policy-list-item">
+                            <strong>Active Account Records:</strong> Retained for the active lifespan of your MoneyFlow account.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Statutory Financial Records:</strong> Retained for a mandatory statutory period (typically 5 to 7 years following account closure) in accordance with the Bank Secrecy Act (BSA) and IRS guidelines.
+                        </li>
+                        <li class="mf-policy-list-item">
+                            <strong>Cryptographic Shredding:</strong> Once legal retention windows expire, records are permanently erased using DoD 5220.22-M sanitization protocols.
+                        </li>
+                    </ul>
+                </article>
+
+                <!-- Section 9: International Transfers -->
+                <article class="mf-policy-section" id="section-9">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">9</span>
+                        <h2 class="mf-policy-heading">International Data Transfers</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        When cross-border financial transactions require routing data through international clearing partners or global correspondent banks, transfers are governed by <strong>Standard Contractual Clauses (SCCs)</strong> and adequacy determinations to guarantee equivalent data protection standards regardless of destination.
+                    </p>
+                </article>
+
+                <!-- Section 10: Contact DPO -->
+                <article class="mf-policy-section" id="section-10">
+                    <div class="mf-section-header-wrap">
+                        <span class="mf-section-number-badge">10</span>
+                        <h2 class="mf-policy-heading">Contact Our Data Protection Officer (DPO)</h2>
+                    </div>
+                    <p class="mf-policy-text">
+                        If you have inquiries regarding this Privacy Policy, wish to exercise your statutory privacy rights, or need to report a data privacy matter, please reach out to our dedicated Data Governance & Privacy Office:
+                    </p>
+
+                    <!-- Contact / DPO Card -->
+                    <div class="mf-dpo-card">
+                        <h3 class="mf-dpo-card-title">MoneyFlow Data Protection Office</h3>
+                        <p class="mf-dpo-card-desc">
+                            Our compliance officers are dedicated to resolving privacy inquiries promptly. We respond to all verified statutory requests within 30 calendar days.
+                        </p>
+
+                        <div class="mf-dpo-info-grid">
+                            <div class="mf-dpo-info-item">
+                                <div class="mf-dpo-info-icon" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="mf-dpo-info-label">Direct Email</div>
+                                    <div class="mf-dpo-info-value">
+                                        <a href="mailto:privacy@moneyflow.bank">privacy@moneyflow.bank</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mf-dpo-info-item">
+                                <div class="mf-dpo-info-icon" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="mf-dpo-info-label">Corporate Address</div>
+                                    <div class="mf-dpo-info-value">
+                                        MoneyFlow Financial Plaza<br />
+                                        100 Financial Way, Suite 400<br />
+                                        New York, NY 10005
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mf-dpo-info-item">
+                                <div class="mf-dpo-info-icon" aria-hidden="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="mf-dpo-info-label">Regulatory Authority</div>
+                                    <div class="mf-dpo-info-value">
+                                        Supervised by the CFPB & Federal Banking Regulators
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Scroll-Spy for Table of Contents
+            var sections = document.querySelectorAll('.mf-policy-section');
+            var navLinks = document.querySelectorAll('.mf-toc-link');
+
+            function onScroll() {
+                var scrollPos = window.scrollY || window.pageYOffset;
+                var offset = 180;
+
+                sections.forEach(function (sec) {
+                    var top = sec.offsetTop - offset;
+                    var height = sec.offsetHeight;
+                    var id = sec.getAttribute('id');
+
+                    if (scrollPos >= top && scrollPos < top + height) {
+                        navLinks.forEach(function (link) {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+            onScroll(); // initial check
+        });
+    </script>
+}
