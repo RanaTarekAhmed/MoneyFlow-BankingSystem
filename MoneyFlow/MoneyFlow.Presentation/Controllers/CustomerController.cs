@@ -24,16 +24,6 @@ namespace MoneyFlowSandbox.Controllers
             return View();
         }
 
-        public IActionResult Transactions()
-        {
-            return View();
-        }
-
-        public IActionResult TransactionDetails()
-        {
-            return View();
-        }
-
         public IActionResult Profile()
         {
             return View();
