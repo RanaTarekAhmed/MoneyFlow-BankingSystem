@@ -1,0 +1,217 @@
+﻿@model MoneyFlow.Presentation.ModelVM.Accounts.AccountDetailsVM
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Account Details";
+}
+
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/Customer/Accounts" class="text-decoration-none">My Accounts</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Account.AccountType Account</li>
+    </ol>
+</nav>
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+        <h1 class="mf-page-greeting">@Model.Account.AccountType Account</h1>
+        <p class="mf-page-subtitle">Account Number: <span class="fw-bold text-dark"> @Model.Account.AccountNumber</span> &bull; Status: <span class="mf-status-badge active"><span class="dot"></span>    @Model.Account.Status</span></p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="@Url.Action("Transfer", "Customer", new { fromAccountId = Model.Account.Id })" class="btn mf-btn-primary" id="btn-account-details-transfer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 1l4 4-4 4" />
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+            </svg>
+            <span>Transfer Funds</span>
+        </a>
+    </div>
+</div>
+
+<!-- Account Overview Hero Card -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-lg-8">
+        <div class="mf-card h-100 p-4">
+            <div class="row g-4">
+                <div class="col-12 col-md-6 border-end-md">
+                    <span class="text-uppercase small fw-bold text-muted d-block mb-1">Available Balance</span>
+                    <div class="display-6 fw-extrabold text-navy mb-2">$@Model.Account.Balance.ToString("N2")</div>
+                    <span class="text-success small fw-semibold d-inline-flex align-items-center gap-1">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Available for immediate transfer
+                    </span>
+                </div>
+                <div class="col-12 col-md-6">
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>Account Type</span>
+                            <span class="fw-bold text-dark">@Model.Account.AccountType</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>Account Status</span>
+                            <span class="mf-status-badge active"><span class="dot"></span>@Model.Account.Status</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>Open Date</span>
+                            <span class="fw-semibold text-dark">@Model.Account.OpenDate.ToString("MMMM dd, yyyy")</span>
+                        </div>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>Currency</span>
+                            <span class="fw-semibold text-dark">USD ($)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <div class="mf-card h-100 p-4 d-flex flex-column justify-content-between">
+            <div>
+                <h2 class="h6 fw-bold text-dark mb-2">Routing &amp; Transfer Info</h2>
+                <p class="text-muted small mb-3">Use these details to receive direct deposits or wire transfers into this account.</p>
+                <div class="p-3 bg-light rounded-3 mb-2">
+                    <small class="text-muted d-block">Routing Transit Number</small>
+                    <span class="fw-bold font-monospace text-dark">021000021</span>
+                </div>
+                <div class="p-3 bg-light rounded-3">
+                    <small class="text-muted d-block">Full Account Number</small>
+                    <span class="fw-bold font-monospace text-dark">  @Model.Account.AccountNumber</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Transactions Section -->
+
+    <div class="mf-card p-4">
+        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-3">
+            <h2 class="h5 fw-bold text-dark mb-0">Recent Activity for this Account</h2>
+            <a href="/Customer/Transactions" class="mf-card-action">View Full Transaction History &rarr;</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table mf-table">
+                <thead>
+                    <tr>
+                        <th>Date &amp; Time</th>
+                        <th>Description</th>
+                        <th>Type</th>
+                        <th class="text-end">Amount</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+            <tbody>
+                @if (Model.Transactions.Any())
+                {
+                    var transactions = Model.Transactions.ToList();
+
+                    @foreach (var transaction in transactions)
+                    {
+                        <tr class="transaction-row">
+                            <td>
+                                <div class="fw-semibold text-dark">
+                                    @transaction.TransactionDate.ToString("MMM dd, yyyy")
+                                </div>
+                                <small class="text-muted">
+                                    @transaction.TransactionDate.ToString("hh:mm tt")
+                                </small>
+                            </td>
+
+                            <td>
+                                <div class="fw-bold text-dark">
+                                    @(transaction.Description ?? "Transaction")
+                                </div>
+                                <span class="mf-txn-code">
+                                    @transaction.TransactionNumber
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-success-subtle text-success fw-bold">
+                                    @transaction.TransactionType
+                                </span>
+                            </td>
+
+                            <td class="text-end fw-bold text-success">
+                                $@transaction.Amount.ToString("N2")
+                            </td>
+
+                            <td class="text-center">
+                                <span class="mf-status-badge completed">
+                                    <span class="dot"></span>
+                                    @transaction.Status
+                                </span>
+                            </td>
+
+                            <td class="text-center">
+                                <a href="/Customer/TransactionDetails?id=@transaction.TransactionNumber"
+                                   class="btn btn-sm btn-light">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            No transactions found for this account.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+           
+                        </table>
+                         @if (Model.Transactions.Count() > 4)
+{
+    <div class="text-center mt-3">
+        <button type="button"
+                id="toggleTransactions"
+                class="btn btn-outline-primary">
+            See More
+        </button>
+    </div>
+}
+                        </div>
+                        </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        const rows = document.querySelectorAll(".transaction-row");
+        const button = document.getElementById("toggleTransactions");
+
+        if (!button) return;
+
+        // Hide transactions after the first 4
+        rows.forEach((row, index) => {
+            if (index >= 4) {
+                row.style.display = "none";
+            }
+        });
+
+        button.addEventListener("click", function() {
+
+            const isExpanded = button.textContent.trim() === "See Less";
+
+            rows.forEach((row, index) => {
+                if (index >= 4) {
+                    row.style.display = isExpanded ? "none" : "table-row";
+                }
+            });
+
+            button.textContent = isExpanded ? "See More" : "See Less";
+        });
+    });
+</script>
+
+                    

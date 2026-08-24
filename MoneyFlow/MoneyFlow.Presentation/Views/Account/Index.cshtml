@@ -1,4 +1,273 @@
-﻿<h1>To be modified to account home page view</h1>
+﻿@model MoneyFlow.Presentation.ModelVM.Accounts.MyAccountsVM
+
+@{
+	Layout = "_CustomerLayout";
+	ViewData["Title"] = "My Accounts";
+}
+<h1>To be modified to account home page view</h1>
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+	<div>
+		<h1 class="mf-page-greeting">My Accounts</h1>
+		<p class="mf-page-subtitle">Manage your balances, account details, and active bank accounts.</p>
+	</div>
+	<div>
+		<a href="/Customer/Transfer" class="btn mf-btn-primary" id="btn-accounts-transfer-money">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M17 1l4 4-4 4" />
+				<path d="M3 11V9a4 4 0 0 1 4-4h14" />
+			</svg>
+			<span>Transfer Funds</span>
+		</a>
+	</div>
+</div>
+
+<!-- Account Summary Row -->
+<div class="row g-4 mb-4">
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="2" y="4" width="20" height="16" rx="2" />
+						<line x1="2" y1="10" x2="22" y2="10" />
+					</svg>
+				</span>
+				<span>Total Liquid Balance</span>
+			</div>
+			<div class="mf-metric-value-wrap">
+				<span class="mf-metric-value">  $@Model.Accounts.Sum(a => a.Balance).ToString("N2")</span>
+			</div>
+			<p class="mf-metric-note">Combined across @Model.Accounts.Count(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active) active accounts</p>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="2" y="5" width="20" height="14" rx="2" />
+						<line x1="2" y1="10" x2="22" y2="10" />
+					</svg>
+				</span>
+				<span>Current Balance</span>
+			</div>
+			<div class="mf-metric-value-wrap">
+				@{
+					var checkingAccount = Model.Accounts
+						.FirstOrDefault(a => a.AccountType == MoneyFlow.Data.Enums.AccountType.Current);
+				}
+
+				<span class="mf-metric-value"> $@(checkingAccount?.Balance.ToString("N2") ?? "0.00")</span>
+			</div>
+			<p class="mf-metric-note">Primary Everyday Account  (@(checkingAccount?.AccountNumber ?? "N/A"))</p>
+		</div>
+	</div>
+
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z" />
+					</svg>
+				</span>
+				<span>Savings Balance</span>
+			</div>
+			<div class="mf-metric-value-wrap">
+				@{
+					var savingsAccount = Model.Accounts
+						.FirstOrDefault(a => a.AccountType == MoneyFlow.Data.Enums.AccountType.Savings);
+				}
+				<span class="mf-metric-value"> $@(savingsAccount?.Balance.ToString("N2") ?? "0.00")</span>
+			</div>
+			<p class="mf-metric-note">Vault Savings Account (@(savingsAccount?.AccountNumber ?? "N/A"))</p>
+		</div>
+	</div>
+</div>
+
+<!-- Accounts Detailed Bento Grid -->
+<div class="row g-4 mb-4">
+	<!-- Card 1: Checking Account -->
+	@foreach (var account in Model.Accounts)
+	{
+		<div class="col-12 col-lg-6">
+			<div class="mf-card h-100 d-flex flex-column justify-content-between p-4" id="account-card-@account.Id">
+				<div>
+					<div class="d-flex align-items-start justify-content-between mb-3">
+						<div class="d-flex align-items-center gap-3">
+							<div class="mf-account-badge-icon checking">
+								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<rect x="2" y="5" width="20" height="14" rx="2" />
+									<line x1="2" y1="10" x2="22" y2="10" />
+								</svg>
+							</div>
+							<div>
+								<h2 class="h5 fw-bold text-dark mb-0"> @account.AccountType Account</h2>
+								<span class="text-muted small"> @account.AccountType Account</span>
+							</div>
+						</div>
+						<span class="mf-status-badge active"><span class="dot"></span> @account.Status </span>
+					</div>
+
+					<div class="my-4">
+						<span class="text-uppercase small fw-bold text-muted d-block mb-1">Available Balance</span>
+						<div class="h2 fw-extrabold text-dark mb-1">$@account.Balance.ToString("N2")</div>
+						<div class="text-muted small">Account Number: <span class="fw-semibold text-dark"> @account.AccountNumber</span></div>
+					</div>
+
+					<div class="p-3 bg-light rounded-3 mb-4">
+						<div class="d-flex justify-content-between text-muted small py-1">
+							<span>Account Type</span>
+							<span class="fw-semibold text-dark"> @account.AccountType</span>
+						</div>
+						<div class="d-flex justify-content-between text-muted small py-1">
+							<span>Open Date</span>
+							<span class="fw-semibold text-dark">@account.OpenDate.ToString("MMMM dd, yyyy")</span>
+						</div>
+						<div class="d-flex justify-content-between text-muted small py-1">
+							<span>Currency</span>
+							<span class="fw-semibold text-dark">USD ($)</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="d-flex flex-wrap gap-2 pt-3 border-top">
+					<a href="@Url.Action("AccountDetails", "Account", new { id = account.Id })"
+					   class="d-flex justify-content-center align-items-center btn btn-sm btn-outline-secondary flex-grow-1"
+					   id="btn-details-@account.Id">
+						View Details
+					</a>
+					<a href="@Url.Action("Index", "Transaction", new { accountId = account.Id })"
+					   class="d-flex justify-content-center align-items-center btn btn-sm btn-outline-secondary flex-grow-1"
+					   id="btn-history-@account.Id">
+						History
+					</a>
+					<a href="@Url.Action("Transfer", "Customer", new { fromAccountId = account.Id })"
+					   class="btn btn-sm mf-btn-primary flex-grow-1" id="btn-transfer-@account.Id">
+						Transfer
+					</a>
+				</div>
+			</div>
+		</div>
+	}
+
+	
+
+</div>
+
+<!-- Recent Transactions -->
+<div class="mf-card p-4 mb-4">
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<div>
+			<h2 class="h5 fw-bold mb-1">Recent Transactions</h2>
+			<p class="text-muted small mb-0">
+				Transactions made through your accounts
+			</p>
+		</div>
+	</div>
+
+	@if (Model.Transactions.Any())
+	{
+		<div class="table-responsive">
+			<table class="table align-middle mb-0">
+				<thead>
+					<tr>
+						<th>Transaction</th>
+						<th>Type</th>
+						<th>Amount</th>
+						<th>Status</th>
+						<th>Date</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					@{
+						var transactions = Model.Transactions
+							.OrderByDescending(t => t.TransactionDate)
+							.ToList();
+					}
+
+					@foreach (var transaction in transactions)
+					{
+						<tr class="transaction-row">
+							<td>
+								<span class="fw-semibold">
+									@transaction.TransactionNumber
+								</span>
+							</td>
+
+							<td>
+								@transaction.TransactionType
+							</td>
+
+							<td>
+								$@transaction.Amount.ToString("N2")
+							</td>
+
+							<td>
+								@transaction.Status
+							</td>
+
+							<td>
+								@transaction.TransactionDate.ToString("MMM dd, yyyy hh:mm tt")
+							</td>
+
+							<td>
+								@(transaction.Description ?? "No description")
+							</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+			@if (transactions.Count > 4)
+			{
+				<div class="text-center mt-3">
+					<button type="button"
+							id="toggleTransactions"
+							class="btn btn-outline-primary">
+						See More
+					</button>
+				</div>
+			}
+			
+		</div>
+		
+		<script>
+				document.addEventListener("DOMContentLoaded", function() {
+
+					const rows = document.querySelectorAll(".transaction-row");
+					const button = document.getElementById("toggleTransactions");
+
+					if (!button) return;
+
+					// Show only the first 4 transactions
+					rows.forEach((row, index) => {
+						if (index >= 4) {
+							row.style.display = "none";
+						}
+					});
+
+					button.addEventListener("click", function() {
+
+						const expanded = button.textContent.trim() === "See Less";
+
+						rows.forEach((row, index) => {
+							if (index >= 4) {
+								row.style.display = expanded ? "none" : "table-row";
+							}
+						});
+
+						button.textContent = expanded ? "See More" : "See Less";
+					});
+				});
+		</script>
+	}
+	
 
 <form asp-controller="Auth"
       asp-action="Logout"
