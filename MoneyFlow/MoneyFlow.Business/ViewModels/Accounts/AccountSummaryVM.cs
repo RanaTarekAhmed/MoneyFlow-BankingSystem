@@ -1,6 +1,6 @@
 ﻿using MoneyFlow.Data.Enums;
 
-namespace MoneyFlow.Presentation.ModelVM.Accounts
+namespace MoneyFlow.Business.ViewModels.Accounts
 {
     public class AccountSummaryVM
     {
