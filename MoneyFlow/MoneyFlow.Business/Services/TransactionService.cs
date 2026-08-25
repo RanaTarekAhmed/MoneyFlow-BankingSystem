@@ -20,6 +20,40 @@ namespace MoneyFlow.Business.Services
             _customerRepository = customerRepository;
         }
 
+        public async Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId)
+        {
+            var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+            var customerId = customer.Id;
+
+			var transaction = await _transactionRepository.GetCustomerTransactionByIdAsync(transactionId, customerId);
+
+            if (transaction == null)
+            {
+                return null;
+            }
+
+			var transactionDetailsVM = new TransactionDetailsVM
+			{
+				TransactionNumber = transaction.TransactionNumber,
+				TransactionType = transaction.TransactionType,
+				Amount = transaction.Amount,
+				Status = transaction.Status,
+				TransactionDate = transaction.TransactionDate,
+				Description = transaction.Description,
+				SenderAccount = transaction.SenderAccount,
+				ReceiverAccount = transaction.ReceiverAccount,
+				IsIncoming = transaction.ReceiverAccount?.CustomerId == customerId
+			};
+
+			return transactionDetailsVM;
+        }
+
         public async Task<PagedResult<TransactionVM>> GetCustomerTransactionsPagedAsync
 			(
 			string? userId, 
@@ -29,16 +63,16 @@ namespace MoneyFlow.Business.Services
 		{
 			var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
 
-			if (customer == null)
-			{
-				throw new Exception("Customer not found.");
-			}
+            if (customer == null)
+            {
+                throw new InvalidOperationException("Customer not found.");
+            }
 
-			var customerId = customer.Id;
+            var customerId = customer.Id;
 
 			var (transactions, totalCount) = await _transactionRepository.GetCustomerTransactionsPagedAsync(customerId, pageNumber, pageSize, filter);
 
-			var items = transactions
+			var transactionVMs = transactions
 				.Select(t => new TransactionVM
 				{
 					Id = t.Id,
@@ -54,7 +88,7 @@ namespace MoneyFlow.Business.Services
 
 			return new PagedResult<TransactionVM>
 			{
-				Items = items,
+				Items = transactionVMs,
 				PageNumber = pageNumber,
 				PageSize = pageSize,
 				TotalCount = totalCount

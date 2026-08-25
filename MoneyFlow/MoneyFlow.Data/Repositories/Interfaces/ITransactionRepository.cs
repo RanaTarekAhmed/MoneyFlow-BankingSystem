@@ -18,7 +18,8 @@ namespace MoneyFlow.Data.Repositories.Interfaces
 			int pageNumber, 
 			int pageSize,
             Expression<Func<Transaction, bool>>? filter
-            ); 
+            );
+		Task<Transaction?> GetCustomerTransactionByIdAsync(int transactionId, int customerId);
 		Task AddAsync(Transaction transaction);
 		Task UpdateStatusAsync(int id, TransactionStatus status);
 	}

@@ -14,5 +14,6 @@ namespace MoneyFlow.Business.Services.Interfaces
 			int pageSize,
 			Expression<Func<Transaction, bool>>? filter
 			);
-	}
+		Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId);
+    }
 }
