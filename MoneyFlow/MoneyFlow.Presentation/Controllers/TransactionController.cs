@@ -16,6 +16,7 @@ namespace MoneyFlow.Presentation.Controllers
             _transactionService = transactionService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(int page = 1)
         {
             int pageSize = 5;
@@ -27,9 +28,16 @@ namespace MoneyFlow.Presentation.Controllers
             return View(result);
         }
 
-        public async Task<IActionResult> Details()
+        [HttpGet]
+        public async Task<IActionResult> Details(int id, int pageNumber)
         {
-            return View();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var result = await _transactionService.GetCustomerTransactionByIdAsync(id, userId);
+
+            ViewBag.PageNumber = pageNumber;
+
+            return View(result);
         }
     }
 }

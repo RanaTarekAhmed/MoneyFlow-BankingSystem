@@ -1,4 +1,4 @@
-@using MoneyFlow.Data.Enums
+
 @{
 	Layout = "_CustomerLayout";
 	ViewData["Title"] = "Transactions";
@@ -137,150 +137,10 @@
 							<span class="mf-status-badge @transaction.Status.ToString().ToLower()"><span class="dot"></span>@transaction.Status.ToString()</span>
 						</td>
 						<td class="text-center">
-							<a href="/Customer/TransactionDetails?id=TXN-8472910" class="btn btn-sm btn-light fw-semibold">Details</a>
+							<a asp-action="Details" asp-route-id="@transaction.Id" asp-route-pageNumber="@Model.PageNumber" class="btn btn-sm btn-light fw-semibold">Details</a>
 						</td>
 					</tr>
 				}
-
-				@* <!-- Row 1: Deposit -->
-				<tr class="mf-txn-data-row" data-type="deposit" data-status="completed">
-					<td>
-						<div class="fw-bold text-dark">Oct 24, 2023</div>
-						<small class="text-muted">14:32 EST</small>
-					</td>
-					<td>
-						<div class="fw-bold text-dark">Cash Deposit</div>
-						<span class="mf-txn-code">TXN-8472910</span>
-					</td>
-					<td>
-						<span class="badge bg-success-subtle text-success fw-bold d-inline-flex align-items-center gap-1">
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="19" x2="12" y2="5"/>
-								<polyline points="5 12 12 5 19 12"/>
-							</svg>
-							Deposit
-						</span>
-					</td>
-					<td class="text-end fw-extrabold text-success fs-6">+ $5,000.00</td>
-					<td class="text-center">
-						<span class="mf-status-badge completed"><span class="dot"></span>Completed</span>
-					</td>
-					<td class="text-center">
-						<a href="/Customer/TransactionDetails?id=TXN-8472910" class="btn btn-sm btn-light fw-semibold">Details</a>
-					</td>
-				</tr>
-
-				<!-- Row 2: Withdrawal -->
-				<tr class="mf-txn-data-row" data-type="withdrawal" data-status="completed">
-					<td>
-						<div class="fw-bold text-dark">Oct 23, 2023</div>
-						<small class="text-muted">09:15 EST</small>
-					</td>
-					<td>
-						<div class="fw-bold text-dark">Cash Withdrawal</div>
-						<span class="mf-txn-code">TXN-8472885</span>
-					</td>
-					<td>
-						<span class="badge bg-secondary-subtle text-dark fw-bold d-inline-flex align-items-center gap-1">
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="5" x2="12" y2="19"/>
-								<polyline points="19 12 12 19 5 12"/>
-							</svg>
-							Withdrawal
-						</span>
-					</td>
-					<td class="text-end fw-extrabold text-navy fs-6">- $1,000.00</td>
-					<td class="text-center">
-						<span class="mf-status-badge completed"><span class="dot"></span>Completed</span>
-					</td>
-					<td class="text-center">
-						<a href="/Customer/TransactionDetails?id=TXN-8472885" class="btn btn-sm btn-light fw-semibold">Details</a>
-					</td>
-				</tr>
-
-				<!-- Row 3: Transfer Pending -->
-				<tr class="mf-txn-data-row" data-type="transfer" data-status="pending">
-					<td>
-						<div class="fw-bold text-dark">Oct 23, 2023</div>
-						<small class="text-muted">08:45 EST</small>
-					</td>
-					<td>
-						<div class="fw-bold text-dark">Internal Transfer to Vault</div>
-						<span class="mf-txn-code">TXN-8472850</span>
-					</td>
-					<td>
-						<span class="badge bg-info-subtle text-primary fw-bold d-inline-flex align-items-center gap-1">
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M17 1l4 4-4 4"/>
-								<path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-							</svg>
-							Transfer
-						</span>
-					</td>
-					<td class="text-end fw-extrabold text-navy fs-6">- $2,500.00</td>
-					<td class="text-center">
-						<span class="mf-status-badge pending"><span class="dot"></span>Pending</span>
-					</td>
-					<td class="text-center">
-						<a href="/Customer/TransactionDetails?id=TXN-8472850" class="btn btn-sm btn-light fw-semibold">Details</a>
-					</td>
-				</tr>
-
-				<!-- Row 4: Failed Withdrawal -->
-				<tr class="mf-txn-data-row" data-type="withdrawal" data-status="failed">
-					<td>
-						<div class="fw-bold text-dark">Oct 21, 2023</div>
-						<small class="text-muted">16:20 EST</small>
-					</td>
-					<td>
-						<div class="fw-bold text-dark">International Vendor Payment</div>
-						<span class="mf-txn-code">TXN-8471992</span>
-					</td>
-					<td>
-						<span class="badge bg-secondary-subtle text-dark fw-bold d-inline-flex align-items-center gap-1">
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="5" x2="12" y2="19"/>
-								<polyline points="19 12 12 19 5 12"/>
-							</svg>
-							Withdrawal
-						</span>
-					</td>
-					<td class="text-end fw-extrabold text-muted fs-6">- $450.00</td>
-					<td class="text-center">
-						<span class="mf-status-badge failed"><span class="dot"></span>Failed</span>
-					</td>
-					<td class="text-center">
-						<a href="/Customer/TransactionDetails?id=TXN-8471992" class="btn btn-sm btn-light fw-semibold">Details</a>
-					</td>
-				</tr>
-
-				<!-- Row 5: Deposit -->
-				<tr class="mf-txn-data-row" data-type="deposit" data-status="completed">
-					<td>
-						<div class="fw-bold text-dark">Oct 20, 2023</div>
-						<small class="text-muted">11:05 EST</small>
-					</td>
-					<td>
-						<div class="fw-bold text-dark">Stripe Payout</div>
-						<span class="mf-txn-code">TXN-8471504</span>
-					</td>
-					<td>
-						<span class="badge bg-success-subtle text-success fw-bold d-inline-flex align-items-center gap-1">
-							<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" y1="19" x2="12" y2="5"/>
-								<polyline points="5 12 12 5 19 12"/>
-							</svg>
-							Deposit
-						</span>
-					</td>
-					<td class="text-end fw-extrabold text-success fs-6">+ $3,000.00</td>
-					<td class="text-center">
-						<span class="mf-status-badge completed"><span class="dot"></span>Completed</span>
-					</td>
-					<td class="text-center">
-						<a href="/Customer/TransactionDetails?id=TXN-8471504" class="btn btn-sm btn-light fw-semibold">Details</a>
-					</td>
-				</tr> *@
 			</tbody>
 		</table>
 	</div>

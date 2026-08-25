@@ -46,7 +46,23 @@ namespace MoneyFlow.Data.Repositories
 
 		}
 
-		public async Task<(List<Transaction> Items, int TotalCount)> GetCustomerTransactionsPagedAsync
+        public async Task<Transaction?> GetCustomerTransactionByIdAsync(int transactionId, int customerId)
+        {
+            return await _context.Transactions
+                .Include(t => t.SenderAccount)
+                .Include(t => t.ReceiverAccount)
+                .FirstOrDefaultAsync(t =>
+                    t.Id == transactionId &&
+                    (
+                        (t.SenderAccount != null &&
+                         t.SenderAccount.CustomerId == customerId)
+                        ||
+                        (t.ReceiverAccount != null &&
+                         t.ReceiverAccount.CustomerId == customerId)
+                    ));
+        }
+
+        public async Task<(List<Transaction> Items, int TotalCount)> GetCustomerTransactionsPagedAsync
 			(
 			int customerId, 
 			int pageNumber, 

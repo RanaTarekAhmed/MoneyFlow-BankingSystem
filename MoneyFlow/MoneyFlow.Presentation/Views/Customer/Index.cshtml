@@ -1,3 +1,5 @@
+@model MoneyFlow.Business.ViewModels.Customer.DashboardVM
+
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Dashboard";
@@ -5,7 +7,7 @@
 
 <!-- Welcome & Financial Overview Header -->
 <div class="mf-page-header">
-    <h1 class="mf-page-greeting">Good morning, John</h1>
+    <h1 class="mf-page-greeting">Good morning, @Model.CustomerName</h1>
     <p class="mf-page-subtitle">Here's your financial overview. Your accounts are secure and up to date.</p>
 </div>
 
@@ -25,7 +27,7 @@
                     <span>Total Balance</span>
                 </div>
                 <div class="mf-metric-value-wrap">
-                    <span class="mf-metric-value">$34,160<span class="cents">.00</span></span>
+                    <span class="mf-metric-value">@Model.TotalBalance.ToString("C2")</span>
                 </div>
             </div>
             <p class="mf-metric-note">Combined across all accounts</p>
@@ -45,7 +47,7 @@
                     <span>Active Accounts</span>
                 </div>
                 <div class="mf-metric-value-wrap">
-                    <span class="mf-metric-value">2</span>
+                    <span class="mf-metric-value">@Model.ActiveAccounts</span>
                 </div>
             </div>
             <p class="mf-metric-note">Checking &amp; Savings</p>
@@ -66,11 +68,11 @@
                     <span>Recent Transactions</span>
                 </div>
                 <div class="mf-metric-value-wrap">
-                    <span class="mf-metric-value">4 <span class="ms-2 cents">this week</span></span>
+                    <span class="mf-metric-value">@Model.RecentTransactionsCount <span class="ms-2 cents">this week</span></span>
                 </div>
                 <div class="mf-progress-bar-wrap">
                     <div class="mf-progress-bar">
-                        <div class="mf-progress-fill" style="width: 75%;"></div>
+                        <div class="mf-progress-fill" style="width: @Math.Min(Model.RecentTransactionsCount * 10, 100)%;"></div>
                     </div>
                 </div>
             </div>
@@ -90,62 +92,37 @@
                 <a href="/Customer/Accounts" class="mf-card-action">View All Accounts</a>
             </div>
 
-            <!-- Checking Account Item Card -->
-            <a href="/Customer/AccountDetails?type=checking" class="mf-account-item-card" id="dash-account-checking">
-                <div class="mf-account-item-left">
-                    <div class="mf-account-badge-icon checking">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="5" width="20" height="14" rx="2"/>
-                            <line x1="2" y1="10" x2="22" y2="10"/>
-                        </svg>
-                    </div>
-                    <div class="mf-account-details-col">
-                        <div class="mf-account-title-row">
-                            <span class="mf-account-title">Checking</span>
-                            <span class="mf-status-badge active"><span class="dot"></span>Active</span>
-                        </div>
-                        <span class="mf-account-number">•••• 4821 &bull; Opened Jan 15, 2023</span>
-                    </div>
-                </div>
-                <div class="mf-account-item-right">
-                    <div>
-                        <div class="mf-account-balance-val">$8,420.50</div>
-                        <div class="mf-account-balance-lbl">Available Balance</div>
-                    </div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                </div>
-            </a>
+            @foreach (var account in Model.Accounts)
+            {
+                var detailsUrl = Url.Action("AccountDetails", "Account", new { id = account.Id });
 
-            <!-- Savings Account Item Card -->
-            <a href="/Customer/AccountDetails?type=savings" class="mf-account-item-card" id="dash-account-savings">
-                <div class="mf-account-item-left">
-                    <div class="mf-account-badge-icon savings">
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z"/>
-                            <line x1="2" y1="9" x2="4" y2="9"/>
-                            <circle cx="15" cy="11" r="1"/>
+                <a href="@detailsUrl" class="mf-account-item-card" id="dash-account-@account.Id">
+                    <div class="mf-account-item-left">
+                        <div class="mf-account-badge-icon @account.AccountTypeClass">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                <line x1="2" y1="10" x2="22" y2="10"/>
+                            </svg>
+                        </div>
+                        <div class="mf-account-details-col">
+                            <div class="mf-account-title-row">
+                                <span class="mf-account-title">@account.AccountTypeName</span>
+                                <span class="mf-status-badge active"><span class="dot"></span>@account.StatusName</span>
+                            </div>
+                            <span class="mf-account-number">@account.MaskedAccountNumber &bull; Opened @account.OpenDate.ToString("MMM dd, yyyy")</span>
+                        </div>
+                    </div>
+                    <div class="mf-account-item-right">
+                        <div>
+                            <div class="mf-account-balance-val">@account.Balance.ToString("C2")</div>
+                            <div class="mf-account-balance-lbl">Available Balance</div>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
+                            <polyline points="9 18 15 12 9 6"/>
                         </svg>
                     </div>
-                    <div class="mf-account-details-col">
-                        <div class="mf-account-title-row">
-                            <span class="mf-account-title">Savings</span>
-                            <span class="mf-status-badge active"><span class="dot"></span>Active</span>
-                        </div>
-                        <span class="mf-account-number">•••• 9210 &bull; Opened Mar 10, 2023</span>
-                    </div>
-                </div>
-                <div class="mf-account-item-right">
-                    <div>
-                        <div class="mf-account-balance-val">$25,739.50</div>
-                        <div class="mf-account-balance-lbl">Available Balance</div>
-                    </div>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-muted">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                </div>
-            </a>
+                </a>
+            }
         </div>
 
         <!-- Recent Transactions Section -->
@@ -156,85 +133,46 @@
             </div>
 
             <div class="mf-transaction-list shadow-sm">
-                <!-- Transaction 1: Deposit -->
-                <a href="/Customer/TransactionDetails?id=TXN-8472910" class="mf-transaction-row">
-                    <div class="mf-txn-left">
-                        <div class="mf-txn-icon-wrap deposit">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="19" x2="12" y2="5"/>
-                                <polyline points="5 12 12 5 19 12"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="mf-txn-title">Cash Deposit</div>
-                            <div class="mf-txn-meta">Oct 24, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
-                        </div>
-                    </div>
-                    <div class="mf-txn-right">
-                        <span class="mf-txn-amount positive">+ $5,000.00</span>
-                        <span class="mf-txn-code">TXN-8472910</span>
-                    </div>
-                </a>
+                @foreach (var transaction in Model.RecentTransactions)
+                {
+                    var amountClass = transaction.IsIncoming ? "positive" : "negative";
+                    var amountPrefix = transaction.IsIncoming ? "+" : "-";
 
-                <!-- Transaction 2: Withdrawal -->
-                <a href="/Customer/TransactionDetails?id=TXN-8472885" class="mf-transaction-row">
-                    <div class="mf-txn-left">
-                        <div class="mf-txn-icon-wrap withdrawal">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <polyline points="19 12 12 19 5 12"/>
-                            </svg>
+                    <a href="@Url.Action("Details", "Transaction", new { id = transaction.Id })" class="mf-transaction-row">
+                        <div class="mf-txn-left">
+                            <div class="mf-txn-icon-wrap @(transaction.IsIncoming ? "deposit" : "withdrawal")">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    @if (transaction.IsIncoming)
+                                    {
+                                        <line x1="12" y1="19" x2="12" y2="5"/>
+                                        <polyline points="5 12 12 5 19 12"/>
+                                    }
+                                    else
+                                    {
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <polyline points="19 12 12 19 5 12"/>
+                                    }
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="mf-txn-title">@transaction.Title</div>
+                                <div class="mf-txn-meta">
+                                    @transaction.TransactionDate.ToLocalTime().ToString("MMM dd, yyyy") &bull;
+                                    <span class="mf-status-badge completed"><span class="dot"></span>@transaction.Status</span>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <div class="mf-txn-title">Cash Withdrawal</div>
-                            <div class="mf-txn-meta">Oct 23, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
+                        <div class="mf-txn-right">
+                            <span class="mf-txn-amount @amountClass">@amountPrefix @transaction.Amount.ToString("C2")</span>
+                            <span class="mf-txn-code">@transaction.TransactionNumber</span>
                         </div>
-                    </div>
-                    <div class="mf-txn-right">
-                        <span class="mf-txn-amount negative">- $1,000.00</span>
-                        <span class="mf-txn-code">TXN-8472885</span>
-                    </div>
-                </a>
+                    </a>
+                }
 
-                <!-- Transaction 3: Transfer Out -->
-                <a href="/Customer/TransactionDetails?id=TXN-8472850" class="mf-transaction-row">
-                    <div class="mf-txn-left">
-                        <div class="mf-txn-icon-wrap transfer">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 1l4 4-4 4"/>
-                                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="mf-txn-title">Transfer to Account •••• 4821</div>
-                            <div class="mf-txn-meta">Oct 23, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
-                        </div>
-                    </div>
-                    <div class="mf-txn-right">
-                        <span class="mf-txn-amount negative">- $2,500.00</span>
-                        <span class="mf-txn-code">TXN-8472850</span>
-                    </div>
-                </a>
-
-                <!-- Transaction 4: Transfer In -->
-                <a href="/Customer/TransactionDetails?id=TXN-8471504" class="mf-transaction-row">
-                    <div class="mf-txn-left">
-                        <div class="mf-txn-icon-wrap deposit">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <line x1="12" y1="19" x2="12" y2="5"/>
-                                <polyline points="5 12 12 5 19 12"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <div class="mf-txn-title">Transfer from Account •••• 7392</div>
-                            <div class="mf-txn-meta">Oct 22, 2023 &bull; <span class="mf-status-badge completed"><span class="dot"></span>Completed</span></div>
-                        </div>
-                    </div>
-                    <div class="mf-txn-right">
-                        <span class="mf-txn-amount positive">+ $3,000.00</span>
-                        <span class="mf-txn-code">TXN-8471504</span>
-                    </div>
-                </a>
+                @if (!Model.RecentTransactions.Any())
+                {
+                    <div class="p-4 text-center text-muted">No transactions found.</div>
+                }
             </div>
         </div>
     </div>
