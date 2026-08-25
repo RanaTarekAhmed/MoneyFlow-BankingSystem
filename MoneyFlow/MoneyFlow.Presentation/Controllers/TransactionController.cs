@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services;
 using MoneyFlow.Business.Services.Interfaces;
+using MoneyFlow.Business.ViewModels.Transaction;
 using System.Security.Claims;
 
 namespace MoneyFlow.Presentation.Controllers
@@ -17,13 +18,19 @@ namespace MoneyFlow.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index(int page = 1, TransactionQueryVM? query = null)
         {
             int pageSize = 5;
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var result = await _transactionService.GetCustomerTransactionsPagedAsync(userId, page, pageSize, null);
+            var transactions = await _transactionService.GetCustomerTransactionsPagedAsync(userId, page, pageSize, query);
+
+            var result = new TransactionIndexVM
+            {
+                Transactions = transactions,
+                Query = query
+            };
 
             return View(result);
         }
