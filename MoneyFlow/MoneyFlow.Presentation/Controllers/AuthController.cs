@@ -35,7 +35,7 @@ namespace MoneyFlowSandbox.Controllers
 				ModelState.AddModelError(string.Empty, "Invalid email or password");
 				return View(model);
 			}
-			return RedirectToAction("Index", "Account");
+			return RedirectToAction("Index", "Customer");
 		}
 
 		[HttpPost]

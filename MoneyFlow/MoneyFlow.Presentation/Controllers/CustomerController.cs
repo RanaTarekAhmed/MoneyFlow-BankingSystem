@@ -1,12 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using MoneyFlow.Business.Services.Interfaces;
 
 namespace MoneyFlowSandbox.Controllers
 {
+    [Authorize]
     public class CustomerController : Controller
     {
-        public IActionResult Index()
+        private readonly IDashboardService _dashboardService;
+
+        public CustomerController(IDashboardService dashboardService)
         {
-            return View();
+            _dashboardService = dashboardService;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
+
+            var model = await _dashboardService.GetDashboardAsync(userId);
+
+            if (model == null)
+            {
+                return NotFound();
+            }
+            return View(model);
         }
 
         public IActionResult Accounts()

@@ -1,4 +1,4 @@
-﻿@model MoneyFlow.Presentation.ModelVM.Accounts.AccountDetailsVM
+﻿@model MoneyFlow.Business.ViewModels.Accounts.AccountDetailsVM
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Account Details";
@@ -16,7 +16,7 @@
 <div class="mf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
     <div>
         <h1 class="mf-page-greeting">@Model.Account.AccountType Account</h1>
-        <p class="mf-page-subtitle">Account Number: <span class="fw-bold text-dark"> @Model.Account.AccountNumber</span> &bull; Status: <span class="mf-status-badge active"><span class="dot"></span>    @Model.Account.Status</span></p>
+        <p class="mf-page-subtitle">Account Number: <span class="fw-bold text-dark"> @Model.Account.AccountNumber</span> &bull; Status: <span class="mf-status-badge @Model.Account.Status.ToString().ToLower()"><span class="dot"></span>    @Model.Account.Status</span></p>
     </div>
     <div class="d-flex gap-2">
         <a href="@Url.Action("Transfer", "Customer", new { fromAccountId = Model.Account.Id })" class="btn mf-btn-primary" id="btn-account-details-transfer">
@@ -52,7 +52,7 @@
                         </div>
                         <div class="d-flex justify-content-between text-muted small">
                             <span>Account Status</span>
-                            <span class="mf-status-badge active"><span class="dot"></span>@Model.Account.Status</span>
+                            <span class="mf-status-badge @Model.Account.Status.ToString().ToLower()"><span class="dot"></span>@Model.Account.Status</span>
                         </div>
                         <div class="d-flex justify-content-between text-muted small">
                             <span>Open Date</span>
@@ -143,7 +143,7 @@
                             </td>
 
                             <td class="text-center">
-                                <span class="mf-status-badge completed">
+                                <span class="mf-status-badge @transaction.Status.ToString().ToLower()">
                                     <span class="dot"></span>
                                     @transaction.Status
                                 </span>

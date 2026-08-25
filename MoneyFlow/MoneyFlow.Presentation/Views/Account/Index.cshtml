@@ -1,4 +1,4 @@
-﻿@model MoneyFlow.Presentation.ModelVM.Accounts.MyAccountsVM
+﻿@model MoneyFlow.Business.ViewModels.Accounts.MyAccountsVM
 
 @{
 	Layout = "_CustomerLayout";
@@ -43,49 +43,55 @@
 		</div>
 	</div>
 
-	<div class="col-12 col-md-4">
-		<div class="mf-card mf-metric-card">
-			<div class="mf-metric-header">
-				<span class="mf-metric-header-icon">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<rect x="2" y="5" width="20" height="14" rx="2" />
-						<line x1="2" y1="10" x2="22" y2="10" />
-					</svg>
-				</span>
-				<span>Current Balance</span>
-			</div>
-			<div class="mf-metric-value-wrap">
-				@{
-					var checkingAccount = Model.Accounts
-						.FirstOrDefault(a => a.AccountType == MoneyFlow.Data.Enums.AccountType.Current);
-				}
+	<!-- Dynamic Accounts -->
+	@foreach (var account in Model.Accounts)
+	{
+		<div class="col-12 col-md-4">
+			<div class="mf-card mf-metric-card">
 
-				<span class="mf-metric-value"> $@(checkingAccount?.Balance.ToString("N2") ?? "0.00")</span>
-			</div>
-			<p class="mf-metric-note">Primary Everyday Account  (@(checkingAccount?.AccountNumber ?? "N/A"))</p>
-		</div>
-	</div>
+				<div class="mf-metric-header">
+					<span class="mf-metric-header-icon">
+						<svg width="18"
+							 height="18"
+							 viewBox="0 0 24 24"
+							 fill="none"
+							 stroke="currentColor"
+							 stroke-width="2"
+							 stroke-linecap="round"
+							 stroke-linejoin="round">
 
-	<div class="col-12 col-md-4">
-		<div class="mf-card mf-metric-card">
-			<div class="mf-metric-header">
-				<span class="mf-metric-header-icon">
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z" />
-					</svg>
-				</span>
-				<span>Savings Balance</span>
+							<rect x="2" y="5"
+								  width="20"
+								  height="14"
+								  rx="2" />
+
+							<line x1="2"
+								  y1="10"
+								  x2="22"
+								  y2="10" />
+						</svg>
+					</span>
+
+					<span>
+						@account.AccountType Balance
+					</span>
+				</div>
+
+				<div class="mf-metric-value-wrap">
+					<span class="mf-metric-value">
+						$@account.Balance.ToString("N2")
+					</span>
+				</div>
+
+				<p class="mf-metric-note">
+					@account.AccountType Account
+					(@account.AccountNumber)
+				</p>
+
 			</div>
-			<div class="mf-metric-value-wrap">
-				@{
-					var savingsAccount = Model.Accounts
-						.FirstOrDefault(a => a.AccountType == MoneyFlow.Data.Enums.AccountType.Savings);
-				}
-				<span class="mf-metric-value"> $@(savingsAccount?.Balance.ToString("N2") ?? "0.00")</span>
-			</div>
-			<p class="mf-metric-note">Vault Savings Account (@(savingsAccount?.AccountNumber ?? "N/A"))</p>
 		</div>
-	</div>
+	}
+
 </div>
 
 <!-- Accounts Detailed Bento Grid -->
@@ -158,116 +164,6 @@
 
 </div>
 
-<!-- Recent Transactions -->
-<div class="mf-card p-4 mb-4">
-	<div class="d-flex justify-content-between align-items-center mb-4">
-		<div>
-			<h2 class="h5 fw-bold mb-1">Recent Transactions</h2>
-			<p class="text-muted small mb-0">
-				Transactions made through your accounts
-			</p>
-		</div>
-	</div>
-
-	@if (Model.Transactions.Any())
-	{
-		<div class="table-responsive">
-			<table class="table align-middle mb-0">
-				<thead>
-					<tr>
-						<th>Transaction</th>
-						<th>Type</th>
-						<th>Amount</th>
-						<th>Status</th>
-						<th>Date</th>
-						<th>Description</th>
-					</tr>
-				</thead>
-
-				<tbody>
-					@{
-						var transactions = Model.Transactions
-							.OrderByDescending(t => t.TransactionDate)
-							.ToList();
-					}
-
-					@foreach (var transaction in transactions)
-					{
-						<tr class="transaction-row">
-							<td>
-								<span class="fw-semibold">
-									@transaction.TransactionNumber
-								</span>
-							</td>
-
-							<td>
-								@transaction.TransactionType
-							</td>
-
-							<td>
-								$@transaction.Amount.ToString("N2")
-							</td>
-
-							<td>
-								@transaction.Status
-							</td>
-
-							<td>
-								@transaction.TransactionDate.ToString("MMM dd, yyyy hh:mm tt")
-							</td>
-
-							<td>
-								@(transaction.Description ?? "No description")
-							</td>
-						</tr>
-					}
-
-				</tbody>
-			</table>
-			@if (transactions.Count > 4)
-			{
-				<div class="text-center mt-3">
-					<button type="button"
-							id="toggleTransactions"
-							class="btn btn-outline-primary">
-						See More
-					</button>
-				</div>
-			}
-			
-		</div>
-		
-		<script>
-				document.addEventListener("DOMContentLoaded", function() {
-
-					const rows = document.querySelectorAll(".transaction-row");
-					const button = document.getElementById("toggleTransactions");
-
-					if (!button) return;
-
-					// Show only the first 4 transactions
-					rows.forEach((row, index) => {
-						if (index >= 4) {
-							row.style.display = "none";
-						}
-					});
-
-					button.addEventListener("click", function() {
-
-						const expanded = button.textContent.trim() === "See Less";
-
-						rows.forEach((row, index) => {
-							if (index >= 4) {
-								row.style.display = expanded ? "none" : "table-row";
-							}
-						});
-
-						button.textContent = expanded ? "See More" : "See Less";
-					});
-				});
-		</script>
-	}
-	
 
 <form asp-controller="Auth"
       asp-action="Logout"

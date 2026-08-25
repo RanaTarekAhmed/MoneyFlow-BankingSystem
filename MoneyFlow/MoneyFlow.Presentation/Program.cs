@@ -38,12 +38,13 @@ namespace MoneyFlow.Presentation
 			// Business Services
 			builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<ITransactionService, TransactionService>();
+            builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 			// Repositories
 			builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-         
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
             var app = builder.Build();
 
