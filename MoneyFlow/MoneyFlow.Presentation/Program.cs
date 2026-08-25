@@ -41,9 +41,11 @@ namespace MoneyFlow.Presentation
 
 			// Repositories
 			builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-			builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+            builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+         
 
-			var app = builder.Build();
+            var app = builder.Build();
 
             // Seed default Identity roles during application startup.
             using (var scope = app.Services.CreateScope())
