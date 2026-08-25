@@ -1,3 +1,5 @@
+@model MoneyFlow.Business.ViewModels.Customer.DashboardVM
+
 @{
     Layout = "_CustomerLayout";
     ViewData["Title"] = "Dashboard";
@@ -5,7 +7,7 @@
 
 <!-- Welcome & Financial Overview Header -->
 <div class="mf-page-header">
-    <h1 class="mf-page-greeting">Good morning, @ViewBag.CustomerName</h1>
+    <h1 class="mf-page-greeting">Good morning, @Model.CustomerName</h1>
     <p class="mf-page-subtitle">Here's your financial overview. Your accounts are secure and up to date.</p>
 </div>
 
@@ -25,7 +27,7 @@
                     <span>Total Balance</span>
                 </div>
                 <div class="mf-metric-value-wrap">
-                    <span class="mf-metric-value">@string.Format("${0:N2}", (decimal)ViewBag.TotalBalance)</span>
+                    <span class="mf-metric-value">@Model.TotalBalance.ToString("C2")</span>
                 </div>
             </div>
             <p class="mf-metric-note">Combined across all accounts</p>
@@ -45,7 +47,7 @@
                     <span>Active Accounts</span>
                 </div>
                 <div class="mf-metric-value-wrap">
-                    <span class="mf-metric-value">@ViewBag.ActiveAccounts</span>
+                    <span class="mf-metric-value">@Model.ActiveAccounts</span>
                 </div>
             </div>
             <p class="mf-metric-note">Checking &amp; Savings</p>
@@ -66,11 +68,11 @@
                     <span>Recent Transactions</span>
                 </div>
                 <div class="mf-metric-value-wrap">
-                    <span class="mf-metric-value">@ViewBag.RecentTransactionsCount <span class="ms-2 cents">this week</span></span>
+                    <span class="mf-metric-value">@Model.RecentTransactionsCount <span class="ms-2 cents">this week</span></span>
                 </div>
                 <div class="mf-progress-bar-wrap">
                     <div class="mf-progress-bar">
-                        <div class="mf-progress-fill" style="width: @Math.Min((int)ViewBag.RecentTransactionsCount * 10, 100)%;"></div>
+                        <div class="mf-progress-fill" style="width: @Math.Min(Model.RecentTransactionsCount * 10, 100)%;"></div>
                     </div>
                 </div>
             </div>
@@ -90,19 +92,13 @@
                 <a href="/Customer/Accounts" class="mf-card-action">View All Accounts</a>
             </div>
 
-            @foreach (var account in (IEnumerable<MoneyFlow.Data.Entities.Account>)ViewBag.Accounts)
+            @foreach (var account in Model.Accounts)
             {
-                var accountTypeName = account.AccountType == MoneyFlow.Data.Enums.AccountType.Current ? "Checking" : "Savings";
-                var accountTypeClass = account.AccountType == MoneyFlow.Data.Enums.AccountType.Current ? "checking" : "savings";
-                var maskedNumber = account.AccountNumber.Length > 4
-                    ? "•••• " + account.AccountNumber[^4..]
-                    : account.AccountNumber;
-                var statusName = account.Status.ToString();
                 var detailsUrl = Url.Action("AccountDetails", "Account", new { id = account.Id });
 
                 <a href="@detailsUrl" class="mf-account-item-card" id="dash-account-@account.Id">
                     <div class="mf-account-item-left">
-                        <div class="mf-account-badge-icon @accountTypeClass">
+                        <div class="mf-account-badge-icon @account.AccountTypeClass">
                             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="2" y="5" width="20" height="14" rx="2"/>
                                 <line x1="2" y1="10" x2="22" y2="10"/>
@@ -110,10 +106,10 @@
                         </div>
                         <div class="mf-account-details-col">
                             <div class="mf-account-title-row">
-                                <span class="mf-account-title">@accountTypeName</span>
-                                <span class="mf-status-badge active"><span class="dot"></span>@statusName</span>
+                                <span class="mf-account-title">@account.AccountTypeName</span>
+                                <span class="mf-status-badge active"><span class="dot"></span>@account.StatusName</span>
                             </div>
-                            <span class="mf-account-number">@maskedNumber &bull; Opened @account.OpenDate.ToString("MMM dd, yyyy")</span>
+                            <span class="mf-account-number">@account.MaskedAccountNumber &bull; Opened @account.OpenDate.ToString("MMM dd, yyyy")</span>
                         </div>
                     </div>
                     <div class="mf-account-item-right">
@@ -137,29 +133,16 @@
             </div>
 
             <div class="mf-transaction-list shadow-sm">
-                @foreach (var transaction in (IEnumerable<MoneyFlow.Data.Entities.Transaction>)ViewBag.RecentTransactions)
+                @foreach (var transaction in Model.RecentTransactions)
                 {
-                    var isIncoming = transaction.ReceiverAccountId.HasValue &&
-                                      ((IEnumerable<MoneyFlow.Data.Entities.Account>)ViewBag.Accounts)
-                                      .Any(a => a.Id == transaction.ReceiverAccountId.Value);
-                    var isOutgoing = transaction.SenderAccountId.HasValue &&
-                                     ((IEnumerable<MoneyFlow.Data.Entities.Account>)ViewBag.Accounts)
-                                     .Any(a => a.Id == transaction.SenderAccountId.Value);
-
-                    var amountClass = isIncoming ? "positive" : "negative";
-                    var amountPrefix = isIncoming ? "+" : "-";
-                    var transactionTitle = transaction.TransactionType switch
-                    {
-                        MoneyFlow.Data.Enums.TransactionType.Deposit => "Cash Deposit",
-                        MoneyFlow.Data.Enums.TransactionType.Withdrawal => "Cash Withdrawal",
-                        _ => isIncoming ? "Transfer In" : "Transfer Out"
-                    };
+                    var amountClass = transaction.IsIncoming ? "positive" : "negative";
+                    var amountPrefix = transaction.IsIncoming ? "+" : "-";
 
                     <a href="@Url.Action("Details", "Transaction", new { id = transaction.Id })" class="mf-transaction-row">
                         <div class="mf-txn-left">
-                            <div class="mf-txn-icon-wrap @(isIncoming ? "deposit" : "withdrawal")">
+                            <div class="mf-txn-icon-wrap @(transaction.IsIncoming ? "deposit" : "withdrawal")">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    @if (isIncoming)
+                                    @if (transaction.IsIncoming)
                                     {
                                         <line x1="12" y1="19" x2="12" y2="5"/>
                                         <polyline points="5 12 12 5 19 12"/>
@@ -172,7 +155,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <div class="mf-txn-title">@transactionTitle</div>
+                                <div class="mf-txn-title">@transaction.Title</div>
                                 <div class="mf-txn-meta">
                                     @transaction.TransactionDate.ToLocalTime().ToString("MMM dd, yyyy") &bull;
                                     <span class="mf-status-badge completed"><span class="dot"></span>@transaction.Status</span>
@@ -186,7 +169,7 @@
                     </a>
                 }
 
-                @if (!((IEnumerable<MoneyFlow.Data.Entities.Transaction>)ViewBag.RecentTransactions).Any())
+                @if (!Model.RecentTransactions.Any())
                 {
                     <div class="p-4 text-center text-muted">No transactions found.</div>
                 }
