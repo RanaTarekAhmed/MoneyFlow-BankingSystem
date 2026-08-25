@@ -171,57 +171,83 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -------------------------------------------------------------------------
-    // 3. Transactions Live Search & Filtering
+    // 3. Transactions Server-Side Search & Filters
     // -------------------------------------------------------------------------
     const txnSearchInput = document.getElementById('txnSearchInput');
     const txnTypeFilter = document.getElementById('txnTypeFilter');
     const txnStatusFilter = document.getElementById('txnStatusFilter');
-    const txnRows = document.querySelectorAll('.mf-txn-data-row');
-    const txnEmptyState = document.getElementById('txnEmptyState');
-    const btnClearFilters = document.getElementById('btnClearTxnFilters');
+    const btnClearTxnFilters = document.getElementById('btnClearTxnFilters');
 
-    function filterTransactions() {
-        if (!txnRows.length) return;
+    if (txnSearchInput || txnTypeFilter || txnStatusFilter) {
+        let debounceTimer;
 
-        const query = (txnSearchInput ? txnSearchInput.value : '').toLowerCase().trim();
-        const selectedType = (txnTypeFilter ? txnTypeFilter.value : 'all').toLowerCase();
-        const selectedStatus = (txnStatusFilter ? txnStatusFilter.value : 'all').toLowerCase();
-
-        let visibleCount = 0;
-
-        txnRows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            const rowType = (row.getAttribute('data-type') || '').toLowerCase();
-            const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
-
-            const matchesQuery = !query || text.includes(query);
-            const matchesType = (selectedType === 'all' || rowType === selectedType);
-            const matchesStatus = (selectedStatus === 'all' || rowStatus === selectedStatus);
-
-            if (matchesQuery && matchesType && matchesStatus) {
-                row.style.display = '';
-                visibleCount++;
-            } else {
-                row.style.display = 'none';
-            }
-        });
-
-        if (txnEmptyState) {
-            txnEmptyState.classList.toggle('d-none', visibleCount > 0);
+        // Restore focus and cursor at end of input if search parameter exists
+        if (txnSearchInput && txnSearchInput.value) {
+            txnSearchInput.focus();
+            txnSearchInput.setSelectionRange(txnSearchInput.value.length, txnSearchInput.value.length);
         }
-    }
 
-    if (txnSearchInput) txnSearchInput.addEventListener('input', filterTransactions);
-    if (txnTypeFilter) txnTypeFilter.addEventListener('change', filterTransactions);
-    if (txnStatusFilter) txnStatusFilter.addEventListener('change', filterTransactions);
+        function applyTransactionFilters() {
+            const url = new URL(window.location.origin + window.location.pathname);
 
-    if (btnClearFilters) {
-        btnClearFilters.addEventListener('click', function () {
-            if (txnSearchInput) txnSearchInput.value = '';
-            if (txnTypeFilter) txnTypeFilter.value = 'all';
-            if (txnStatusFilter) txnStatusFilter.value = 'all';
-            filterTransactions();
-        });
+            // Search
+            const query = txnSearchInput ? txnSearchInput.value.trim() : '';
+            if (query) {
+                url.searchParams.set('Search', query);
+            }
+
+            // Transaction Type
+            const type = txnTypeFilter ? txnTypeFilter.value : '';
+            if (type) {
+                url.searchParams.set('TransactionType', type);
+            }
+
+            // Status
+            const status = txnStatusFilter ? txnStatusFilter.value : '';
+            if (status) {
+                url.searchParams.set('Status', status);
+            }
+
+            // Reset page number to 1 on any filter or search update
+            url.searchParams.set('page', '1');
+
+            window.location.href = url.toString();
+        }
+
+        // Debounce search input (500ms)
+        if (txnSearchInput) {
+            txnSearchInput.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyTransactionFilters, 500);
+            });
+        }
+
+        // Type filter auto-trigger
+        if (txnTypeFilter) {
+            txnTypeFilter.addEventListener('change', function () {
+                clearTimeout(debounceTimer);
+                applyTransactionFilters();
+            });
+        }
+
+        // Status filter auto-trigger
+        if (txnStatusFilter) {
+            txnStatusFilter.addEventListener('change', function () {
+                clearTimeout(debounceTimer);
+                applyTransactionFilters();
+            });
+        }
+
+        // Reset / Clear filters button
+        if (btnClearTxnFilters) {
+            btnClearTxnFilters.addEventListener('click', function () {
+                clearTimeout(debounceTimer);
+                if (txnSearchInput) txnSearchInput.value = '';
+                if (txnTypeFilter) txnTypeFilter.value = '';
+                if (txnStatusFilter) txnStatusFilter.value = '';
+                applyTransactionFilters();
+            });
+        }
     }
 
     // -------------------------------------------------------------------------

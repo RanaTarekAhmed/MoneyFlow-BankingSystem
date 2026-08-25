@@ -4,7 +4,7 @@
 	ViewData["Title"] = "Transactions";
 }
 
-@model PagedResult<TransactionVM>
+@model TransactionIndexVM
 
 <!-- Page Header -->
 <div class="mf-page-header">
@@ -24,27 +24,28 @@
 						<line x1="21" y1="21" x2="16.65" y2="16.65"/>
 					</svg>
 				</span>
-				<input type="text" class="form-control mf-form-control" id="txnSearchInput" placeholder="Search by TXN #, description..." />
+				<input name="Search" value="@Model?.Query?.Search" type="text" class="form-control mf-form-control" id="txnSearchInput" placeholder="Search by TXN #, description..." />
 			</div>
 		</div>
 
 		<!-- Type Filter -->
 		<div class="col-6 col-md-3">
-			<select class="form-select mf-form-control" id="txnTypeFilter" aria-label="Filter by transaction type">
-				<option value="all" selected>All Types</option>
-				<option value="deposit">Deposit</option>
-				<option value="withdrawal">Withdrawal</option>
-				<option value="transfer">Transfer</option>
+			<select asp-for="@Model.Query.TransactionType" class="form-select mf-form-control" id="txnTypeFilter" aria-label="Filter by transaction type">
+				<option value="">All Types</option>
+				<option value="Deposit">Deposit</option>
+				<option value="Withdrawal">Withdrawal</option>
+				<option value="Transfer">Transfer</option>
 			</select>
 		</div>
 
 		<!-- Status Filter -->
 		<div class="col-6 col-md-3">
-			<select class="form-select mf-form-control" id="txnStatusFilter" aria-label="Filter by status">
-				<option value="all" selected>All Statuses</option>
-				<option value="completed">Completed</option>
-				<option value="pending">Pending</option>
-				<option value="failed">Failed</option>
+			<select asp-for="@Model.Query.Status" class="form-select mf-form-control" id="txnStatusFilter" aria-label="Filter by status">
+				<option value="">All Statuses</option>
+				<option value="Completed">Completed</option>
+				<option value="Pending">Pending</option>
+				<option value="Failed">Failed</option>
+				@* <option value="Cancelled">Cancelled</option> *@
 			</select>
 		</div>
 
@@ -75,7 +76,7 @@
 				</tr>
 			</thead>
 			<tbody id="txnTableBody">
-				@foreach (var transaction in Model.Items)
+				@foreach (var transaction in Model.Transactions.Items)
 				{
 					<tr class="mf-txn-data-row"
 						data-type="@transaction.TransactionType.ToString().ToLower()" 
@@ -137,7 +138,7 @@
 							<span class="mf-status-badge @transaction.Status.ToString().ToLower()"><span class="dot"></span>@transaction.Status.ToString()</span>
 						</td>
 						<td class="text-center">
-							<a asp-action="Details" asp-route-id="@transaction.Id" asp-route-pageNumber="@Model.PageNumber" class="btn btn-sm btn-light fw-semibold">Details</a>
+							<a asp-action="Details" asp-route-id="@transaction.Id" asp-route-pageNumber="@Model.Transactions.PageNumber" class="btn btn-sm btn-light fw-semibold">Details</a>
 						</td>
 					</tr>
 				}
@@ -159,21 +160,21 @@
 
 	<!-- Table Pagination -->
 	@{
-		var startPage = Math.Max(1, Model.PageNumber - 1);
-		var endPage = Math.Min(Model.TotalPages, startPage + 2);
+		var startPage = Math.Max(1, Model.Transactions.PageNumber - 1);
+		var endPage = Math.Min(Model.Transactions.TotalPages, startPage + 2);
 
 		if (endPage - startPage < 2)
 		{
 			startPage = Math.Max(1, endPage - 2);
 		}
 
-		var startItem = Model.TotalCount == 0
+		var startItem = Model.Transactions.TotalCount == 0
 			? 0
-			: (Model.PageNumber - 1) * Model.PageSize + 1;
+			: (Model.Transactions.PageNumber - 1) * Model.Transactions.PageSize + 1;
 
 		var endItem = Math.Min(
-			Model.PageNumber * Model.PageSize,
-			Model.TotalCount
+			Model.Transactions.PageNumber * Model.Transactions.PageSize,
+			Model.Transactions.TotalCount
 		);
 	}
 
@@ -183,7 +184,7 @@
 			Showing
 			<strong class="text-dark">@startItem-@endItem</strong>
 			of
-			<strong class="text-dark">@Model.TotalCount</strong>
+			<strong class="text-dark">@Model.Transactions.TotalCount</strong>
 			transactions
 		</span>
 
@@ -191,12 +192,15 @@
 			<ul class="pagination pagination-sm mb-0">
 
 				<!-- Previous -->
-				@if (Model.HasPrevious)
+				@if (Model.Transactions.HasPrevious)
 				{
 					<li class="page-item">
 						<a class="page-link"
 						   asp-action="Index"
-						   asp-route-page="@(Model.PageNumber - 1)">
+						   asp-route-page="@(Model.Transactions.PageNumber - 1)"
+						   asp-route-Search="@Model?.Query?.Search"
+						   asp-route-TransactionType="@Model?.Query?.TransactionType"
+						   asp-route-Status="@Model?.Query?.Status">
 							Previous
 						</a>
 					</li>
@@ -211,22 +215,28 @@
 				<!-- Pages -->
 				@for (int i = startPage; i <= endPage; i++)
 				{
-					<li class="page-item @(i == Model.PageNumber ? "active" : "")">
+					<li class="page-item @(i == Model.Transactions.PageNumber ? "active" : "")">
 						<a class="page-link"
 						   asp-action="Index"
-						   asp-route-page="@i">
+						   asp-route-page="@i"
+						   asp-route-Search="@Model?.Query?.Search"
+						   asp-route-TransactionType="@Model?.Query?.TransactionType"
+						   asp-route-Status="@Model?.Query?.Status">
 							@i
 						</a>
 					</li>
 				}
 
 				<!-- Next -->
-				@if (Model.HasNext)
+				@if (Model.Transactions.HasNext)
 				{
 					<li class="page-item">
 						<a class="page-link"
 						   asp-action="Index"
-						   asp-route-page="@(Model.PageNumber + 1)">
+						   asp-route-page="@(Model.Transactions.PageNumber + 1)"
+						   asp-route-Search="@Model?.Query?.Search"
+						   asp-route-TransactionType="@Model?.Query?.TransactionType"
+						   asp-route-Status="@Model?.Query?.Status">
 							Next
 						</a>
 					</li>
