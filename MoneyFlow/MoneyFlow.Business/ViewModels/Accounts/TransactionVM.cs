@@ -11,7 +11,6 @@ namespace MoneyFlow.Business.ViewModels.Accounts
         public TransactionStatus Status { get; set; }
         public DateTime TransactionDate { get; set; }
         public string? Description { get; set; }
-
         public int? SenderAccountId { get; set; }
         public int? ReceiverAccountId { get; set; }
     }

@@ -35,16 +35,22 @@ namespace MoneyFlow.Presentation
 				.AddEntityFrameworkStores<MoneyFlowDbContext>()
 				.AddDefaultTokenProviders();
 
-			// Business Services
-			builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Auth/Login";
+            });
+
+            // Business Services
+            builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IAccountService, AccountService>();
 
-			// Repositories
-			builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+            // Repositories
+            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
             builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-            builder.Services.AddScoped<IAccountService, AccountService>();
+            
 
             var app = builder.Build();
 

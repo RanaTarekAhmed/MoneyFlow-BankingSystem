@@ -8,7 +8,7 @@ using MoneyFlow.Business.ViewModels.Accounts;
 
 namespace MoneyFlow.Presentation.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;

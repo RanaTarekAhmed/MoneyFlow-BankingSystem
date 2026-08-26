@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace MoneyFlow.Presentation.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class TransactionController : Controller
     {
         private readonly ITransactionService _transactionService;

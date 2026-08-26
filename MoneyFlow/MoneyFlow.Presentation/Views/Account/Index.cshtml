@@ -1,10 +1,9 @@
-﻿@model MoneyFlow.Business.ViewModels.Accounts.MyAccountsVM
+﻿@model MyAccountsVM
 
 @{
 	Layout = "_CustomerLayout";
 	ViewData["Title"] = "My Accounts";
 }
-<h1>To be modified to account home page view</h1>
 
 <!-- Page Header -->
 <div class="mf-page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -50,28 +49,23 @@
 			<div class="mf-card mf-metric-card">
 
 				<div class="mf-metric-header">
-					<span class="mf-metric-header-icon">
-						<svg width="18"
-							 height="18"
-							 viewBox="0 0 24 24"
-							 fill="none"
-							 stroke="currentColor"
-							 stroke-width="2"
-							 stroke-linecap="round"
-							 stroke-linejoin="round">
-
-							<rect x="2" y="5"
-								  width="20"
-								  height="14"
-								  rx="2" />
-
-							<line x1="2"
-								  y1="10"
-								  x2="22"
-								  y2="10" />
-						</svg>
-					</span>
-
+					@if (account.AccountType == AccountType.Current)
+					{
+						<span class="mf-metric-header-icon">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<rect x="2" y="5" width="20" height="14" rx="2" />
+								<line x1="2" y1="10" x2="22" y2="10" />
+							</svg>
+						</span>
+					}
+					else
+					{
+						<span class="mf-metric-header-icon">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z" />
+							</svg>
+						</span>	
+					}
 					<span>
 						@account.AccountType Balance
 					</span>
@@ -104,18 +98,38 @@
 				<div>
 					<div class="d-flex align-items-start justify-content-between mb-3">
 						<div class="d-flex align-items-center gap-3">
-							<div class="mf-account-badge-icon checking">
-								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-									<rect x="2" y="5" width="20" height="14" rx="2" />
-									<line x1="2" y1="10" x2="22" y2="10" />
-								</svg>
-							</div>
+							@if (account.AccountType == AccountType.Savings)
+							{
+								<div class="mf-account-badge-icon savings">
+									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+										<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z" />
+										<line x1="2" y1="9" x2="4" y2="9" />
+										<circle cx="15" cy="11" r="1" />
+									</svg>
+								</div>
+							}
+							else
+							{
+								<div class="mf-account-badge-icon checking">
+									<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+										<rect x="2" y="5" width="20" height="14" rx="2" />
+										<line x1="2" y1="10" x2="22" y2="10" />
+									</svg>
+								</div>
+							}
 							<div>
 								<h2 class="h5 fw-bold text-dark mb-0"> @account.AccountType Account</h2>
 								<span class="text-muted small"> @account.AccountType Account</span>
 							</div>
 						</div>
-						<span class="mf-status-badge active"><span class="dot"></span> @account.Status </span>
+						@if (account.Status == AccountStatus.Suspended)
+						{
+							<span class="mf-status-badge pending"><span class="dot"></span> @account.Status </span>
+						}
+						else
+						{
+							<span class="mf-status-badge @account.Status.ToString().ToLower()"><span class="dot"></span> @account.Status </span>
+						}
 					</div>
 
 					<div class="my-4">
@@ -159,19 +173,4 @@
 			</div>
 		</div>
 	}
-
-	
-
 </div>
-
-
-<form asp-controller="Auth"
-      asp-action="Logout"
-      method="post"
-      onsubmit="return confirm('Are you sure you want to log out?');">
-
-    <button type="submit" class="btn btn-danger">
-        Log out
-    </button>
-
-</form>

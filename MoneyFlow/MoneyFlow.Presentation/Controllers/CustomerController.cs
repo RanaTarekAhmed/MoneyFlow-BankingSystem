@@ -4,7 +4,7 @@ using MoneyFlow.Business.Services.Interfaces;
 
 namespace MoneyFlowSandbox.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Customer")]
     public class CustomerController : Controller
     {
         private readonly IDashboardService _dashboardService;
@@ -30,16 +30,6 @@ namespace MoneyFlowSandbox.Controllers
                 return NotFound();
             }
             return View(model);
-        }
-
-        public IActionResult Accounts()
-        {
-            return View();
-        }
-
-        public IActionResult AccountDetails()
-        {
-            return View();
         }
 
         public IActionResult Transfer()
