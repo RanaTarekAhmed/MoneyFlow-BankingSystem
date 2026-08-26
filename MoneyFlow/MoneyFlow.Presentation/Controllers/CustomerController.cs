@@ -32,11 +32,6 @@ namespace MoneyFlowSandbox.Controllers
             return View(model);
         }
 
-        public IActionResult Transfer()
-        {
-            return View();
-        }
-
         public IActionResult Profile()
         {
             return View();
