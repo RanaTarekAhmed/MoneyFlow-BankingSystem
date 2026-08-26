@@ -36,56 +36,77 @@
 				<span>Total Liquid Balance</span>
 			</div>
 			<div class="mf-metric-value-wrap">
-				<span class="mf-metric-value">  $@Model.Accounts.Sum(a => a.Balance).ToString("N2")</span>
+				<span class="mf-metric-value">
+					$@(Model.Accounts
+						.Where(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active)
+						.Sum(a => a.Balance)
+						.ToString("N2"))
+				</span>
 			</div>
-			<p class="mf-metric-note">Combined across @Model.Accounts.Count(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active) active accounts</p>
+			<p class="mf-metric-note">
+				Combined across @Model.Accounts.Count(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active) active accounts
+			</p>
 		</div>
 	</div>
 
-	<!-- Dynamic Accounts -->
-	@foreach (var account in Model.Accounts)
-	{
-		<div class="col-12 col-md-4">
-			<div class="mf-card mf-metric-card">
-
-				<div class="mf-metric-header">
-					@if (account.AccountType == AccountType.Current)
-					{
-						<span class="mf-metric-header-icon">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<rect x="2" y="5" width="20" height="14" rx="2" />
-								<line x1="2" y1="10" x2="22" y2="10" />
-							</svg>
-						</span>
-					}
-					else
-					{
-						<span class="mf-metric-header-icon">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z" />
-							</svg>
-						</span>	
-					}
-					<span>
-						@account.AccountType Balance
-					</span>
-				</div>
-
-				<div class="mf-metric-value-wrap">
-					<span class="mf-metric-value">
-						$@account.Balance.ToString("N2")
-					</span>
-				</div>
-
-				<p class="mf-metric-note">
-					@account.AccountType Account
-					(@account.AccountNumber)
-				</p>
-
+	<!-- Savings Account -->
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2z" />
+					</svg>
+				</span>
+				<span>Savings Balance</span>
 			</div>
-		</div>
-	}
 
+			<div class="mf-metric-value-wrap">
+				<span class="mf-metric-value">
+					$@(Model.Accounts
+						.Where(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active &&
+									a.AccountType == AccountType.Savings)
+						.Sum(a => a.Balance)
+						.ToString("N2"))
+				</span>
+			</div>
+
+			<p class="mf-metric-note">
+				Combined across @Model.Accounts.Count(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active &&
+															a.AccountType == AccountType.Savings) active savings accounts
+			</p>
+		</div>
+	</div>
+
+	<!-- Current Account -->
+	<div class="col-12 col-md-4">
+		<div class="mf-card mf-metric-card">
+			<div class="mf-metric-header">
+				<span class="mf-metric-header-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<rect x="2" y="5" width="20" height="14" rx="2" />
+						<line x1="2" y1="10" x2="22" y2="10" />
+					</svg>
+				</span>
+				<span>Current Balance</span>
+			</div>
+
+			<div class="mf-metric-value-wrap">
+				<span class="mf-metric-value">
+					$@(Model.Accounts
+						.Where(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active &&
+									a.AccountType == AccountType.Current)
+						.Sum(a => a.Balance)
+						.ToString("N2"))
+				</span>
+			</div>
+
+			<p class="mf-metric-note">
+				Combined across @Model.Accounts.Count(a => a.Status == MoneyFlow.Data.Enums.AccountStatus.Active &&
+															a.AccountType == AccountType.Current) active current accounts
+			</p>
+		</div>
+	</div>
 </div>
 
 <!-- Accounts Detailed Bento Grid -->
@@ -165,7 +186,7 @@
 					   id="btn-history-@account.Id">
 						History
 					</a>
-					<a href="@Url.Action("Transfer", "Customer", new { fromAccountId = account.Id })"
+					<a href="@Url.Action("Transfer", "Account", new { fromAccountId = account.Id })"
 					   class="btn btn-sm mf-btn-primary flex-grow-1" id="btn-transfer-@account.Id">
 						Transfer
 					</a>

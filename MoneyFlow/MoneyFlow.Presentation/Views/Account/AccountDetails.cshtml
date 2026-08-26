@@ -19,7 +19,7 @@
         <p class="mf-page-subtitle">Account Number: <span class="fw-bold text-dark"> @Model.Account.AccountNumber</span> &bull; Status: <span class="mf-status-badge @Model.Account.Status.ToString().ToLower()"><span class="dot"></span>    @Model.Account.Status</span></p>
     </div>
     <div class="d-flex gap-2">
-        <a href="@Url.Action("Transfer", "Customer", new { fromAccountId = Model.Account.Id })" class="btn mf-btn-primary" id="btn-account-details-transfer">
+        <a href="@Url.Action("Transfer", "Account", new { fromAccountId = Model.Account.Id })" class="btn mf-btn-primary" id="btn-account-details-transfer">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17 1l4 4-4 4" />
                 <path d="M3 11V9a4 4 0 0 1 4-4h14" />
