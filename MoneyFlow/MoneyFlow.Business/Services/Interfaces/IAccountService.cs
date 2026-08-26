@@ -10,5 +10,9 @@ namespace MoneyFlow.Business.Services.Interfaces
         Task<MyAccountsVM?> GetMyAccountsAsync(string userId);
 
         Task<AccountDetailsVM?> GetAccountDetailsAsync(string userId, int accountId);
+
+        Task<TransferVM?> GetTransferModelAsync(string userId);
+
+        Task<(bool Success, string Message)> TransferAsync(string userId, TransferVM model);
     }
 }

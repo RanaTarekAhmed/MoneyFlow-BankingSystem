@@ -1,0 +1,703 @@
+﻿@model MoneyFlow.Business.ViewModels.Accounts.TransferVM
+
+@{
+    Layout = "_CustomerLayout";
+    ViewData["Title"] = "Transfer Money";
+}
+
+<div class="mf-page-header">
+    <h1 class="mf-page-greeting">Transfer Money</h1>
+    <p class="mf-page-subtitle">
+        Securely move funds between your accounts or to external recipients with instant settlement.
+    </p>
+</div>
+
+<div class="row g-4" id="transferFormContainer">
+
+    <!-- Transfer Form -->
+    <div class="col-12 col-lg-8">
+
+        <div class="mf-card p-4 p-md-5">
+
+            <form asp-controller="Account"
+                  asp-action="Transfer"
+                  method="post"
+                  id="mfTransferForm">
+
+                @Html.AntiForgeryToken()
+
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger mb-4"
+                     role="alert">
+                </div>
+
+                <!-- Step 1 -->
+                <div class="mb-5">
+
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span class="mf-step-num">1</span>
+
+                        <h2 class="h5 fw-bold text-dark mb-0">
+                            Account Details
+                        </h2>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <!-- Sender Account -->
+                        <div class="col-12">
+
+                            <label asp-for="SenderAccountId"
+                                   class="mf-form-label">
+                                From Account
+                            </label>
+
+                            <select asp-for="SenderAccountId"
+                                    class="form-select mf-form-control"
+                                    id="fromAccountSelect">
+
+                                <option value="">
+                                    -- Select Your Account --
+                                </option>
+
+                                @if (Model.Accounts != null)
+                                {
+                                    foreach (var account in Model.Accounts)
+                                    {
+                                        <option value="@account.Id"
+                                                data-balance="@account.Balance">
+
+                                            @account.AccountNumber
+                                            — Balance: @account.Balance.ToString("N2")
+
+                                        </option>
+                                    }
+                                }
+
+                            </select>
+
+                            <span asp-validation-for="SenderAccountId"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <!-- Receiver Account -->
+                        <div class="col-12">
+
+                            <label asp-for="ReceiverAccountNumber"
+                                   class="mf-form-label">
+                                To Account / Recipient
+                            </label>
+
+                            <input asp-for="ReceiverAccountNumber"
+                                   class="form-control mf-form-control"
+                                   id="toAccountInput"
+                                   placeholder="Enter receiver account number"
+                                   autocomplete="off" />
+
+                            <span asp-validation-for="ReceiverAccountNumber"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr class="my-4 text-muted" />
+
+                <!-- Step 2 -->
+                <div class="mb-4">
+
+                    <div class="d-flex align-items-center gap-2 mb-4">
+                        <span class="mf-step-num">2</span>
+
+                        <h2 class="h5 fw-bold text-dark mb-0">
+                            Transfer Amount
+                        </h2>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class="mb-4">
+
+                        <label asp-for="Amount"
+                               class="mf-form-label">
+                            Amount
+                        </label>
+
+                        <div class="mf-amount-hero-input">
+
+                            <span class="mf-amount-currency">
+                                $
+                            </span>
+
+                            <input asp-for="Amount"
+                                   type="number"
+                                   step="0.01"
+                                   min="0.01"
+                                   class="form-control mf-amount-input"
+                                   id="transferAmountInput"
+                                   placeholder="0.00" />
+
+                        </div>
+
+                        <span asp-validation-for="Amount"
+                              class="text-danger">
+                        </span>
+
+                        <!-- Available Balance -->
+                        <div class="mt-2">
+
+                            <span class="small text-muted">
+                                Available balance:
+                                <strong class="text-dark"
+                                        id="availableBalance">
+                                    Select an account
+                                </strong>
+                            </span>
+
+                        </div>
+
+                        <!-- Quick Amount Buttons -->
+                        <div class="mf-quick-chips mt-3">
+
+                            <button type="button"
+                                    class="mf-chip-btn"
+                                    data-amount="50">
+                                +$50
+                            </button>
+
+                            <button type="button"
+                                    class="mf-chip-btn"
+                                    data-amount="100">
+                                +$100
+                            </button>
+
+                            <button type="button"
+                                    class="mf-chip-btn"
+                                    data-amount="500">
+                                +$500
+                            </button>
+
+                            <button type="button"
+                                    class="mf-chip-btn"
+                                    data-amount="1000">
+                                +$1,000
+                            </button>
+
+                            <button type="button"
+                                    class="mf-chip-btn"
+                                    id="maxAmountButton">
+                                Max
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+
+                        <label asp-for="Description"
+                               class="mf-form-label">
+
+                            Description
+
+                            <span class="fw-normal text-muted">
+                                (Optional)
+                            </span>
+
+                        </label>
+
+                        <textarea asp-for="Description"
+                                  class="form-control mf-form-control"
+                                  id="transferDescriptionInput"
+                                  rows="3"
+                                  placeholder="What is this transfer for?"></textarea>
+
+                        <span asp-validation-for="Description"
+                              class="text-danger">
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex justify-content-end gap-3 pt-3 border-top">
+
+                    <a asp-controller="Account"
+                       asp-action="Index"
+                       class="btn btn-light px-4 py-2 fw-semibold">
+                        Cancel
+                    </a>
+
+                    <button type="button"
+                            class="btn mf-btn-primary px-4 py-2"
+                            id="btnReviewTransfer">
+
+                        Review Transfer
+
+                        <svg class="mf-btn-arrow"
+                             width="14"
+                             height="14"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="currentColor"
+                             stroke-width="2.5"
+                             stroke-linecap="round"
+                             stroke-linejoin="round">
+
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+
+                        </svg>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- Right Side -->
+    <div class="col-12 col-lg-4">
+
+        <!-- Security Tip -->
+        <div class="mf-card mb-4"
+             style="border-left: 4px solid var(--mf-success);">
+
+            <div class="d-flex align-items-center gap-2 mb-2">
+
+                <span class="text-success">
+
+                    <svg width="20"
+                         height="20"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+
+                    </svg>
+
+                </span>
+
+                <h3 class="h6 fw-bold mb-0 text-dark">
+                    Security Tip
+                </h3>
+
+            </div>
+
+            <p class="text-muted small mb-0">
+                Always double-check the receiver account number before
+                sending funds. Transfers are processed immediately.
+            </p>
+
+        </div>
+
+
+        <!-- Transfer Information -->
+        <div class="mf-card">
+
+            <h3 class="h6 fw-bold text-dark text-uppercase mb-3">
+                Transfer Information
+            </h3>
+
+            <div class="small text-muted">
+
+                <p class="mb-2">
+                    <strong class="text-dark">
+                        Sender:
+                    </strong>
+                    Select one of your accounts.
+                </p>
+
+                <p class="mb-2">
+                    <strong class="text-dark">
+                        Receiver:
+                    </strong>
+                    Enter the receiver's account number.
+                </p>
+
+                <p class="mb-0">
+                    <strong class="text-dark">
+                        Settlement:
+                    </strong>
+                    Transfers are processed immediately.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Review Modal -->
+
+<div class="modal fade"
+     id="transferReviewModal"
+     tabindex="-1"
+     aria-labelledby="transferReviewModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+
+            <div class="modal-header">
+
+                <h2 class="modal-title h5 fw-bold"
+                    id="transferReviewModalLabel">
+                    Review Transfer Details
+                </h2>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p class="text-muted small">
+                    Please review the details before confirming.
+                </p>
+
+                <div class="bg-light p-3 rounded-3">
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">
+                            From Account
+                        </span>
+
+                        <strong id="revFromAccount">
+                            -
+                        </strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">
+                            To Account
+                        </span>
+
+                        <strong id="revToAccount">
+                            -
+                        </strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">
+                            Amount
+                        </span>
+
+                        <strong id="revAmount">
+                            $0.00
+                        </strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">
+                            Transfer Fee
+                        </span>
+
+                        <strong class="text-success">
+                            $0.00
+                        </strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">
+                            Total Debit
+                        </span>
+
+                        <strong id="revTotal">
+                            $0.00
+                        </strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">
+                            Description
+                        </span>
+
+                        <strong id="revDescription">
+                            None
+                        </strong>
+                    </div>
+
+                </div>
+
+                <div class="alert alert-info mt-3 mb-0 small">
+                    Transfers are processed immediately and cannot be
+                    cancelled after confirmation.
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-light"
+                        data-bs-dismiss="modal">
+                    Make Changes
+                </button>
+
+                <button type="button"
+                        class="btn mf-btn-primary"
+                        id="btnConfirmTransfer">
+                    Confirm &amp; Send Funds
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const form =
+                document.getElementById("mfTransferForm");
+
+            const senderSelect =
+                document.getElementById("fromAccountSelect");
+
+            const receiverInput =
+                document.getElementById("toAccountInput");
+
+            const amountInput =
+                document.getElementById("transferAmountInput");
+
+            const descriptionInput =
+                document.getElementById("transferDescriptionInput");
+
+            const availableBalance =
+                document.getElementById("availableBalance");
+
+            const reviewButton =
+                document.getElementById("btnReviewTransfer");
+
+            const confirmButton =
+                document.getElementById("btnConfirmTransfer");
+
+            const reviewModalElement =
+                document.getElementById("transferReviewModal");
+
+
+            // ==========================================
+            // Sender account changed
+            // ==========================================
+
+            senderSelect.addEventListener("change", function () {
+
+                const selectedOption =
+                    senderSelect.options[
+                        senderSelect.selectedIndex
+                    ];
+
+                if (!selectedOption ||
+                    !selectedOption.dataset.balance) {
+
+                    availableBalance.textContent =
+                        "Select an account";
+
+                    amountInput.removeAttribute("max");
+
+                    return;
+                }
+
+                const balance =
+                    parseFloat(
+                        selectedOption.dataset.balance
+                    );
+
+                availableBalance.textContent =
+                    "$" +
+                    balance.toLocaleString(
+                        undefined,
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    );
+
+                amountInput.max = balance;
+
+            });
+
+
+            // ==========================================
+            // Quick amount buttons
+            // ==========================================
+
+            document
+                .querySelectorAll(".mf-chip-btn")
+                .forEach(function (button) {
+
+                    button.addEventListener("click", function () {
+
+                        let amount;
+
+                        if (button.id === "maxAmountButton") {
+
+                            const selectedOption =
+                                senderSelect.options[
+                                    senderSelect.selectedIndex
+                                ];
+
+                            if (!selectedOption ||
+                                !selectedOption.dataset.balance) {
+
+                                alert(
+                                    "Please select an account first."
+                                );
+
+                                return;
+                            }
+
+                            amount =
+                                parseFloat(
+                                    selectedOption.dataset.balance
+                                );
+
+                        }
+                        else {
+
+                            amount =
+                                parseFloat(
+                                    button.dataset.amount
+                                );
+
+                        }
+
+                        if (!isNaN(amount)) {
+
+                            amountInput.value =
+                                amount.toFixed(2);
+
+                        }
+
+                    });
+
+                });
+
+
+            // ==========================================
+            // Review Transfer
+            // ==========================================
+
+            reviewButton.addEventListener("click", function () {
+
+                if (!form.checkValidity()) {
+
+                    form.reportValidity();
+
+                    return;
+                }
+
+                const selectedOption =
+                    senderSelect.options[
+                        senderSelect.selectedIndex
+                    ];
+
+                if (!selectedOption ||
+                    !selectedOption.value) {
+
+                    alert("Please select your account.");
+
+                    return;
+                }
+
+                const senderText =
+                    selectedOption.textContent.trim();
+
+                const receiver =
+                    receiverInput.value.trim();
+
+                const amount =
+                    parseFloat(amountInput.value);
+
+                const description =
+                    descriptionInput.value.trim();
+
+
+                document.getElementById("revFromAccount")
+                    .textContent = senderText;
+
+                document.getElementById("revToAccount")
+                    .textContent = receiver;
+
+                document.getElementById("revAmount")
+                    .textContent =
+                    "$" +
+                    amount.toLocaleString(
+                        undefined,
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    );
+
+                document.getElementById("revTotal")
+                    .textContent =
+                    "$" +
+                    amount.toLocaleString(
+                        undefined,
+                        {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }
+                    );
+
+                document.getElementById("revDescription")
+                    .textContent =
+                    description || "None";
+
+
+                const modal =
+                    new bootstrap.Modal(
+                        reviewModalElement
+                    );
+
+                modal.show();
+
+            });
+
+
+            // ==========================================
+            // Confirm Transfer
+            // ==========================================
+
+            confirmButton.addEventListener("click", function () {
+
+                form.submit();
+
+            });
+
+        });
+
+    </script>
+}

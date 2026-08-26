@@ -1,7 +1,8 @@
 ﻿using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Accounts;
+using MoneyFlow.Data.Enums;
 using MoneyFlow.Data.Repositories.Interfaces;
-
+using MoneyFlow.Data.Entities;
 namespace MoneyFlow.Business.Services
 {
     public class AccountService : IAccountService
@@ -114,6 +115,80 @@ namespace MoneyFlow.Business.Services
                     ReceiverAccountId = t.ReceiverAccountId
                 }).ToList()
             };
+        }
+
+        public async Task<TransferVM?> GetTransferModelAsync(string userId)
+        {
+            var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
+
+            if (customer == null)
+            {
+                return null;
+            }
+
+            var accounts = await _accountRepository.GetAllAsync(a => a.CustomerId == customer.Id);
+
+            var model = new TransferVM
+            {
+                Accounts = accounts.Select(a => new AccountTransferOptionVM
+                { Id = a.Id, AccountNumber = a.AccountNumber, Balance = a.Balance }).ToList()
+            };
+            return model;
+        }
+
+
+        public async Task<(bool Success, string Message)> TransferAsync(string userId,TransferVM model)
+        {
+            var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
+
+            if (customer == null)
+            {
+                return (false, "Customer was not found.");
+            }
+
+            var senderAccount = await _accountRepository.GetAsync(a => a.Id == model.SenderAccountId &&a.CustomerId == customer.Id);
+
+            if (senderAccount == null)
+            {
+                return (false, "The selected sender account does not belong to you.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.ReceiverAccountNumber))
+            {
+                return (false, "Please enter the receiver account number.");
+            }
+
+            var receiverAccount = await _accountRepository.GetAsync(a => a.AccountNumber == model.ReceiverAccountNumber.Trim());
+
+            if (receiverAccount == null)
+            {
+                return (false, "The receiver account was not found.");
+            }
+
+            try
+            {
+                senderAccount.Transfer(receiverAccount, model.Amount);
+            }
+            catch (ArgumentException ex)
+            {
+                return (false, ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return (false, ex.Message);
+            }
+            var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
+
+            var transaction = new Transaction(transactionNumber,TransactionType.Transfer,model.Amount, model.Description,null,senderAccount.Id,receiverAccount.Id);
+
+            transaction.UpdateStatus(TransactionStatus.Completed);
+
+            await _accountRepository.UpdateAsync(senderAccount);
+            await _accountRepository.UpdateAsync(receiverAccount);
+
+            await _transactionRepository.AddAsync(transaction);
+
+            return (true, "Transfer completed successfully.");
         }
     }
 }

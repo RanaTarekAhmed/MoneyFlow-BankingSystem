@@ -52,7 +52,7 @@ namespace MoneyFlow.Data.Entities
 
 
 		//To be used in SERVICE layer
-		/*
+		
         public void Deposit(decimal amount)
         {
             if (amount <= 0)
@@ -84,6 +84,6 @@ namespace MoneyFlow.Data.Entities
 
             Withdraw(amount);
             destinationAccount.Deposit(amount);
-        }*/
+        }
     }
 }
