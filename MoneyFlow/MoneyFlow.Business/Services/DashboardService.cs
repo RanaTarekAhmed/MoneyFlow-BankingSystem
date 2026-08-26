@@ -42,11 +42,12 @@ namespace MoneyFlow.Business.Services
                 return null;
             }
 
-            var accounts = await _accountRepository.GetAllAsync(
-                a => a.CustomerId == customer.Id && a.Status != AccountStatus.Closed);
-
+            var accounts = await _accountRepository.GetAllAsync(a => a.CustomerId == customer.Id && a.Status != AccountStatus.Closed);
             var accountIds = accounts.Select(a => a.Id).ToList();
 
+            // Only show the two most recently opened active accounts in the dashboard
+            // view All Accounts -> to view full account list 
+            var displayedAccounts = accounts.Where(a => a.Status == AccountStatus.Active).OrderByDescending(a => a.OpenDate).Take(2).ToList();
             var transactions = accountIds.Count == 0
                 ? new List<Transaction>()
                 : await _transactionRepository.GetAllAsync(
@@ -92,7 +93,7 @@ namespace MoneyFlow.Business.Services
 
                 RecentTransactionsCount = transactions.Count(t => t.TransactionDate >= weekAgo),
 
-                Accounts = accounts.Select(a => new DashboardAccountVM
+                Accounts = displayedAccounts.Select(a => new DashboardAccountVM
                 {
                     Id = a.Id,
                     AccountNumber = a.AccountNumber,
