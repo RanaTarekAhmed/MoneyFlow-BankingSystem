@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using MoneyFlow.Data.Entities;
 
 namespace MoneyFlow.Business.Services.Interfaces
 {
@@ -13,6 +14,6 @@ namespace MoneyFlow.Business.Services.Interfaces
 
         Task<TransferVM?> GetTransferModelAsync(string userId);
 
-        Task<(bool Success, string Message)> TransferAsync(string userId, TransferVM model);
+        Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId, TransferVM model);
     }
 }

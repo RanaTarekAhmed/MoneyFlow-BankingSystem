@@ -137,46 +137,47 @@ namespace MoneyFlow.Business.Services
         }
 
 
-        public async Task<(bool Success, string Message)> TransferAsync(string userId,TransferVM model)
+        public async Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId,TransferVM model)
         {
             var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
 
             if (customer == null)
             {
-                return (false, "Customer was not found.");
+                return (false, "Customer was not found.", null);
             }
 
-            var senderAccount = await _accountRepository.GetAsync(a => a.Id == model.SenderAccountId &&a.CustomerId == customer.Id);
+            var senderAccount = await _accountRepository.GetAsync(a => a.Id == model.SenderAccountId && a.CustomerId == customer.Id);
 
             if (senderAccount == null)
             {
-                return (false, "The selected sender account does not belong to you.");
+                return (false,"The selected sender account does not belong to you.",null);
             }
 
             if (string.IsNullOrWhiteSpace(model.ReceiverAccountNumber))
             {
-                return (false, "Please enter the receiver account number.");
+                return (false,"Please enter the receiver account number.",null);
             }
 
             var receiverAccount = await _accountRepository.GetAsync(a => a.AccountNumber == model.ReceiverAccountNumber.Trim());
 
             if (receiverAccount == null)
             {
-                return (false, "The receiver account was not found.");
+                return (false,"The receiver account was not found.",null);
             }
 
             try
             {
-                senderAccount.Transfer(receiverAccount, model.Amount);
+                senderAccount.Transfer(receiverAccount,model.Amount);
             }
             catch (ArgumentException ex)
             {
-                return (false, ex.Message);
+                return (false, ex.Message, null);
             }
             catch (InvalidOperationException ex)
             {
-                return (false, ex.Message);
+                return (false, ex.Message, null);
             }
+
             var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
 
             var transaction = new Transaction(transactionNumber,TransactionType.Transfer,model.Amount, model.Description,null,senderAccount.Id,receiverAccount.Id);
@@ -184,11 +185,12 @@ namespace MoneyFlow.Business.Services
             transaction.UpdateStatus(TransactionStatus.Completed);
 
             await _accountRepository.UpdateAsync(senderAccount);
+
             await _accountRepository.UpdateAsync(receiverAccount);
 
             await _transactionRepository.AddAsync(transaction);
 
-            return (true, "Transfer completed successfully.");
+            return (true,"Transfer completed successfully.",transaction);
         }
     }
 }

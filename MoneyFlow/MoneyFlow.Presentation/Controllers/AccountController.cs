@@ -108,8 +108,11 @@ namespace MoneyFlow.Presentation.Controllers
                 }
 
                 transferModel.SenderAccountId = model.SenderAccountId;
+
                 transferModel.ReceiverAccountNumber = model.ReceiverAccountNumber;
+
                 transferModel.Amount = model.Amount;
+
                 transferModel.Description = model.Description;
 
                 return View(transferModel);
@@ -119,7 +122,7 @@ namespace MoneyFlow.Presentation.Controllers
 
             if (!result.Success)
             {
-                ModelState.AddModelError(string.Empty, result.Message);
+                ModelState.AddModelError(string.Empty,result.Message);
 
                 var transferModel = await _accountService.GetTransferModelAsync(user.Id);
 
@@ -129,16 +132,24 @@ namespace MoneyFlow.Presentation.Controllers
                 }
 
                 transferModel.SenderAccountId = model.SenderAccountId;
+
                 transferModel.ReceiverAccountNumber = model.ReceiverAccountNumber;
+
                 transferModel.Amount = model.Amount;
+
                 transferModel.Description = model.Description;
 
                 return View(transferModel);
             }
 
-            TempData["SuccessMessage"] = result.Message;
+            ViewBag.TransferSuccessful = true;
 
-            return RedirectToAction(nameof(Index));
+            ViewBag.TransactionNumber = result.Transaction?.TransactionNumber;
+
+            ViewBag.TransactionDate = result.Transaction?.TransactionDate;
+
+
+            return View(model);
         }
     }
 }
