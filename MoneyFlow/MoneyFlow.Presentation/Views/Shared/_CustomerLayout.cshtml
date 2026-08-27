@@ -29,7 +29,7 @@
         <!-- Main Portal Container -->
         <div class="mf-portal-main">
             <!-- Sticky Glassmorphism Topbar -->
-            @await Html.PartialAsync("_CustomerTopbar")
+            @await Component.InvokeAsync("CustomerTopBar")
 
             <!-- Page Body Content -->
             <main role="main" class="mf-portal-content" id="customer-main-content">

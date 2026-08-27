@@ -45,6 +45,7 @@ namespace MoneyFlow.Presentation
 			builder.Services.AddScoped<ITransactionService, TransactionService>();
             builder.Services.AddScoped<IDashboardService, DashboardService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
+			builder.Services.AddScoped<ICustomerService, CustomerService>();
 
             // Repositories
             builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
