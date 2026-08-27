@@ -149,12 +149,11 @@
                                 </span>
                             </td>
 
-                            <td class="text-center">
-                                <a href="/Customer/TransactionDetails?id=@transaction.TransactionNumber"
-                                   class="btn btn-sm btn-light">
-                                    View
-                                </a>
-                            </td>
+                           <td class="text-center">
+                              <a asp-controller="Transaction" asp-action="Details" asp-route-id="@transaction.Id" asp-route-pageNumber="1"class="btn btn-sm btn-light fw-semibold">
+                                 Details
+                               </a>
+                           </td>
                         </tr>
                     }
                 }

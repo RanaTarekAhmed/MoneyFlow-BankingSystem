@@ -90,6 +90,8 @@ namespace MoneyFlow.Business.Services
 
             var transactions = await _transactionRepository.GetAllAsync( t => t.SenderAccountId == accountId ||  t.ReceiverAccountId == accountId);
 
+            transactions = transactions.OrderByDescending(t => t.TransactionDate).ToList();
+
             return new AccountDetailsVM
             {
                 Account = new AccountSummaryVM
