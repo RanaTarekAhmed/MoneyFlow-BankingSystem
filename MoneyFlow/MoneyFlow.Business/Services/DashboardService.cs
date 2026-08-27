@@ -75,7 +75,7 @@ namespace MoneyFlow.Business.Services
                         {
                             TransactionType.Deposit => "Cash Deposit",
                             TransactionType.Withdrawal => "Cash Withdrawal",
-                            _ => isIncoming ? "Transfer In" : "Transfer Out"
+                            _ => isIncoming ? "Transfer from Account" : "Transfer to Account"
                         }
                     };
                 })
