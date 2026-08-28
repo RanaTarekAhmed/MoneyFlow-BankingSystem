@@ -286,48 +286,20 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -------------------------------------------------------------------------
-    // 5. Customer Profile Edit Toggle & Password Validation
+    // 5. Customer Profile Edit Modal & Password Validation
     // -------------------------------------------------------------------------
-    const btnEditProfile = document.getElementById('btnEditProfile');
-    const btnCancelEdit = document.getElementById('btnCancelEdit');
-    const profileViewSection = document.getElementById('profileViewMode');
-    const profileEditSection = document.getElementById('profileEditMode');
+    const editPersonalInfoModalEl = document.getElementById('editPersonalInfoModal');
+    const editPersonalInfoForm = document.getElementById('editPersonalInfoForm');
     const profileSuccessAlert = document.getElementById('profileUpdateSuccess');
-
-    if (btnEditProfile && profileViewSection && profileEditSection) {
-        btnEditProfile.addEventListener('click', function () {
-            profileViewSection.classList.add('d-none');
-            profileEditSection.classList.remove('d-none');
-        });
-    }
-
-    if (btnCancelEdit && profileViewSection && profileEditSection) {
-        btnCancelEdit.addEventListener('click', function () {
-            profileEditSection.classList.add('d-none');
-            profileViewSection.classList.remove('d-none');
-        });
-    }
-
-    const profileEditForm = document.getElementById('profileEditForm');
-    if (profileEditForm) {
-        profileEditForm.addEventListener('submit', function (e) {
-            e.preventDefault();
-            profileEditSection.classList.add('d-none');
-            profileViewSection.classList.remove('d-none');
-            if (profileSuccessAlert) {
-                profileSuccessAlert.classList.remove('d-none');
-                setTimeout(() => profileSuccessAlert.classList.add('d-none'), 4000);
-            }
-        });
-    }
 
     // Toggle Masked National ID
     const toggleNIdBtn = document.getElementById('btnToggleNId');
     const maskedNId = document.getElementById('maskedNationalId');
     if (toggleNIdBtn && maskedNId) {
         let isRevealed = false;
-        const fullId = maskedNId.getAttribute('data-full-id') || '29508120194857';
-        const maskedText = '••••••••••4857';
+        const fullId = maskedNId.getAttribute('data-full-id') || '';
+        const lastFour = fullId.length >= 4 ? fullId.slice(-4) : '••••';
+        const maskedText = `••••••••••${lastFour}`;
 
         toggleNIdBtn.addEventListener('click', function () {
             isRevealed = !isRevealed;
@@ -341,6 +313,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const reqLength = document.getElementById('req-length');
     const reqNumber = document.getElementById('req-number');
     const reqSpecial = document.getElementById('req-special');
+    const reqUpper = document.getElementById('req-upper');
+    const reqLower = document.getElementById('req-lower');
 
     if (newPassInput) {
         newPassInput.addEventListener('input', function () {
@@ -348,6 +322,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (reqLength) reqLength.classList.toggle('text-success', val.length >= 8);
             if (reqNumber) reqNumber.classList.toggle('text-success', /\d/.test(val));
             if (reqSpecial) reqSpecial.classList.toggle('text-success', /[^A-Za-z0-9]/.test(val));
+            if (reqUpper) reqUpper.classList.toggle('text-success', /[A-Z]/.test(val));
+            if (reqLower) reqLower.classList.toggle('text-success', /[a-z]/.test(val));
         });
     }
 });
+
+

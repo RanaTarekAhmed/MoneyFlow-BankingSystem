@@ -1326,3 +1326,26 @@
     display: none;
   }
 }
+
+/* ==========================================================================
+   Portal Modal Styles
+   ========================================================================== */
+.mf-modal .modal-content {
+  background: #ffffff;
+  border: 1px solid rgba(196, 198, 209, 0.4);
+  box-shadow: 0 20px 45px -10px rgba(0, 25, 60, 0.18);
+}
+
+.mf-modal-icon-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--mf-radius-lg);
+  background-color: var(--mf-blue-card);
+  color: var(--mf-navy-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--mf-blue-soft);
+}
+
