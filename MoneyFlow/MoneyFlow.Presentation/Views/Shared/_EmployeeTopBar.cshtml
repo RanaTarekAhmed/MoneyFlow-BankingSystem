@@ -1,0 +1,103 @@
+@* MoneyFlow Employee Portal - Topbar Partial *@
+<header class="mf-portal-topbar">
+    <div class="mf-topbar-left">
+        <button class="mf-topbar-toggler" type="button" id="mfSidebarToggle" aria-label="Toggle navigation sidebar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+        </button>
+        <h1 class="mf-topbar-title">@(ViewData["Title"] ?? "Employee Portal")</h1>
+    </div>
+
+    <!-- Center Omnisearch -->
+    <div class="d-none d-lg-block">
+        <div class="mf-omnisearch-wrap">
+            <span class="mf-omnisearch-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+            </span>
+            <input type="text" class="mf-omnisearch-input" id="mfOmnisearchInput" placeholder="Quick lookup (Account #, Customer, TXN ID)..." />
+        </div>
+    </div>
+
+    <div class="mf-topbar-actions">
+        <!-- Live Shift Status Badge -->
+        <div class="mf-shift-badge d-none d-sm-inline-flex" title="Active Teller Session">
+            <span class="mf-shift-dot"></span>
+            <span>Shift Active</span>
+        </div>
+
+        <!-- Staff Avatar & Profile Dropdown -->
+        <div class="dropdown">
+            <button class="mf-user-dropdown-toggle" type="button" id="employeeProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="mf-user-avatar" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">ST</span>
+                <span class="mf-user-info-text d-none d-md-flex">
+                    <span class="mf-user-name">Staff Officer</span>
+                    <span class="mf-user-role text-primary fw-bold">Bank Teller</span>
+                </span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="d-none d-md-inline-block text-muted ms-1">
+                    <polyline points="6 9 12 15 18 9" />
+                </svg>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end mf-topbar-dropdown-menu" aria-labelledby="employeeProfileDropdown">
+                <li class="px-3 py-2 border-bottom mb-1">
+                    <p class="mb-0 fw-bold text-dark">Staff Officer</p>
+                    <small class="text-muted">officer.staff@moneyflow.bank</small>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/Employee/Profile" id="dropdown-emp-profile">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <span>My Profile &amp; Security</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/Employee/Operations" id="dropdown-emp-ops">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        <span>Teller Desk Ops</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/Employee/Customers" id="dropdown-emp-customers">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                        </svg>
+                        <span>Customer Directory</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/Employee/Accounts" id="dropdown-emp-accounts">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2" />
+                            <line x1="2" y1="10" x2="22" y2="10" />
+                        </svg>
+                        <span>Accounts Ledger</span>
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form asp-controller="Auth" asp-action="Logout" method="post">
+                        <button type="submit" class="dropdown-item text-danger" id="emp-dropdown-logout">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                                <polyline points="16 17 21 12 16 7" />
+                                <line x1="21" y1="12" x2="9" y2="12" />
+                            </svg>
+                            <span>End Shift & Logout</span>
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>

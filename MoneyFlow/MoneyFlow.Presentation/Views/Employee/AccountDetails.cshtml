@@ -1,0 +1,106 @@
+@{
+    Layout = "_EmployeeLayout";
+    ViewData["Title"] = "Account Details";
+}
+
+<!-- Back Navigation -->
+<div class="mb-3">
+    <a href="/Employee/Accounts" class="text-decoration-none text-muted small d-inline-flex align-items-center gap-1">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Accounts Ledger
+    </a>
+</div>
+
+<!-- Account Master Hero Card -->
+<div class="mf-card mb-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="mf-txn-code fs-5 fw-bold text-dark">MF-100234</span>
+                <span class="badge bg-success-subtle text-success fw-bold">Active</span>
+                <span class="badge bg-light text-dark border">Current Account</span>
+            </div>
+            <div class="text-muted small mt-1">
+                Opened 14 Jan 2024
+            </div>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <a href="/Employee/Operations" class="mf-teller-btn mf-teller-btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Deposit / Withdraw</span>
+            </a>
+            <button type="button" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold" onclick="if(window.MoneyFlowToast) window.MoneyFlowToast.info('Account Statement generated.');">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Export Statement
+            </button>
+        </div>
+    </div>
+
+    <!-- Financial Breakdown Grid -->
+    <div class="row g-3 mt-3 pt-3 border-top">
+        <div class="col-12 col-sm-6 col-md-4">
+            <span class="text-muted small text-uppercase fw-bold">Available Balance</span>
+            <div class="fs-4 fw-bold text-dark">$14,520.50</div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
+            <span class="text-muted small text-uppercase fw-bold">Account Status</span>
+            <div><span class="badge bg-success-subtle text-success fs-6 fw-bold">Active</span></div>
+        </div>
+        <div class="col-12 col-sm-6 col-md-4">
+            <span class="text-muted small text-uppercase fw-bold">Account Holder</span>
+            <div>
+                <a href="/Employee/CustomerDetails" class="fw-bold text-primary text-decoration-none">Sarah Jenkins</a>
+                <div class="small text-muted">ID: CUST-4091</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Specific Transaction History -->
+<div class="mf-table-card">
+    <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
+        <h2 class="h6 mb-0 fw-bold text-dark">Account Activity</h2>
+        <span class="small text-muted">Real-time posting</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table mf-table mb-0">
+            <thead>
+                <tr>
+                    <th>Date &amp; Time</th>
+                    <th>Reference</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th class="text-end">Amount</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Today, 09:45 AM</td>
+                    <td><span class="mf-txn-code">TXN-902184</span></td>
+                    <td>Cash Deposit</td>
+                    <td><span class="badge bg-success-subtle text-success">Deposit</span></td>
+                    <td class="text-end fw-bold text-success">+$2,500.00</td>
+                    <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>Yesterday, 04:12 PM</td>
+                    <td><span class="mf-txn-code">TXN-902041</span></td>
+                    <td>Account Transfer</td>
+                    <td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
+                    <td class="text-end fw-bold text-dark">-$120.00</td>
+                    <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                </tr>
+                <tr>
+                    <td>26 Aug 2026, 01:10 PM</td>
+                    <td><span class="mf-txn-code">TXN-901928</span></td>
+                    <td>Internal Transfer from Savings</td>
+                    <td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
+                    <td class="text-end fw-bold text-success">+$1,000.00</td>
+                    <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

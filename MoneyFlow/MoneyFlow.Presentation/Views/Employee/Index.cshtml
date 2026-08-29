@@ -1,0 +1,251 @@
+@{
+    Layout = "_EmployeeLayout";
+    ViewData["Title"] = "Staff Dashboard";
+}
+
+<!-- Page Greeting & Overview -->
+<div class="mf-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+        <h1 class="mf-page-greeting">Employee Operations Dashboard</h1>
+        <p class="mf-page-subtitle">Teller Station 02 • Active Session • System Time: @DateTime.UtcNow.ToString("dd MMM yyyy")</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="/Employee/Operations" class="mf-teller-btn mf-teller-btn-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>New Cash Operation</span>
+        </a>
+    </div>
+</div>
+
+<!-- Quick Action Shortcuts Bar -->
+<div class="mf-quick-actions-bar">
+    <div class="d-flex align-items-center gap-2">
+        <span class="text-muted fw-bold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">Teller Shortcuts:</span>
+    </div>
+    <div class="mf-action-btn-group">
+        <a href="/Employee/Operations" class="mf-teller-btn mf-teller-btn-success">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+            </svg>
+            <span>Cash Deposit</span>
+        </a>
+        <a href="/Employee/Operations" class="mf-teller-btn mf-teller-btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+            <span>Cash Withdrawal</span>
+        </a>
+        <a href="/Employee/Customers" class="mf-teller-btn mf-teller-btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+            </svg>
+            <span>Register Customer</span>
+        </a>
+        <a href="/Employee/Accounts" class="mf-teller-btn mf-teller-btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Search Accounts</span>
+        </a>
+    </div>
+</div>
+
+<!-- Operational Metric Cards -->
+<div class="row g-3 mb-4">
+    <!-- Cash Drawer -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="mf-kpi-card">
+            <div class="mf-kpi-top">
+                <span class="mf-kpi-label">Teller Cash Drawer</span>
+                <span class="mf-kpi-icon warning">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                    </svg>
+                </span>
+            </div>
+            <div>
+                <div class="mf-kpi-value">$42,850.00</div>
+                <div class="mf-kpi-trend positive">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="18 15 12 9 6 15"></polyline>
+                    </svg>
+                    <span>Balanced &amp; Reconciled</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Deposits Processed -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="mf-kpi-card">
+            <div class="mf-kpi-top">
+                <span class="mf-kpi-label">Today's Inflow (Deposits)</span>
+                <span class="mf-kpi-icon success">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="19" x2="12" y2="5"></line>
+                        <polyline points="5 12 12 5 19 12"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div>
+                <div class="mf-kpi-value">$184,210.00</div>
+                <div class="mf-kpi-trend positive">
+                    <span>48 deposits executed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Withdrawals Dispensed -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="mf-kpi-card">
+            <div class="mf-kpi-top">
+                <span class="mf-kpi-label">Today's Outflow (Withdrawals)</span>
+                <span class="mf-kpi-icon primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                </span>
+            </div>
+            <div>
+                <div class="mf-kpi-value">$61,400.00</div>
+                <div class="mf-kpi-trend neutral">
+                    <span>22 withdrawals dispensed</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Customers Served -->
+    <div class="col-12 col-sm-6 col-xl-3">
+        <div class="mf-kpi-card">
+            <div class="mf-kpi-top">
+                <span class="mf-kpi-label">Customers Served</span>
+                <span class="mf-kpi-icon purple">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                </span>
+            </div>
+            <div>
+                <div class="mf-kpi-value">34 Customers</div>
+                <div class="mf-kpi-trend positive">
+                    <span>Avg desk time: 2.8 mins</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid: Daily Desk Operations & Activity Feed -->
+<div class="row g-4 mb-4">
+    <!-- Left Column: Recent Desk Operations Handled -->
+    <div class="col-12 col-lg-7">
+        <div class="mf-table-card">
+            <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <h2 class="h6 mb-0 fw-bold text-dark">Recent Desk Cash Operations</h2>
+                </div>
+                <a href="/Employee/Operations" class="small text-decoration-none fw-bold">Open Operations Desk &rarr;</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table mf-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Operation Ref</th>
+                            <th>Customer &amp; Account</th>
+                            <th class="text-end">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="mf-txn-code">TXN-902184</span>
+                                <div class="small text-muted">10 mins ago</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">Sarah Jenkins</div>
+                                <div class="small text-muted">Cash Deposit • MF-100234</div>
+                            </td>
+                            <td class="text-end fw-bold text-success">+$2,500.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="mf-txn-code">TXN-902180</span>
+                                <div class="small text-muted">25 mins ago</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">David Miller</div>
+                                <div class="small text-muted">Cash Withdrawal • MF-100876</div>
+                            </td>
+                            <td class="text-end fw-bold text-dark">-$800.00</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="mf-txn-code">TXN-902165</span>
+                                <div class="small text-muted">45 mins ago</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">Elena Rostova</div>
+                                <div class="small text-muted">Cash Deposit • MF-100912</div>
+                            </td>
+                            <td class="text-end fw-bold text-success">+$12,400.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Recent Activity Stream -->
+    <div class="col-12 col-lg-5">
+        <div class="mf-card h-100">
+            <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+                <h2 class="h6 mb-0 fw-bold text-dark">Recent Activity Feed</h2>
+                <span class="badge bg-primary-subtle text-primary fw-bold" style="font-size: 0.7rem;">Live Stream</span>
+            </div>
+            
+            <div class="mf-activity-timeline">
+                <div class="mf-timeline-item">
+                    <div class="mf-timeline-dot success"></div>
+                    <div class="mf-timeline-time">10 mins ago • Teller 02</div>
+                    <div class="mf-timeline-title">Cash Deposit Completed</div>
+                    <p class="mf-timeline-desc">$2,500.00 deposited into Current Account #MF-100234 (Sarah Jenkins)</p>
+                </div>
+
+                <div class="mf-timeline-item">
+                    <div class="mf-timeline-dot warning"></div>
+                    <div class="mf-timeline-time">25 mins ago • Teller 02</div>
+                    <div class="mf-timeline-title">Cash Withdrawal Dispensed</div>
+                    <p class="mf-timeline-desc">$800.00 cash dispensed from Savings Account #MF-100876 (David Miller)</p>
+                </div>
+
+                <div class="mf-timeline-item">
+                    <div class="mf-timeline-dot"></div>
+                    <div class="mf-timeline-time">1 hour ago • Officer ST</div>
+                    <div class="mf-timeline-title">Sub-Account Opened</div>
+                    <p class="mf-timeline-desc">New Savings Account opened for customer Sarah Jenkins.</p>
+                </div>
+
+                <div class="mf-timeline-item mb-0">
+                    <div class="mf-timeline-dot success"></div>
+                    <div class="mf-timeline-time">2 hours ago • Cash Vault</div>
+                    <div class="mf-timeline-title">Teller Drawer Reconciled</div>
+                    <p class="mf-timeline-desc">Morning cash drawer opening balance verified: $42,850.00.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

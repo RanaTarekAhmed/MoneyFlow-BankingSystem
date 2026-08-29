@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Customer;
-using MoneyFlow.Data.Entities;
-using System.Net;
 using System.Security.Claims;
 
 namespace MoneyFlowSandbox.Controllers
@@ -23,7 +20,7 @@ namespace MoneyFlowSandbox.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
             {

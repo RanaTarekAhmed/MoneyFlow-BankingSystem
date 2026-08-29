@@ -84,18 +84,18 @@
 				<div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 px-3 mb-3 d-none:empty" role="alert"></div>
 
 				<div class="mb-3">
-					<label class="mf-form-label" asp-for="ChangePassword.CurrentPassword">Current Password</label>
-					<input type="password" class="form-control mf-form-control" asp-for="ChangePassword.CurrentPassword" id="currentPassword" placeholder="••••••••" required />
+					<label class="mf-form-label" asp-for="ChangePassword.CurrentPassword">Current Password <span class="text-danger">*</span></label>
+					<input type="password" class="form-control mf-form-control" asp-for="ChangePassword.CurrentPassword" id="currentPassword" placeholder="••••••••"/>
 					<span asp-validation-for="ChangePassword.CurrentPassword" class="text-danger small"></span>
 				</div>
 				<div class="mb-3">
-					<label class="mf-form-label" asp-for="ChangePassword.NewPassword">New Password</label>
-					<input type="password" class="form-control mf-form-control" asp-for="ChangePassword.NewPassword" id="newPasswordInput" placeholder="••••••••" required />
+					<label class="mf-form-label" asp-for="ChangePassword.NewPassword">New Password <span class="text-danger">*</span></label>
+					<input type="password" class="form-control mf-form-control" asp-for="ChangePassword.NewPassword" id="newPasswordInput" placeholder="••••••••"/>
 					<span asp-validation-for="ChangePassword.NewPassword" class="text-danger small"></span>
 				</div>
 				<div class="mb-3">
-					<label class="mf-form-label" asp-for="ChangePassword.ConfirmNewPassword">Confirm New Password</label>
-					<input type="password" class="form-control mf-form-control" asp-for="ChangePassword.ConfirmNewPassword" id="confirmPasswordInput" placeholder="••••••••" required />
+					<label class="mf-form-label" asp-for="ChangePassword.ConfirmNewPassword">Confirm New Password <span class="text-danger">*</span></label>
+					<input type="password" class="form-control mf-form-control" asp-for="ChangePassword.ConfirmNewPassword" id="confirmPasswordInput" placeholder="••••••••"/>
 					<span asp-validation-for="ChangePassword.ConfirmNewPassword" class="text-danger small"></span>
 				</div>
 

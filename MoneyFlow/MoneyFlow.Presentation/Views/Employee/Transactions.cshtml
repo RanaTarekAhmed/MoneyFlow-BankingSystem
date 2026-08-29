@@ -1,0 +1,250 @@
+@{
+    Layout = "_EmployeeLayout";
+    ViewData["Title"] = "Transactions Ledger";
+}
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+        <h1 class="mf-page-greeting">Transactions Ledger</h1>
+        <p class="mf-page-subtitle">Inspect deposits, withdrawals, and account transfers across the banking system.</p>
+    </div>
+    <div>
+        <button type="button" class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold" onclick="if(window.MoneyFlowToast) window.MoneyFlowToast.info('Transaction ledger exported as CSV.');">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export Ledger
+        </button>
+    </div>
+</div>
+
+<!-- Filters Bar Card -->
+<div class="mf-filter-card">
+    <div class="row g-3 align-items-center">
+        <!-- Live Search -->
+        <div class="col-12 col-md-5">
+            <div class="mf-search-input-wrap">
+                <span class="mf-search-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </span>
+                <input type="text" class="form-control mf-form-control" id="empTxnSearch" placeholder="Search by TXN #, description, customer..." />
+            </div>
+        </div>
+
+        <!-- Transaction Type Filter strictly matching TransactionType Enum -->
+        <div class="col-6 col-md-3">
+            <select class="form-select mf-form-control" id="empTxnTypeFilter">
+                <option value="">All Types</option>
+                <option value="Deposit">Deposit</option>
+                <option value="Withdrawal">Withdrawal</option>
+                <option value="Transfer">Transfer</option>
+            </select>
+        </div>
+
+        <!-- Transaction Status Filter strictly matching TransactionStatus Enum -->
+        <div class="col-6 col-md-3">
+            <select class="form-select mf-form-control" id="empTxnStatusFilter">
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+                <option value="Failed">Failed</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-12 col-md-1 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary w-100 p-2" id="btnClearempTxnSearch" title="Clear all filters">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Transactions Data Table -->
+<div class="mf-table-card">
+    <div class="table-responsive">
+        <table class="table mf-table">
+            <thead>
+                <tr>
+                    <th scope="col" style="min-width: 150px;">Timestamp</th>
+                    <th scope="col">TXN Ref</th>
+                    <th scope="col" style="min-width: 200px;">Description</th>
+                    <th scope="col">Type</th>
+                    <th scope="col" class="text-end">Amount</th>
+                    <th scope="col" class="text-center">Status</th>
+                    <th scope="col" class="text-end">Details</th>
+                </tr>
+            </thead>
+            <tbody id="empTxnTableBody">
+                <!-- Txn 1: Deposit -->
+                <tr data-filter-item="true" data-type="Deposit" data-status="Completed">
+                    <td>
+                        <div class="fw-bold text-dark">Today, 09:45 AM</div>
+                        <small class="text-muted">Teller Counter</small>
+                    </td>
+                    <td><span class="mf-txn-code">TXN-902184</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">Cash Deposit</div>
+                        <div class="small text-muted">Account: MF-100234 (Sarah Jenkins)</div>
+                    </td>
+                    <td><span class="badge bg-success-subtle text-success">Deposit</span></td>
+                    <td class="text-end fw-bold text-success">+$2,500.00</td>
+                    <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#txnDetailModal" data-ref="TXN-902184" data-type="Deposit" data-amount="+$2,500.00" data-status="Completed" data-desc="Cash Deposit • Account MF-100234" data-time="Today, 09:45 AM">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Txn 2: Withdrawal -->
+                <tr data-filter-item="true" data-type="Withdrawal" data-status="Completed">
+                    <td>
+                        <div class="fw-bold text-dark">Today, 09:30 AM</div>
+                        <small class="text-muted">Teller Counter</small>
+                    </td>
+                    <td><span class="mf-txn-code">TXN-902180</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">Cash Withdrawal</div>
+                        <div class="small text-muted">Account: MF-100876 (David Miller)</div>
+                    </td>
+                    <td><span class="badge bg-warning-subtle text-warning-emphasis">Withdrawal</span></td>
+                    <td class="text-end fw-bold text-dark">-$800.00</td>
+                    <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#txnDetailModal" data-ref="TXN-902180" data-type="Withdrawal" data-amount="-$800.00" data-status="Completed" data-desc="Cash Withdrawal • Account MF-100876" data-time="Today, 09:30 AM">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Txn 3: Transfer -->
+                <tr data-filter-item="true" data-type="Transfer" data-status="Completed">
+                    <td>
+                        <div class="fw-bold text-dark">Today, 08:50 AM</div>
+                        <small class="text-muted">Customer Transfer</small>
+                    </td>
+                    <td><span class="mf-txn-code">TXN-884920</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">Account Transfer</div>
+                        <div class="small text-muted">MF-100234 -> MF-100876</div>
+                    </td>
+                    <td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
+                    <td class="text-end fw-bold text-dark">-$1,500.00</td>
+                    <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#txnDetailModal" data-ref="TXN-884920" data-type="Transfer" data-amount="-$1,500.00" data-status="Completed" data-desc="Account Transfer • MF-100234 -> MF-100876" data-time="Today, 08:50 AM">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Txn 4: Pending Transfer -->
+                <tr data-filter-item="true" data-type="Transfer" data-status="Pending">
+                    <td>
+                        <div class="fw-bold text-dark">Yesterday, 04:12 PM</div>
+                        <small class="text-muted">Scheduled Transfer</small>
+                    </td>
+                    <td><span class="mf-txn-code">TXN-902041</span></td>
+                    <td>
+                        <div class="fw-bold text-dark">Scheduled Account Transfer</div>
+                        <div class="small text-muted">Account: MF-100234</div>
+                    </td>
+                    <td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
+                    <td class="text-end fw-bold text-dark">-$120.00</td>
+                    <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis fw-bold">Pending</span></td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#txnDetailModal" data-ref="TXN-902041" data-type="Transfer" data-amount="-$120.00" data-status="Pending" data-desc="Scheduled Account Transfer • MF-100234" data-time="Yesterday, 04:12 PM">
+                            View
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- No Results fallback -->
+                <tr class="mf-no-filter-results" style="display: none;">
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <p class="mb-0 fw-bold">No transactions found matching your search filter criteria.</p>
+                        <small>Try clearing search terms or selecting 'All Types'.</small>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Responsive Pagination Footer -->
+    <div class="p-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light" id="txnPagination">
+        <div class="text-muted small">
+            Showing <strong class="text-dark">1</strong> to <strong class="text-dark">4</strong> of <strong class="text-dark">4</strong> transactions
+        </div>
+        <nav aria-label="Transactions Ledger Pagination">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link" href="javascript:void(0);" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="javascript:void(0);">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0);">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0);">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0);">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal: Transaction Details -->
+<div class="modal fade" id="txnDetailModal" tabindex="-1" aria-labelledby="txnDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="txnDetailModalLabel">Transaction Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                    <span class="text-muted small">Reference Code:</span>
+                    <span class="mf-txn-code fs-6 fw-bold" id="modalTxnRef">TXN-902184</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Date &amp; Time:</span>
+                    <span class="fw-bold text-dark" id="modalTxnTime">Today, 09:45 AM</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Transaction Type:</span>
+                    <span class="badge bg-success-subtle text-success fw-bold" id="modalTxnType">Deposit</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Description:</span>
+                    <span class="fw-bold text-dark" id="modalTxnDesc">Cash Deposit • Account MF-100234</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small">Amount:</span>
+                    <span class="fs-5 fw-bold text-dark" id="modalTxnAmount">+$2,500.00</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                    <span class="text-muted small">Status:</span>
+                    <span class="badge bg-success text-white" id="modalTxnStatus">Completed</span>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

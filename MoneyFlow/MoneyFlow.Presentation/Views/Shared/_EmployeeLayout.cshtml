@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MoneyFlow Employee Portal</title>
+    <meta name="description" content="MoneyFlow Employee Portal & Core Banking Management Console." />
+    
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    
+    <!-- MoneyFlow Global Styles & Portal Styles -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/customer-portal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/employee-portal.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="mf-portal-body @ViewData["BodyClass"]">
+    <div class="mf-portal-wrapper">
+        <!-- Persistent / Offcanvas Employee Sidebar -->
+        @await Html.PartialAsync("_EmployeeSidebar")
+
+        <!-- Main Portal Container -->
+        <div class="mf-portal-main">
+            <!-- Sticky Employee Topbar -->
+            @await Html.PartialAsync("_EmployeeTopBar")
+
+            <!-- Page Body Content -->
+            <main role="main" class="mf-portal-content" id="employee-main-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    @await Html.PartialAsync("_ToastNotification")
+
+    <!-- Bootstrap & Portal Client Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/customer-portal.js" asp-append-version="true"></script>
+    <script src="~/js/employee-portal.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

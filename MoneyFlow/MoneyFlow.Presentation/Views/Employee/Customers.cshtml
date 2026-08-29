@@ -1,0 +1,521 @@
+@{
+    Layout = "_EmployeeLayout";
+    ViewData["Title"] = "Customer Management";
+}
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+    <div>
+        <h1 class="mf-page-greeting">Customer Directory</h1>
+        <p class="mf-page-subtitle">Search registered customers, inspect account standings, and issue new bank accounts.</p>
+    </div>
+    <div>
+        <button type="button" class="mf-teller-btn mf-teller-btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal" id="btnOpenNewCustModal">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Register New Customer</span>
+        </button>
+    </div>
+</div>
+
+<!-- Filters & Search Bar Card -->
+<div class="mf-filter-card">
+    <div class="row g-3 align-items-center">
+        <!-- Live Search Input -->
+        <div class="col-12 col-md-7">
+            <div class="mf-search-input-wrap">
+                <span class="mf-search-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </span>
+                <input type="text" class="form-control mf-form-control" id="empCustomerSearch" placeholder="Search by customer name, email, National ID, or phone..." />
+            </div>
+        </div>
+
+        <!-- Account Status Filter matching AccountStatus enum -->
+        <div class="col-10 col-md-4">
+            <select class="form-select mf-form-control" id="empCustomerStatusFilter" aria-label="Filter by Status">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+                <option value="Closed">Closed</option>
+            </select>
+        </div>
+
+        <!-- Reset Button -->
+        <div class="col-2 col-md-1 d-flex justify-content-end">
+            <button type="button" class="btn btn-outline-secondary w-100 p-2" id="btnClearempCustomerSearch" title="Clear all filters">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"/>
+                    <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Data Table Section -->
+<div class="mf-table-card">
+    <div class="table-responsive">
+        <table class="table mf-table">
+            <thead>
+                <tr>
+                    <th scope="col" style="min-width: 200px;">Customer</th>
+                    <th scope="col">Contact Info</th>
+                    <th scope="col">National ID</th>
+                    <th scope="col" class="text-center">Accounts</th>
+                    <th scope="col" class="text-center">Status</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="empCustomerTableBody">
+                <!-- Customer 1 -->
+                <tr data-filter-item="true" data-status="Active">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="mf-lookup-avatar" style="width: 38px; height: 38px; font-size: 0.9rem;">SJ</div>
+                            <div>
+                                <a href="/Employee/CustomerDetails" class="fw-bold text-dark text-decoration-none">Sarah Jenkins</a>
+                                <div class="small text-muted">ID: CUST-4091</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>sarah.jenkins@example.com</div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark">29901011234567</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border px-2 py-1">2 Accounts</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">Active</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Employee/CustomerDetails"><i class="me-2">🔍</i> Customer Overview</a></li>
+                                <li><a class="dropdown-item btn-open-account-for-cust" href="javascript:void(0);" data-cust-id="CUST-4091" data-cust-name="Sarah Jenkins" data-cust-email="sarah.jenkins@example.com" data-cust-natid="29901011234567"><i class="me-2">💳</i> + Open Account</a></li>
+                                <li><a class="dropdown-item" href="/Employee/Operations"><i class="me-2">💵</i> Cash Desk Op</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0);" onclick="if(window.MoneyFlowToast) window.MoneyFlowToast.warning('Status suspended for Sarah Jenkins');"><i class="me-2">🚫</i> Suspend Customer</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Customer 2 -->
+                <tr data-filter-item="true" data-status="Active">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="mf-lookup-avatar" style="width: 38px; height: 38px; font-size: 0.9rem; background: #0284c7;">DM</div>
+                            <div>
+                                <a href="/Employee/CustomerDetails" class="fw-bold text-dark text-decoration-none">David Miller</a>
+                                <div class="small text-muted">ID: CUST-4092</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>david.miller@techcorp.io</div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark">29505051234568</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border px-2 py-1">3 Accounts</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">Active</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Employee/CustomerDetails"><i class="me-2">🔍</i> Customer Overview</a></li>
+                                <li><a class="dropdown-item btn-open-account-for-cust" href="javascript:void(0);" data-cust-id="CUST-4092" data-cust-name="David Miller" data-cust-email="david.miller@techcorp.io" data-cust-natid="29505051234568"><i class="me-2">💳</i> + Open Account</a></li>
+                                <li><a class="dropdown-item" href="/Employee/Operations"><i class="me-2">💵</i> Cash Desk Op</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="javascript:void(0);" onclick="if(window.MoneyFlowToast) window.MoneyFlowToast.warning('Status suspended for David Miller');"><i class="me-2">🚫</i> Suspend Customer</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Customer 3 -->
+                <tr data-filter-item="true" data-status="Active">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="mf-lookup-avatar" style="width: 38px; height: 38px; font-size: 0.9rem; background: #d97706;">ER</div>
+                            <div>
+                                <a href="/Employee/CustomerDetails" class="fw-bold text-dark text-decoration-none">Elena Rostova</a>
+                                <div class="small text-muted">ID: CUST-4093</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>elena.rostova@enterprise.com</div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark">29811111234569</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border px-2 py-1">1 Account</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">Active</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Employee/CustomerDetails"><i class="me-2">🔍</i> Customer Overview</a></li>
+                                <li><a class="dropdown-item btn-open-account-for-cust" href="javascript:void(0);" data-cust-id="CUST-4093" data-cust-name="Elena Rostova" data-cust-email="elena.rostova@enterprise.com" data-cust-natid="29811111234569"><i class="me-2">💳</i> + Open Account</a></li>
+                                <li><a class="dropdown-item" href="/Employee/Operations"><i class="me-2">💵</i> Cash Desk Op</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Customer 4 -->
+                <tr data-filter-item="true" data-status="Suspended">
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="mf-lookup-avatar" style="width: 38px; height: 38px; font-size: 0.9rem; background: #d97706;">MV</div>
+                            <div>
+                                <a href="/Employee/CustomerDetails" class="fw-bold text-dark text-decoration-none">Marcus Vance</a>
+                                <div class="small text-muted">ID: CUST-4094</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>marcus.vance@mail.org</div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold text-dark">29208081234570</div>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-light text-dark border px-2 py-1">1 Account</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-2 py-1">Suspended</span>
+                    </td>
+                    <td class="text-end">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Actions
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="/Employee/CustomerDetails"><i class="me-2">🔍</i> Customer Overview</a></li>
+                                <li><a class="dropdown-item text-success" href="javascript:void(0);" onclick="if(window.MoneyFlowToast) window.MoneyFlowToast.success('Suspension lifted for Marcus Vance');"><i class="me-2">🔓</i> Activate Customer</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- No Results fallback row -->
+                <tr class="mf-no-filter-results" style="display: none;">
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mb-2 text-muted">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <p class="mb-0 fw-bold">No customers match your search filters.</p>
+                        <small>Try clearing or adjusting your search parameters.</small>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Responsive Pagination Footer -->
+    <div class="p-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light" id="customerPagination">
+        <div class="text-muted small">
+            Showing <strong class="text-dark">1</strong> to <strong class="text-dark">4</strong> of <strong class="text-dark">4</strong> customers
+        </div>
+        <nav aria-label="Customer Directory Pagination">
+            <ul class="pagination pagination-sm mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link" href="javascript:void(0);" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="javascript:void(0);">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0);">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0);">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="javascript:void(0);">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Modal: Register New Customer (Styled identically to Register page) -->
+<div class="modal fade" id="newCustomerModal" tabindex="-1" aria-labelledby="newCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-light">
+                <div>
+                    <h5 class="modal-title fw-bold text-dark mb-0" id="newCustomerModalLabel">Register New Banking Customer</h5>
+                    <div class="text-muted small">Create customer record and set up initial portal login credentials.</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="newCustomerForm">
+                    <!-- 1. Personal Information Section -->
+                    <div class="mf-register-section mb-4">
+                        <h6 class="mf-register-section-title text-primary fw-bold border-bottom pb-2 mb-3">
+                            1. Personal Information
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small text-dark">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control mf-form-control" id="modalRegFirstName" required placeholder="John" />
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small text-dark">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control mf-form-control" id="modalRegLastName" required placeholder="Doe" />
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small text-dark">Date of Birth <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control mf-form-control" id="modalRegDOB" required />
+                            </div>
+
+                            <div class="col-12 col-sm-6">
+                                <label class="form-label fw-bold small text-dark">National ID (14 digits) <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control mf-form-control" id="modalRegNationalId" required placeholder="29901011234567" pattern="^\d{14}$" />
+                                <div class="form-text">Must contain exactly 14 digits.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Contact Information Section -->
+                    <div class="mf-register-section mb-4">
+                        <h6 class="mf-register-section-title text-primary fw-bold border-bottom pb-2 mb-3">
+                            2. Contact Information
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-dark">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control mf-form-control" id="modalRegEmail" required placeholder="john.doe@example.com" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-dark">Residential Address <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control mf-form-control" id="modalRegAddress" required placeholder="123 Financial Way, Apt 4B" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Security Section -->
+                    <div class="mf-register-section mb-2">
+                        <h6 class="mf-register-section-title text-primary fw-bold border-bottom pb-2 mb-3">
+                            3. Security &amp; Credentials
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-dark">Initial Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control mf-form-control" id="modalRegPassword" required placeholder="••••••••" />
+                                    <button class="btn btn-outline-secondary mf-modal-password-toggle-btn" type="button" data-target="modalRegPassword">
+                                        <svg class="mf-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="mf-eye-closed d-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="23" x2="23" y2="1"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- 3-Segment Password Strength Meter -->
+                                <div class="mf-password-meter-wrap mt-2" id="modal-password-meter">
+                                    <div class="mf-strength-bars d-flex gap-1 mb-1">
+                                        <div class="mf-strength-bar flex-grow-1" id="modal-str-bar-1" style="height: 4px; background-color: #cbd5e1; border-radius: 4px;"></div>
+                                        <div class="mf-strength-bar flex-grow-1" id="modal-str-bar-2" style="height: 4px; background-color: #cbd5e1; border-radius: 4px;"></div>
+                                        <div class="mf-strength-bar flex-grow-1" id="modal-str-bar-3" style="height: 4px; background-color: #cbd5e1; border-radius: 4px;"></div>
+                                    </div>
+                                    <span class="small text-muted fw-semibold" id="modal-str-label">Password strength: Weak</span>
+                                </div>
+
+                                <!-- Password Requirements Checklist -->
+                                <div class="p-3 bg-light rounded mt-2 border">
+                                    <div class="fw-bold text-dark small mb-2">Password must contain:</div>
+                                    <ul class="list-unstyled mb-0 d-flex flex-column gap-1" style="font-size: 0.8rem;">
+                                        <li id="modal-req-len" class="text-muted"><span class="me-1">✕</span> At least 8 characters</li>
+                                        <li id="modal-req-upper" class="text-muted"><span class="me-1">✕</span> One uppercase letter (A-Z)</li>
+                                        <li id="modal-req-lower" class="text-muted"><span class="me-1">✕</span> One lowercase letter (a-z)</li>
+                                        <li id="modal-req-num" class="text-muted"><span class="me-1">✕</span> One number (0-9)</li>
+                                        <li id="modal-req-special" class="text-muted"><span class="me-1">✕</span> One special character (!@@#$%^&amp;*)</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small text-dark">Confirm Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control mf-form-control" id="modalRegConfirmPassword" required placeholder="••••••••" />
+                                    <button class="btn btn-outline-secondary mf-modal-password-toggle-btn" type="button" data-target="modalRegConfirmPassword">
+                                        <svg class="mf-eye-open" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="mf-eye-closed d-none" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                            <line x1="1" y1="23" x2="23" y2="1"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary fw-bold px-4" id="btnSaveNewCustomer">
+                    Create Customer Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Open Account with Searchable Customer Select -->
+<div class="modal fade" id="openAccountForCustomerModal" tabindex="-1" aria-labelledby="openAccountForCustomerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <div>
+                    <h5 class="modal-title fw-bold" id="openAccountForCustomerModalLabel">Open Bank Account for Customer</h5>
+                    <div class="small text-white-50">Issue a new Current or Savings account to a customer.</div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="openAccountForm">
+                    <!-- 1. Searchable Customer Select Component -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-dark d-flex justify-content-between">
+                            <span>Select Customer <span class="text-danger">*</span></span>
+                            <button type="button" class="btn btn-link p-0 text-decoration-none small d-none" id="btnChangeCustomer">
+                                Change / Search Another
+                            </button>
+                        </label>
+
+                        <!-- Searchable Select Input & Dropdown -->
+                        <div class="mf-searchable-select-wrap position-relative" id="customerSearchableSelectBox">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="11" cy="11" r="8"/>
+                                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                                    </svg>
+                                </span>
+                                <input type="text" class="form-control mf-form-control border-start-0" id="inputSearchCustomerModal" placeholder="Type customer name, National ID, or email to search..." autocomplete="off" />
+                            </div>
+
+                            <!-- Floating Searchable Results Dropdown -->
+                            <div class="mf-searchable-dropdown shadow border rounded" id="customerSearchDropdown" style="display: none;">
+                                <div class="mf-searchable-list" id="customerSearchList">
+                                    <!-- Populated dynamically and statically pre-seeded -->
+                                    <div class="mf-searchable-item" data-cust-id="CUST-4091" data-cust-name="Sarah Jenkins" data-cust-email="sarah.jenkins@example.com" data-cust-natid="29901011234567">
+                                        <div class="mf-lookup-avatar-xs">SJ</div>
+                                        <div class="mf-searchable-meta">
+                                            <div class="mf-searchable-name">Sarah Jenkins <span class="badge bg-light text-muted border ms-1">CUST-4091</span></div>
+                                            <div class="mf-searchable-sub">sarah.jenkins@example.com • Nat ID: 29901011234567</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mf-searchable-item" data-cust-id="CUST-4092" data-cust-name="David Miller" data-cust-email="david.miller@techcorp.io" data-cust-natid="29505051234568">
+                                        <div class="mf-lookup-avatar-xs" style="background: #0284c7;">DM</div>
+                                        <div class="mf-searchable-meta">
+                                            <div class="mf-searchable-name">David Miller <span class="badge bg-light text-muted border ms-1">CUST-4092</span></div>
+                                            <div class="mf-searchable-sub">david.miller@techcorp.io • Nat ID: 29505051234568</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mf-searchable-item" data-cust-id="CUST-4093" data-cust-name="Elena Rostova" data-cust-email="elena.rostova@enterprise.com" data-cust-natid="29811111234569">
+                                        <div class="mf-lookup-avatar-xs" style="background: #d97706;">ER</div>
+                                        <div class="mf-searchable-meta">
+                                            <div class="mf-searchable-name">Elena Rostova <span class="badge bg-light text-muted border ms-1">CUST-4093</span></div>
+                                            <div class="mf-searchable-sub">elena.rostova@enterprise.com • Nat ID: 29811111234569</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mf-searchable-item" data-cust-id="CUST-4094" data-cust-name="Marcus Vance" data-cust-email="marcus.vance@mail.org" data-cust-natid="29208081234570">
+                                        <div class="mf-lookup-avatar-xs" style="background: #d97706;">MV</div>
+                                        <div class="mf-searchable-meta">
+                                            <div class="mf-searchable-name">Marcus Vance <span class="badge bg-light text-muted border ms-1">CUST-4094</span></div>
+                                            <div class="mf-searchable-sub">marcus.vance@mail.org • Nat ID: 29208081234570</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-3 text-center text-muted small" id="customerSearchNoMatch" style="display: none;">
+                                    No registered customers match your search query.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected Customer Active Banner -->
+                        <div class="p-3 bg-light rounded d-flex align-items-center justify-content-between border mt-2" id="selectedCustomerBanner" style="display: none;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="mf-lookup-avatar" style="width: 44px; height: 44px; font-size: 1.1rem;" id="modalCustAvatar">SJ</div>
+                                <div>
+                                    <div class="fw-bold text-dark fs-6" id="modalCustDisplayName">Sarah Jenkins</div>
+                                    <div class="small text-muted">ID: <strong id="modalCustDisplayId">CUST-4091</strong> • Nat ID: <span id="modalCustDisplayNatId">29901011234567</span></div>
+                                </div>
+                            </div>
+                            <span class="badge bg-success-subtle text-success fw-bold px-3 py-1">Selected</span>
+                        </div>
+
+                        <input type="hidden" id="selectedCustomerIdVal" value="" />
+                    </div>
+
+                    <!-- 2. Account Specifications -->
+                    <div class="row g-3 pt-3 border-top">
+                        <!-- Account Type strictly matching AccountType enum (Savings, Current) -->
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark">Account Type <span class="text-danger">*</span></label>
+                            <select class="form-select mf-form-control" id="modalAccountTypeSelect" required>
+                                <option value="Current">Current Account</option>
+                                <option value="Savings">Savings Account</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-bold small text-dark">Initial Deposit Amount ($)</label>
+                            <input type="number" step="0.01" min="0" class="form-control mf-form-control" id="modalInitialDepositInput" placeholder="0.00" value="250.00" />
+                            <div class="form-text">Initial counter or cash deposit amount.</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary fw-bold px-4" id="btnConfirmOpenAccount">
+                    Create &amp; Issue Account
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
