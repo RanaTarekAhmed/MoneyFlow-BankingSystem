@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Authentication;
 using MoneyFlow.Business.ViewModels.Customer;
+using MoneyFlow.Business.Services;
 
 namespace MoneyFlow.Presentation.Controllers
 {
@@ -12,15 +13,18 @@ namespace MoneyFlow.Presentation.Controllers
        
         private readonly ICustomerService _customerService;
         private readonly IAuthService _authService;
-        public EmployeeController(ICustomerService customerService, IAuthService authService)
+        private readonly IDashboardService _dashboardService;
+        public EmployeeController(ICustomerService customerService, IAuthService authService, IDashboardService dashboardService)
         {
             _customerService = customerService;
             _authService = authService;
-
+            _dashboardService = dashboardService;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View();
+            const int pageSize = 5;
+            var dashboard = await _dashboardService.GetEmployeeDashboardAsync(page, pageSize);
+            return View(dashboard);
         }
         public IActionResult Accounts()
         {

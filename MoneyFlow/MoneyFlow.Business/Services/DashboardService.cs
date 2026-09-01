@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Customer;
+using MoneyFlow.Business.ViewModels;
+using MoneyFlow.Business.Common;
 using MoneyFlow.Data.Entities;
 using MoneyFlow.Data.Enums;
 using MoneyFlow.Data.Repositories.Interfaces;
@@ -48,11 +50,7 @@ namespace MoneyFlow.Business.Services
             // Only show the two most recently opened active accounts in the dashboard
             // view All Accounts -> to view full account list 
             var displayedAccounts = accounts.Where(a => a.Status == AccountStatus.Active).OrderByDescending(a => a.OpenDate).Take(2).ToList();
-            var transactions = accountIds.Count == 0
-                ? new List<Transaction>()
-                : await _transactionRepository.GetAllAsync(
-                    t => (t.SenderAccountId.HasValue && accountIds.Contains(t.SenderAccountId.Value))
-                      || (t.ReceiverAccountId.HasValue && accountIds.Contains(t.ReceiverAccountId.Value)));
+            var transactions = accountIds.Count == 0 ? new List<Transaction>() : await _transactionRepository.GetAllAsync(t => (t.SenderAccountId.HasValue && accountIds.Contains(t.SenderAccountId.Value)) || (t.ReceiverAccountId.HasValue && accountIds.Contains(t.ReceiverAccountId.Value)));
 
             var recentTransactions = transactions
                 .OrderByDescending(t => t.TransactionDate)
@@ -60,7 +58,7 @@ namespace MoneyFlow.Business.Services
                 .Select(t =>
                 {
                     var isIncoming = t.ReceiverAccountId.HasValue &&
-                                      accountIds.Contains(t.ReceiverAccountId.Value);
+                                     accountIds.Contains(t.ReceiverAccountId.Value);
 
                     return new DashboardTransactionVM
                     {
@@ -110,5 +108,53 @@ namespace MoneyFlow.Business.Services
                 RecentTransactions = recentTransactions
             };
         }
+        public async Task<EmployeeDashboardVM> GetEmployeeDashboardAsync(int pageNumber, int pageSize)
+        {
+            pageNumber = Math.Max(1, pageNumber);
+            pageSize = Math.Clamp(pageSize, 1, 50);
+
+            var today = DateTime.UtcNow.Date;
+            var customers = await _customerRepository.GetAllAsync(null);
+            var accounts = await _accountRepository.GetAllAsync(null);
+            var todayTransactions = await _transactionRepository.GetAllAsync(t => t.TransactionDate >= today);
+            var paged = await _transactionRepository.GetAllTransactionsPagedAsync(pageNumber, pageSize, null);
+
+            return new EmployeeDashboardVM
+            {
+                TotalCustomers = customers.Count,
+                TotalAccounts = accounts.Count(a => !a.IsDeleted),
+                TodayTransactionsCount = todayTransactions.Count,
+                TodayDeposits = todayTransactions.Where(t =>
+                        t.TransactionType == TransactionType.Deposit && t.Status == TransactionStatus.Completed)
+                    .Sum(t => t.Amount),
+                TodayWithdrawals = todayTransactions.Where(t =>
+                        t.TransactionType == TransactionType.Withdrawal && t.Status == TransactionStatus.Completed)
+                    .Sum(t => t.Amount),
+                Transactions = new PagedResult<EmployeeDashboardTransactionVM>
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize,
+                    TotalCount = paged.TotalCount,
+                    Items = paged.Items.Select(t =>
+                    {
+                        var account = t.TransactionType == TransactionType.Deposit
+                            ? t.ReceiverAccount
+                            : t.SenderAccount ?? t.ReceiverAccount;
+                        var customer = account?.Customer?.User;
+                        return new EmployeeDashboardTransactionVM
+                        {
+                            TransactionNumber = t.TransactionNumber,
+                            TransactionType = t.TransactionType,
+                            Amount = t.Amount,
+                            Status = t.Status,
+                            TransactionDate = t.TransactionDate,
+                            AccountNumber = account?.AccountNumber ?? "-",
+                            CustomerName = customer == null ? "Unknown Customer" : $"{customer.FirstName} {customer.LastName}".Trim()
+                        };
+                    }).ToList()
+                }
+            };
+        }
+
     }
 }
