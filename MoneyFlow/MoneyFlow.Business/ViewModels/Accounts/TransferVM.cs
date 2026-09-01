@@ -10,11 +10,11 @@ namespace MoneyFlow.Business.ViewModels.Accounts
         [Required(ErrorMessage = "Please select the account to transfer from.")]
         public int SenderAccountId { get; set; }
 
-        [Required(ErrorMessage = "Please enter the receiver account number.")]
+        [Required(ErrorMessage = "Please enter the recipient account number.")]
         public string ReceiverAccountNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Please enter the transfer amount.")]
-        [Range(typeof(decimal), "0.01", "79228162514264337593543950335",
+        [Range(typeof(decimal), "5.0", "79228162514264337593543950335",
             ErrorMessage = "Transfer amount must be greater than zero.")]
         public decimal Amount { get; set; }
 
