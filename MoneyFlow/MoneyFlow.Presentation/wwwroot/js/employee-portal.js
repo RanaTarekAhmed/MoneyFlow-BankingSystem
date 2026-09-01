@@ -409,7 +409,86 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setupTableFiltering('empCustomerSearch', null, 'empCustomerTableBody', 'empCustomerStatusFilter');
     setupTableFiltering('empAccountSearch', 'empAccountTypeFilter', 'empAccountTableBody', 'empAccountStatusFilter');
-    setupTableFiltering('empTxnSearch', 'empTxnTypeFilter', 'empTxnTableBody', 'empTxnStatusFilter');
+
+    // -------------------------------------------------------------------------
+    // 5b. Employee Transactions Server-Side Search & Filters
+    // -------------------------------------------------------------------------
+    const empTxnSearch = document.getElementById('empTxnSearch');
+    const empTxnTypeFilter = document.getElementById('empTxnTypeFilter');
+    const empTxnStatusFilter = document.getElementById('empTxnStatusFilter');
+    const btnClearEmpTxnSearch = document.getElementById('btnClearempTxnSearch');
+
+    if (empTxnSearch || empTxnTypeFilter || empTxnStatusFilter) {
+        let debounceTimer;
+
+        // Restore focus and cursor at end of input if search parameter exists
+        if (empTxnSearch && empTxnSearch.value) {
+            empTxnSearch.focus();
+            empTxnSearch.setSelectionRange(empTxnSearch.value.length, empTxnSearch.value.length);
+        }
+
+        function applyEmpTransactionFilters() {
+            const url = new URL(window.location.origin + window.location.pathname);
+
+            // Search
+            const query = empTxnSearch ? empTxnSearch.value.trim() : '';
+            if (query) {
+                url.searchParams.set('Search', query);
+            }
+
+            // Transaction Type
+            const type = empTxnTypeFilter ? empTxnTypeFilter.value : '';
+            if (type) {
+                url.searchParams.set('TransactionType', type);
+            }
+
+            // Status
+            const status = empTxnStatusFilter ? empTxnStatusFilter.value : '';
+            if (status) {
+                url.searchParams.set('Status', status);
+            }
+
+            // Reset page number to 1 on any filter or search update
+            url.searchParams.set('page', '1');
+
+            window.location.href = url.toString();
+        }
+
+        // Debounce search input (500ms)
+        if (empTxnSearch) {
+            empTxnSearch.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyEmpTransactionFilters, 500);
+            });
+        }
+
+        // Type filter auto-trigger
+        if (empTxnTypeFilter) {
+            empTxnTypeFilter.addEventListener('change', function () {
+                clearTimeout(debounceTimer);
+                applyEmpTransactionFilters();
+            });
+        }
+
+        // Status filter auto-trigger
+        if (empTxnStatusFilter) {
+            empTxnStatusFilter.addEventListener('change', function () {
+                clearTimeout(debounceTimer);
+                applyEmpTransactionFilters();
+            });
+        }
+
+        // Reset / Clear filters button
+        if (btnClearEmpTxnSearch) {
+            btnClearEmpTxnSearch.addEventListener('click', function () {
+                clearTimeout(debounceTimer);
+                if (empTxnSearch) empTxnSearch.value = '';
+                if (empTxnTypeFilter) empTxnTypeFilter.value = '';
+                if (empTxnStatusFilter) empTxnStatusFilter.value = '';
+                applyEmpTransactionFilters();
+            });
+        }
+    }
 
 
     // -------------------------------------------------------------------------

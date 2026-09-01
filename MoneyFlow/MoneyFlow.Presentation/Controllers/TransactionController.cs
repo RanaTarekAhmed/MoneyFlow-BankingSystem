@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace MoneyFlow.Presentation.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    [Authorize]
     public class TransactionController : Controller
     {
         private readonly ITransactionService _transactionService;
@@ -17,6 +17,7 @@ namespace MoneyFlow.Presentation.Controllers
             _transactionService = transactionService;
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         public async Task<IActionResult> CustomerIndex(int page = 1, TransactionQueryVM? query = null)
         {
@@ -35,6 +36,7 @@ namespace MoneyFlow.Presentation.Controllers
             return View(result);
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         public async Task<IActionResult> CustomerDetails(int id, int pageNumber)
         {
@@ -47,6 +49,7 @@ namespace MoneyFlow.Presentation.Controllers
             return View(result);
         }
 
+        [Authorize(Roles = "Employee, Admin")]
         [HttpGet]
         public async Task<IActionResult> EmployeeIndex(int page = 1, TransactionQueryVM? query = null)
         {
