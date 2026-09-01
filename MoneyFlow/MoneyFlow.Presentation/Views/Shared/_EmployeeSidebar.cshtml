@@ -1,9 +1,21 @@
-@* MoneyFlow Employee Portal - Responsive Sidebar Partial *@
+@inject Microsoft.AspNetCore.Identity.UserManager<MoneyFlow.Data.Entities.ApplicationUser> UserManager
 @{
+    var currentEmployee = await UserManager.GetUserAsync(User);
+    var employeeName = currentEmployee == null
+        ? "Employee"
+        : $"{currentEmployee.FirstName} {currentEmployee.LastName}".Trim();
+    if (string.IsNullOrWhiteSpace(employeeName)) employeeName = currentEmployee?.UserName ?? "Employee";
+    var employeeRoles = currentEmployee == null ? new List<string>() : await UserManager.GetRolesAsync(currentEmployee);
+    var employeeRole = employeeRoles.FirstOrDefault() ?? "Employee";
+    var employeeInitials = string.Concat(employeeName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(part => char.ToUpperInvariant(part[0])));
+    if (string.IsNullOrWhiteSpace(employeeInitials)) employeeInitials = "E";
+
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
 }
-
 <aside class="mf-portal-sidebar" id="mfEmployeeSidebar">
     <!-- Sidebar Brand -->
     <a href="/Employee/Index" class="mf-sidebar-brand" id="portal-brand-link">
@@ -25,10 +37,10 @@
     <!-- Staff Identity Pill in Sidebar -->
     <a href="/Employee/Profile" class="text-decoration-none d-block">
         <div class="mf-employee-badge-container">
-            <div class="mf-employee-avatar-sm">ST</div>
+            <div class="mf-employee-avatar-sm">@employeeInitials</div>
             <div class="mf-employee-meta">
-                <div class="mf-employee-name">Staff Officer</div>
-                <div class="mf-employee-role">Senior Bank Teller</div>
+                <div class="mf-employee-name">@employeeName</div>
+                <div class="mf-employee-role">@employeeRole</div>
             </div>
         </div>
     </a>
