@@ -92,13 +92,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const amountVal = amountInput ? parseFloat(amountInput.value) : 0;
 
             if (!toVal) {
-                alert('Please enter a recipient account number.');
+                //alert('Please enter a recipient account number.');
                 if (toAccountInput) toAccountInput.focus();
                 return;
             }
 
             if (!amountVal || amountVal <= 0) {
-                alert('Please enter a valid transfer amount greater than $0.00.');
+                //alert('Please enter a valid transfer amount greater than $0.00.');
                 if (amountInput) amountInput.focus();
                 return;
             }

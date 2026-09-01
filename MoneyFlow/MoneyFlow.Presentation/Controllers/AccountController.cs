@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
-using MoneyFlow.Data.Entities;
-using MoneyFlow.Data.Repositories.Interfaces;
 using MoneyFlow.Business.ViewModels.Accounts;
+using MoneyFlow.Data.Entities;
+using MoneyFlow.Data.Repositories;
+using MoneyFlow.Data.Repositories.Interfaces;
 
 namespace MoneyFlow.Presentation.Controllers
 {
@@ -100,56 +101,48 @@ namespace MoneyFlow.Presentation.Controllers
 
             if (!ModelState.IsValid)
             {
-                var transferModel = await _accountService.GetTransferModelAsync(user.Id);
-
-                if (transferModel == null)
-                {
-                    return NotFound();
-                }
-
-                transferModel.SenderAccountId = model.SenderAccountId;
-
-                transferModel.ReceiverAccountNumber = model.ReceiverAccountNumber;
-
-                transferModel.Amount = model.Amount;
-
-                transferModel.Description = model.Description;
-
-                return View(transferModel);
+                return View(await RepopulateTransferModelAsync(user.Id, model));
             }
 
             var result = await _accountService.TransferAsync(user.Id, model);
 
             if (!result.Success)
             {
-                ModelState.AddModelError(string.Empty,result.Message);
-
-                var transferModel = await _accountService.GetTransferModelAsync(user.Id);
-
-                if (transferModel == null)
+                if (!string.IsNullOrEmpty(result.Message) &&
+                    (result.Message.Contains("receiver", StringComparison.OrdinalIgnoreCase) ||
+                     result.Message.Contains("recipient", StringComparison.OrdinalIgnoreCase) ||
+                     result.Message.Contains("exist", StringComparison.OrdinalIgnoreCase)))
                 {
-                    return NotFound();
+                    ModelState.AddModelError(nameof(model.ReceiverAccountNumber), result.Message);
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, result.Message ?? "An unexpected error occurred.");
                 }
 
-                transferModel.SenderAccountId = model.SenderAccountId;
-
-                transferModel.ReceiverAccountNumber = model.ReceiverAccountNumber;
-
-                transferModel.Amount = model.Amount;
-
-                transferModel.Description = model.Description;
-
-                return View(transferModel);
+                return View(await RepopulateTransferModelAsync(user.Id, model));
             }
 
             ViewBag.TransferSuccessful = true;
-
             ViewBag.TransactionNumber = result.Transaction?.TransactionNumber;
-
             ViewBag.TransactionDate = result.Transaction?.TransactionDate;
 
-
             return View(model);
+        }
+
+        private async Task<TransferVM> RepopulateTransferModelAsync(string userId, TransferVM submittedModel)
+        {
+            var transferModel = await _accountService.GetTransferModelAsync(userId);
+            if (transferModel != null)
+            {
+                transferModel.SenderAccountId = submittedModel.SenderAccountId;
+                transferModel.ReceiverAccountNumber = submittedModel.ReceiverAccountNumber;
+                transferModel.Amount = submittedModel.Amount;
+                transferModel.Description = submittedModel.Description;
+                return transferModel;
+            }
+
+            return submittedModel;
         }
     }
 }
