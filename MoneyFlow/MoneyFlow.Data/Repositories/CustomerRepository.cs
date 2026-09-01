@@ -61,5 +61,18 @@ namespace MoneyFlow.Data.Repositories
 
             return await query.ToListAsync();
         }
+
+        public async Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, Expression<Func<Customer, bool>>? filter)
+        {
+            var query = _context.Customers.Where(c => !c.IsDeleted).Include(c => c.User).Include(c => c.Accounts).AsQueryable();
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+            var totalCount = await query.CountAsync();
+            var customers=await query.OrderBy(c => c.Id) .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            return (customers, totalCount);
+        }
     }
 }

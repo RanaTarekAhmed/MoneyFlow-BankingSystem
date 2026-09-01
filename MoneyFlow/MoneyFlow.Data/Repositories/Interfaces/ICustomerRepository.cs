@@ -10,5 +10,7 @@ namespace MoneyFlow.Data.Repositories.Interfaces
 		Task<Customer?> GetAsync(Expression<Func<Customer, bool>>? filter);
 		Task AddAsync(Customer customer);
 		Task DeleteAsync(int id);
-	}
+
+        Task<(List<Customer> Customers, int TotalCount)> GetPagedAsync(int pageNumber,int pageSize,Expression<Func<Customer, bool>>? filter);
+    }
 }
