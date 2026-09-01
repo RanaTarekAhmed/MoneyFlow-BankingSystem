@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MoneyFlow.Business.Common;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Customer;
 using MoneyFlow.Data.Entities;
 using MoneyFlow.Data.Repositories.Interfaces;
+using System.Linq.Expressions;
 
 
 namespace MoneyFlow.Business.Services
@@ -116,5 +118,39 @@ namespace MoneyFlow.Business.Services
 
 			return await _userManager.UpdateAsync(user);
 		}
-	}
+
+        public async Task<PagedResult<CustomerListVM>> GetCustomersPagedAsync( int pageNumber,int pageSize,string? search)
+		{
+			search = search?.Trim();
+            Expression<Func<Customer, bool>>? filter = null;
+			if (!string.IsNullOrEmpty(search)){
+				filter=c=>c.NationalId.Contains(search) || c.User.FirstName.Contains(search) || c.User.LastName.Contains(search) || c.User.Email != null && c.User.Email.Contains(search)|| (c.User.UserName != null && c.User.UserName.Contains(search)) || (c.User.PhoneNumber != null && c.User.PhoneNumber.Contains(search));
+			}
+            var (customers, totalCount) = await _customerRepository.GetPagedAsync(pageNumber,pageSize,filter);
+
+            var customerVMs = customers.Select(c => new CustomerListVM {
+          Id = c.Id,
+          UserName = c.User.UserName ?? string.Empty,
+          FirstName = c.User.FirstName,
+          LastName = c.User.LastName,
+          Email = c.User.Email ?? string.Empty,
+          PhoneNumber = c.User.PhoneNumber ?? string.Empty,
+          NationalId = c.NationalId,
+          CreatedAt = c.CreatedAt,
+          IsDeleted = c.IsDeleted,
+
+           AccountsCount = c.Accounts.Count(a => !a.IsDeleted)
+            })
+      .ToList();
+
+            return new PagedResult<CustomerListVM>
+            {
+                Items = customerVMs,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+        }
+
+    }
 }
