@@ -63,103 +63,92 @@
 
 <!-- Transactions Data Table Section -->
 <div class="mf-table-card">
-	<div class="table-responsive">
-		<table class="table mf-table">
-			<thead>
-				<tr>
-					<th scope="col" style="min-width: 150px;">Date &amp; Time</th>
-					<th scope="col" style="min-width: 220px;">Description</th>
-					<th scope="col">Type</th>
-					<th scope="col" class="text-end">Amount</th>
-					<th scope="col" class="text-center">Status</th>
-					<th scope="col" class="text-center">Actions</th>
-				</tr>
-			</thead>
-			<tbody id="txnTableBody">
-				@foreach (var transaction in Model.Transactions.Items)
-				{
-					<tr class="mf-txn-data-row"
-						data-type="@transaction.TransactionType.ToString().ToLower()" 
-						data-status="@transaction.Status.ToString().ToLower()">
-						<td>
-							<div class="fw-bold text-dark">
-								@transaction.TransactionDate.ToString("MMM dd, yyyy")
-							</div>
-
-							<small class="text-muted">
-								@transaction.TransactionDate.ToString("HH:mm")
-							</small>
-						</td>
-						<td>
-							<div class="fw-bold text-dark">
-								@transaction.Description
-							</div>
-
-							<span class="mf-txn-code">
-								@transaction.TransactionNumber
-							</span>
-						</td>
-						<td>
-							@if (transaction.TransactionType == TransactionType.Deposit)
-							{
-								<span class="badge bg-success-subtle text-success fw-bold d-inline-flex align-items-center gap-1">
-									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-										<line x1="12" y1="19" x2="12" y2="5" />
-										<polyline points="5 12 12 5 19 12" />
-									</svg>
-									Deposit
-								</span>
-							}
-							else if (transaction.TransactionType == TransactionType.Withdrawal)
-							{
-								<span class="badge bg-secondary-subtle text-dark fw-bold d-inline-flex align-items-center gap-1">
-									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-										<line x1="12" y1="5" x2="12" y2="19" />
-										<polyline points="19 12 12 19 5 12" />
-									</svg>
-									Withdrawal
-								</span>
-							}
-							else
-							{
-								<span class="badge bg-info-subtle text-primary fw-bold d-inline-flex align-items-center gap-1">
-									<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M17 1l4 4-4 4" />
-										<path d="M3 11V9a4 4 0 0 1 4-4h14" />
-									</svg>
-									Transfer
-								</span>
-							}
-						</td>
-						<td class="text-end fw-extrabold @(transaction.IsIncoming ? "text-success" : "text-navy") fs-6">
-							@(transaction.IsIncoming ? "+" : "-") $@transaction.Amount
-						</td>
-						<td class="text-center">
-							<span class="mf-status-badge @transaction.Status.ToString().ToLower()"><span class="dot"></span>@transaction.Status.ToString()</span>
-						</td>
-						<td class="text-center">
-							<a asp-action="Details" asp-route-id="@transaction.Id" asp-route-pageNumber="@Model.Transactions.PageNumber" class="btn btn-sm btn-light fw-semibold">Details</a>
-						</td>
+	@if (Model != null && Model.Transactions.Items.Any())
+	{
+		<div class="table-responsive">
+			<table class="table mf-table">
+				<thead>
+					<tr>
+						<th scope="col" style="min-width: 150px;">Date &amp; Time</th>
+						<th scope="col" style="min-width: 220px;">Description</th>
+						<th scope="col">Type</th>
+						<th scope="col" class="text-end">Amount</th>
+						<th scope="col" class="text-center">Status</th>
+						<th scope="col" class="text-center">Actions</th>
 					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+				</thead>
+				<tbody id="txnTableBody">
+					@foreach (var transaction in Model.Transactions.Items)
+					{
+						<tr class="mf-txn-data-row"
+							data-type="@transaction.TransactionType.ToString().ToLower()"
+							data-status="@transaction.Status.ToString().ToLower()">
+							<td>
+								<div class="fw-bold text-dark">
+									@transaction.TransactionDate.ToString("MMM dd, yyyy")
+								</div>
 
-	<!-- Empty State (Hidden unless filters find no results) -->
-	<div class="p-5 text-center d-none" id="txnEmptyState">
-		<div class="text-muted mb-2">
-			<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-				<circle cx="11" cy="11" r="8"/>
-				<line x1="21" y1="21" x2="16.65" y2="16.65"/>
-			</svg>
+								<small class="text-muted">
+									@transaction.TransactionDate.ToString("HH:mm")
+								</small>
+							</td>
+							<td>
+								<div class="fw-bold text-dark">
+									@transaction.Description
+								</div>
+
+								<span class="mf-txn-code">
+									@transaction.TransactionNumber
+								</span>
+							</td>
+							<td>
+								@if (transaction.TransactionType == TransactionType.Deposit)
+								{
+									<span class="badge bg-success-subtle text-success fw-bold d-inline-flex align-items-center gap-1">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+											<line x1="12" y1="19" x2="12" y2="5" />
+											<polyline points="5 12 12 5 19 12" />
+										</svg>
+										Deposit
+									</span>
+								}
+								else if (transaction.TransactionType == TransactionType.Withdrawal)
+								{
+									<span class="badge bg-secondary-subtle text-dark fw-bold d-inline-flex align-items-center gap-1">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+											<line x1="12" y1="5" x2="12" y2="19" />
+											<polyline points="19 12 12 19 5 12" />
+										</svg>
+										Withdrawal
+									</span>
+								}
+								else
+								{
+									<span class="badge bg-info-subtle text-primary fw-bold d-inline-flex align-items-center gap-1">
+										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+											<path d="M17 1l4 4-4 4" />
+											<path d="M3 11V9a4 4 0 0 1 4-4h14" />
+										</svg>
+										Transfer
+									</span>
+								}
+							</td>
+							<td class="text-end fw-extrabold @(transaction.IsIncoming ? "text-success" : "text-navy") fs-6">
+								@(transaction.IsIncoming ? "+" : "-") $@transaction.Amount
+							</td>
+							<td class="text-center">
+								<span class="mf-status-badge @transaction.Status.ToString().ToLower()"><span class="dot"></span>@transaction.Status.ToString()</span>
+							</td>
+							<td class="text-center">
+								<a asp-action="CustomerDetails" asp-route-id="@transaction.Id" asp-route-pageNumber="@Model.Transactions.PageNumber" class="btn btn-sm btn-light fw-semibold">Details</a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
 		</div>
-		<h3 class="h6 fw-bold text-dark mb-1">No Transactions Found</h3>
-		<p class="text-muted small">Try adjusting your filters or search terms.</p>
-	</div>
 
-	<!-- Table Pagination -->
-	@{
+		<!-- Table Pagination -->
 		var startPage = Math.Max(1, Model.Transactions.PageNumber - 1);
 		var endPage = Math.Min(Model.Transactions.TotalPages, startPage + 2);
 
@@ -176,7 +165,6 @@
 			Model.Transactions.PageNumber * Model.Transactions.PageSize,
 			Model.Transactions.TotalCount
 		);
-	}
 
 	<div class="d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 border-top gap-2">
 
@@ -196,7 +184,7 @@
 				{
 					<li class="page-item">
 						<a class="page-link"
-						   asp-action="Index"
+						   asp-action="CustomerIndex"
 						   asp-route-page="@(Model.Transactions.PageNumber - 1)"
 						   asp-route-Search="@Model?.Query?.Search"
 						   asp-route-TransactionType="@Model?.Query?.TransactionType"
@@ -215,9 +203,9 @@
 				<!-- Pages -->
 				@for (int i = startPage; i <= endPage; i++)
 				{
-					<li class="page-item @(i == Model.Transactions.PageNumber ? "active" : "")">
+					<li class="page-item @(i == Model?.Transactions.PageNumber ? "active" : "")">
 						<a class="page-link"
-						   asp-action="Index"
+						   asp-action="CustomerIndex"
 						   asp-route-page="@i"
 						   asp-route-Search="@Model?.Query?.Search"
 						   asp-route-TransactionType="@Model?.Query?.TransactionType"
@@ -228,11 +216,11 @@
 				}
 
 				<!-- Next -->
-				@if (Model.Transactions.HasNext)
+				@if (Model != null && Model.Transactions.HasNext)
 				{
 					<li class="page-item">
 						<a class="page-link"
-						   asp-action="Index"
+						   asp-action="CustomerIndex"
 						   asp-route-page="@(Model.Transactions.PageNumber + 1)"
 						   asp-route-Search="@Model?.Query?.Search"
 						   asp-route-TransactionType="@Model?.Query?.TransactionType"
@@ -250,4 +238,19 @@
 			</ul>
 		</nav>
 	</div>
+	}
+	else
+	{
+		<!-- Empty State (Hidden unless filters find no results) -->
+		<div class="p-5 text-center" id="txnEmptyState">
+			<div class="text-muted mb-2">
+				<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="11" cy="11" r="8" />
+					<line x1="21" y1="21" x2="16.65" y2="16.65" />
+				</svg>
+			</div>
+			<h3 class="h6 fw-bold text-dark mb-1">No Transactions Found</h3>
+			<p class="text-muted small">Try adjusting your filters or search terms.</p>
+		</div>
+	}
 </div>

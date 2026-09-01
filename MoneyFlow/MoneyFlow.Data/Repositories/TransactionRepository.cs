@@ -4,8 +4,6 @@ using MoneyFlow.Data.Repositories.Interfaces;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using MoneyFlow.Data.Database;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 
 
 
@@ -39,7 +37,33 @@ namespace MoneyFlow.Data.Repositories
 
 		}
 
-		public async Task<Transaction?> GetAsync(Expression<Func<Transaction, bool>> filter)
+        public async Task<(List<Transaction> Items, int TotalCount)> GetAllTransactionsPagedAsync(int pageNumber, int pageSize, Expression<Func<Transaction, bool>>? filter)
+        {
+			IQueryable<Transaction> query = _context.Transactions;
+
+			if (filter != null)
+			{
+				query = query.Where(filter);
+			}
+
+			var totalCount = await query.CountAsync();
+
+			var items = await query
+				.Include(t => t.SenderAccount)
+					.ThenInclude(a => a.Customer)
+						.ThenInclude(c => c.User)
+				.Include(t => t.ReceiverAccount)
+					.ThenInclude(a => a.Customer)
+						.ThenInclude(c => c.User)
+				.OrderByDescending(t => t.TransactionDate)
+				.Skip((pageNumber - 1) * pageSize)
+				.Take(pageSize)
+				.ToListAsync();
+
+			return (items, totalCount);
+        }
+
+        public async Task<Transaction?> GetAsync(Expression<Func<Transaction, bool>> filter)
 		{
 			var query = _context.Transactions.Where(t => (t.SenderAccount == null || !t.SenderAccount.IsDeleted) && (t.ReceiverAccount == null || !t.ReceiverAccount.IsDeleted));
 			return await query.Where(filter).FirstOrDefaultAsync();

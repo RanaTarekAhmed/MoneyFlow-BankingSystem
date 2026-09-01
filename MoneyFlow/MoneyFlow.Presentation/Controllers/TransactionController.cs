@@ -18,7 +18,7 @@ namespace MoneyFlow.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(int page = 1, TransactionQueryVM? query = null)
+        public async Task<IActionResult> CustomerIndex(int page = 1, TransactionQueryVM? query = null)
         {
             int pageSize = 5;
 
@@ -36,13 +36,29 @@ namespace MoneyFlow.Presentation.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int id, int pageNumber)
+        public async Task<IActionResult> CustomerDetails(int id, int pageNumber)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             var result = await _transactionService.GetCustomerTransactionByIdAsync(id, userId);
 
             ViewBag.PageNumber = pageNumber;
+
+            return View(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EmployeeIndex(int page = 1, TransactionQueryVM? query = null)
+        {
+            int pageSize = 5;
+
+            var transactions = await _transactionService.GetAllTransactionsPagedAsync(page, pageSize, query);
+
+            var result = new EmployeeTransactionIndexVM
+            {
+                Transactions = transactions,
+                Query = query
+            };
 
             return View(result);
         }

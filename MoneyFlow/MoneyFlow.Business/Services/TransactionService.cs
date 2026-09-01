@@ -20,7 +20,63 @@ namespace MoneyFlow.Business.Services
 			_customerRepository = customerRepository;
 		}
 
-		public async Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId)
+        public async Task<PagedResult<EmployeeTransactionVM>> GetAllTransactionsPagedAsync(int pageNumber, int pageSize, TransactionQueryVM? query)
+        {
+			Expression<Func<Transaction, bool>>? filter = null;
+
+			if (query != null)
+			{
+				var search = query.Search?.Trim();
+
+				if (!string.IsNullOrEmpty(search)
+					|| query.TransactionType.HasValue
+					|| query.Status.HasValue
+					)
+				{
+					filter = t =>
+					(string.IsNullOrEmpty(search) || t.TransactionNumber.Contains(search)
+					|| (t.Description != null && t.Description.Contains(search))
+					|| (t.SenderAccount != null && t.SenderAccount.AccountNumber.Contains(search))
+					|| (t.ReceiverAccount != null && t.ReceiverAccount.AccountNumber.Contains(search))
+					|| (t.SenderAccount != null && t.SenderAccount.Customer.User.FirstName.Contains(search))
+					|| (t.ReceiverAccount != null && t.ReceiverAccount.Customer.User.LastName.Contains(search)))
+					&&
+					(!query.TransactionType.HasValue || t.TransactionType == query.TransactionType)
+					&&
+					(!query.Status.HasValue || t.Status == query.Status);
+                }
+			}
+
+			var (transactions, totalCount) = await _transactionRepository.GetAllTransactionsPagedAsync(pageNumber, pageSize, filter);
+
+			var transactionVMs = transactions
+				.Select(t => new EmployeeTransactionVM
+				{
+					Id = t.Id,
+					TransactionNumber = t.TransactionNumber,
+					TransactionType = t.TransactionType,
+					Amount = t.Amount,
+					Status = t.Status,
+					TransactionDate = t.TransactionDate,
+					Description = t.Description,
+					SenderAccount = t.SenderAccount,
+					ReceiverAccount = t.ReceiverAccount,
+					CustomerFirstName = t.SenderAccount != null ? t.SenderAccount.Customer?.User?.FirstName : t.ReceiverAccount?.Customer?.User?.FirstName,
+					CustomerLastName = t.SenderAccount != null ? t.SenderAccount.Customer?.User?.LastName : t.ReceiverAccount?.Customer?.User?.LastName
+
+				})
+				.ToList();
+
+			return new PagedResult<EmployeeTransactionVM>
+			{
+				Items = transactionVMs,
+				PageNumber = pageNumber,
+				PageSize = pageSize,
+				TotalCount = totalCount
+			};
+        }
+
+        public async Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId)
 		{
 			var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
 
