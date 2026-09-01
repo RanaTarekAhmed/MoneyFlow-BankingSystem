@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using MoneyFlow.Data.Entities;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Authentication;
 
@@ -9,10 +11,12 @@ namespace MoneyFlowSandbox.Controllers
 	public class AuthController : Controller
 	{
 		private readonly IAuthService _authService;
+		private readonly UserManager<ApplicationUser> _userManager;
 
-		public AuthController(IAuthService authService)
+		public AuthController(IAuthService authService, UserManager<ApplicationUser> userManager)
 		{
 			_authService = authService;
+			_userManager = userManager;
 		}
 
 		[HttpGet]
@@ -35,6 +39,18 @@ namespace MoneyFlowSandbox.Controllers
 				ModelState.AddModelError(string.Empty, "Invalid email or password");
 				return View(model);
 			}
+			var user = await _userManager.FindByEmailAsync(model.Email);
+
+			if (user != null && await _userManager.IsInRoleAsync(user, "Employee"))
+			{
+				return RedirectToAction("Index", "Employee");
+			}
+
+			if (user != null && await _userManager.IsInRoleAsync(user, "Admin"))
+			{
+				return RedirectToAction("Index", "Employee");
+			}
+
 			return RedirectToAction("Index", "Customer");
 		}
 

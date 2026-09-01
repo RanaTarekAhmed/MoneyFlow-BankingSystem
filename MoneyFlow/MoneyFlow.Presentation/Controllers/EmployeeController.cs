@@ -8,6 +8,7 @@ using MoneyFlow.Business.Services;
 namespace MoneyFlow.Presentation.Controllers
 {
  
+    [Authorize(Roles = "Employee,Admin")]
     public class EmployeeController : Controller
     {
        
