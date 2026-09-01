@@ -1,3 +1,18 @@
+@inject Microsoft.AspNetCore.Identity.UserManager<MoneyFlow.Data.Entities.ApplicationUser> UserManager
+@{
+    var currentEmployee = await UserManager.GetUserAsync(User);
+    var employeeName = currentEmployee == null
+        ? "Employee"
+        : $"{currentEmployee.FirstName} {currentEmployee.LastName}".Trim();
+    if (string.IsNullOrWhiteSpace(employeeName)) employeeName = currentEmployee?.UserName ?? "Employee";
+    var employeeRoles = currentEmployee == null ? new List<string>() : await UserManager.GetRolesAsync(currentEmployee);
+    var employeeRole = employeeRoles.FirstOrDefault() ?? "Employee";
+    var employeeInitials = string.Concat(employeeName
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Take(2)
+        .Select(part => char.ToUpperInvariant(part[0])));
+    if (string.IsNullOrWhiteSpace(employeeInitials)) employeeInitials = "E";
+}
 @* MoneyFlow Employee Portal - Topbar Partial *@
 <header class="mf-portal-topbar">
     <div class="mf-topbar-left">
@@ -34,10 +49,10 @@
         <!-- Staff Avatar & Profile Dropdown -->
         <div class="dropdown">
             <button class="mf-user-dropdown-toggle" type="button" id="employeeProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <span class="mf-user-avatar" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">ST</span>
+                <span class="mf-user-avatar">@employeeInitials</span>
                 <span class="mf-user-info-text d-none d-md-flex">
-                    <span class="mf-user-name">Staff Officer</span>
-                    <span class="mf-user-role text-primary fw-bold">Bank Teller</span>
+                    <span class="mf-user-name">@employeeName</span>
+                    <span class="mf-user-role text-primary fw-bold">@employeeRole</span>
                 </span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="d-none d-md-inline-block text-muted ms-1">
                     <polyline points="6 9 12 15 18 9" />
@@ -45,8 +60,8 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end mf-topbar-dropdown-menu" aria-labelledby="employeeProfileDropdown">
                 <li class="px-3 py-2 border-bottom mb-1">
-                    <p class="mb-0 fw-bold text-dark">Staff Officer</p>
-                    <small class="text-muted">officer.staff@moneyflow.bank</small>
+                    <p class="mb-0 fw-bold text-dark">@employeeName</p>
+                    <small class="text-muted">@currentEmployee?.Email</small>
                 </li>
                 <li>
                     <a class="dropdown-item" href="/Employee/Profile" id="dropdown-emp-profile">
