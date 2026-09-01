@@ -79,7 +79,7 @@
 
                                     <div>
                                         <a asp-controller="Employee" asp-action="CustomerDetails" asp-route-id="@customer.Id" class="fw-bold text-dark text-decoration-none">@customer.FirstName @customer.LastName</a>
-                                        <div class="small text-muted">ID: @customer.Id</div>
+                                        <div class="small text-muted">ID: CUST-@customer.Id</div>
                                     </div>
                                 </div>
                             </td>
@@ -97,7 +97,7 @@
 
                             <!-- Accounts Count -->
                             <td class="text-center">
-                                <span class="badge bg-primary-subtle text-primary fw-bold px-3 py-2">@customer.AccountsCount</span>
+                                <span class="badge bg-light text-dark border px-2 py-1">@customer.AccountsCount Accounts</span>
                             </td>
 
                             <!-- Actions -->
@@ -219,7 +219,6 @@
     </div>
 </div>
 
-```html
 <!-- Modal: Register New Customer -->
 <div class="modal fade" id="newCustomerModal" tabindex="-1" aria-labelledby="newCustomerModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -365,69 +364,68 @@
     </div>
 </div>
 
+@section Scripts {
+    <!-- Register Customer Script -->
+    <script>
+        document.getElementById("btnSaveNewCustomer").addEventListener("click", async function() {
 
-<!-- Register Customer Script -->
-<script>
-    document.getElementById("btnSaveNewCustomer").addEventListener("click", async function() {
+            const form = document.getElementById("newCustomerForm");
 
-        const form = document.getElementById("newCustomerForm");
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
 
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
-        }
+            const formData = new FormData();
 
-        const formData = new FormData();
+            formData.append("FirstName", document.getElementById("modalRegFirstName").value);
+            formData.append("LastName", document.getElementById("modalRegLastName").value);
+            formData.append("DateOfBirth", document.getElementById("modalRegDOB").value);
+            formData.append("NationalId", document.getElementById("modalRegNationalId").value);
+            formData.append("Email", document.getElementById("modalRegEmail").value);
+            formData.append("Address", document.getElementById("modalRegAddress").value);
+            formData.append("Password", document.getElementById("modalRegPassword").value);
+            formData.append("ConfirmPassword", document.getElementById("modalRegConfirmPassword").value);
 
-        formData.append("FirstName", document.getElementById("modalRegFirstName").value);
-        formData.append("LastName", document.getElementById("modalRegLastName").value);
-        formData.append("DateOfBirth", document.getElementById("modalRegDOB").value);
-        formData.append("NationalId", document.getElementById("modalRegNationalId").value);
-        formData.append("Email", document.getElementById("modalRegEmail").value);
-        formData.append("Address", document.getElementById("modalRegAddress").value);
-        formData.append("Password", document.getElementById("modalRegPassword").value);
-        formData.append("ConfirmPassword", document.getElementById("modalRegConfirmPassword").value);
+            const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
+            formData.append("__RequestVerificationToken", token);
 
-        const token = form.querySelector('input[name="__RequestVerificationToken"]').value;
-        formData.append("__RequestVerificationToken", token);
+            try {
 
-        try {
+                const response = await fetch('@Url.Action("RegisterCustomer", "Employee")', {
+                    method: "POST",
+                    body: formData
+                });
 
-            const response = await fetch('@Url.Action("RegisterCustomer", "Employee")', {
-                method: "POST",
-                body: formData
-            });
+                const result = await response.json();
 
-            const result = await response.json();
+                if (response.ok && result.success) {
 
-            if (response.ok && result.success) {
+                    alert(result.message);
 
-                alert(result.message);
+                    const modalElement = document.getElementById("newCustomerModal");
+                    const modal = bootstrap.Modal.getInstance(modalElement);
 
-                const modalElement = document.getElementById("newCustomerModal");
-                const modal = bootstrap.Modal.getInstance(modalElement);
+                    modal.hide();
 
-                modal.hide();
+                    form.reset();
 
-                form.reset();
+                    location.reload();
 
-                location.reload();
+                } else {
 
-            } else {
+                    console.log(result);
+                    alert("Failed to register customer.");
 
-                console.log(result);
-                alert("Failed to register customer.");
+                }
+
+            } catch (error) {
+
+                console.error(error);
+                alert("An error occurred while registering the customer.");
 
             }
 
-        } catch (error) {
-
-            console.error(error);
-            alert("An error occurred while registering the customer.");
-
-        }
-
-    });
-</script>
-```
-
+        });
+    </script>
+}
