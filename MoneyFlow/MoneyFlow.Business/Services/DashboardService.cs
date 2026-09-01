@@ -121,10 +121,15 @@ namespace MoneyFlow.Business.Services
             var todayTransactions = await _transactionRepository.GetAllAsync(t =>
                 t.TransactionDate >= today &&
                 t.Status == TransactionStatus.Completed);
-
-            var paged = await _transactionRepository.GetAllTransactionsPagedAsync(
-                pageNumber,
-                pageSize,
+            
+            var recentCashOperations = await _transactionRepository.GetAllTransactionsPagedAsync(
+                1,
+                5,
+                t => t.TransactionType == TransactionType.Deposit || t.TransactionType == TransactionType.Withdrawal);
+            
+            var recentActivities = await _transactionRepository.GetAllTransactionsPagedAsync(
+                1,
+                5,
                 null);
 
             var todayCustomersServed = todayTransactions
@@ -150,30 +155,27 @@ namespace MoneyFlow.Business.Services
                 TodayWithdrawals = todayTransactions
                     .Where(t => t.TransactionType == TransactionType.Withdrawal)
                     .Sum(t => t.Amount),
-                Transactions = new PagedResult<EmployeeDashboardTransactionVM>
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    TotalCount = paged.TotalCount,
-                    Items = paged.Items.Select(t =>
-                    {
-                        var account = t.TransactionType == TransactionType.Deposit ? t.ReceiverAccount : t.SenderAccount ?? t.ReceiverAccount;
-                        var customer = account?.Customer?.User;
-                        var customerName = customer == null ? "Unknown Customer" : $"{customer.FirstName} {customer.LastName}".Trim();
-                        return new EmployeeDashboardTransactionVM
-                        {
-                            Id = t.Id,
-                            TransactionNumber = t.TransactionNumber,
-                            TransactionType = t.TransactionType,
-                            Amount = t.Amount,
-                            Status = t.Status,
-                            TransactionDate = t.TransactionDate,
-                            Description = t.Description,
-                            AccountNumber = account?.AccountNumber ?? "-",
-                            CustomerName = string.IsNullOrWhiteSpace(customerName) ? "Unknown Customer" : customerName
-                        };
-                    }).ToList()
-                }
+                RecentCashOperations = recentCashOperations.Items.Select(MapEmployeeDashboardTransaction).ToList(),
+                RecentActivities = recentActivities.Items.Select(MapEmployeeDashboardTransaction).ToList()
+            };
+        }
+
+        private static EmployeeDashboardTransactionVM MapEmployeeDashboardTransaction(Transaction t)
+        {
+            var account = t.TransactionType == TransactionType.Deposit ? t.ReceiverAccount : t.SenderAccount ?? t.ReceiverAccount;
+            var customer = account?.Customer?.User;
+            var customerName = customer == null ? "Unknown Customer" : $"{customer.FirstName} {customer.LastName}".Trim();
+            return new EmployeeDashboardTransactionVM
+            {
+                Id = t.Id,
+                TransactionNumber = t.TransactionNumber,
+                TransactionType = t.TransactionType,
+                Amount = t.Amount,
+                Status = t.Status,
+                TransactionDate = t.TransactionDate,
+                Description = t.Description,
+                AccountNumber = account?.AccountNumber ?? "-",
+                CustomerName = string.IsNullOrWhiteSpace(customerName) ? "Unknown Customer" : customerName
             };
         }
 

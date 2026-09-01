@@ -21,10 +21,9 @@ namespace MoneyFlow.Presentation.Controllers
             _authService = authService;
             _dashboardService = dashboardService;
         }
-        public async Task<IActionResult> Index(int page = 1)
+        public async Task<IActionResult> Index()
         {
-            const int pageSize = 5;
-            var dashboard = await _dashboardService.GetEmployeeDashboardAsync(page, pageSize);
+            var dashboard = await _dashboardService.GetEmployeeDashboardAsync(1, 5);
             return View(dashboard);
         }
         public IActionResult Accounts()

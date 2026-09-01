@@ -1,4 +1,3 @@
-using MoneyFlow.Business.Common;
 using MoneyFlow.Data.Enums;
 
 namespace MoneyFlow.Business.ViewModels;
@@ -12,7 +11,8 @@ public class EmployeeDashboardVM
     public decimal TodayDeposits { get; set; }
     public decimal TodayWithdrawals { get; set; }
     public decimal TodayNetCashMovement => TodayDeposits - TodayWithdrawals;
-    public PagedResult<EmployeeDashboardTransactionVM> Transactions { get; set; } = new();
+    public List<EmployeeDashboardTransactionVM> RecentCashOperations { get; set; } = new();
+    public List<EmployeeDashboardTransactionVM> RecentActivities { get; set; } = new();
 }
 
 public class EmployeeDashboardTransactionVM
