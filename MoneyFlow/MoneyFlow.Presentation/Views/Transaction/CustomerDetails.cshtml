@@ -9,7 +9,7 @@
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="mb-3">
 	<ol class="breadcrumb">
-		<li class="breadcrumb-item"><a href="/Transaction/Index" class="text-decoration-none">Transactions</a></li>
+		<li class="breadcrumb-item"><a href="/Transaction/CustomerIndex" class="text-decoration-none">Transactions</a></li>
 		<li class="breadcrumb-item active" aria-current="page">@Model.TransactionNumber</li>
 	</ol>
 </nav>
@@ -132,7 +132,7 @@
 			</div> *@
 
 			<div class="d-flex justify-content-between align-items-center pt-4 mt-4 border-top">
-				<a asp-action="Index" asp-route-page="@ViewBag.PageNumber" class="btn btn-light">&larr; Back to History</a>
+				<a asp-action="CustomerIndex" asp-route-page="@ViewBag.PageNumber" class="btn btn-light">&larr; Back to History</a>
 				<a href="/Account/Transfer" class="btn mf-btn-primary">New Transfer</a> <!--account/transfer-->
 			</div>
 		</div>

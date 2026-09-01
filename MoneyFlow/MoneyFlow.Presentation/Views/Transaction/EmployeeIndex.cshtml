@@ -1,0 +1,375 @@
+@{
+	Layout = "_EmployeeLayout";
+	ViewData["Title"] = "Transactions Ledger";
+}
+
+@model EmployeeTransactionIndexVM
+
+<!-- Page Header -->
+<div class="mf-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+	<div>
+		<h1 class="mf-page-greeting">Transactions Ledger</h1>
+		<p class="mf-page-subtitle">Inspect deposits, withdrawals, and account transfers across the banking system.</p>
+	</div>
+</div>
+
+<!-- Filters Bar Card -->
+<div class="mf-filter-card">
+	<div class="row g-3 align-items-center">
+		<!-- Live Search -->
+		<div class="col-12 col-md-5">
+			<div class="mf-search-input-wrap">
+				<span class="mf-search-icon">
+					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="11" cy="11" r="8"/>
+						<line x1="21" y1="21" x2="16.65" y2="16.65"/>
+					</svg>
+				</span>
+				<input type="text" class="form-control mf-form-control" id="empTxnSearch" placeholder="Search by TXN #, description, customer..." />
+			</div>
+		</div>
+
+		<!-- Transaction Type Filter strictly matching TransactionType Enum -->
+		<div class="col-6 col-md-3">
+			<select class="form-select mf-form-control" id="empTxnTypeFilter">
+				<option value="">All Types</option>
+				<option value="Deposit">Deposit</option>
+				<option value="Withdrawal">Withdrawal</option>
+				<option value="Transfer">Transfer</option>
+			</select>
+		</div>
+
+		<!-- Transaction Status Filter strictly matching TransactionStatus Enum -->
+		<div class="col-6 col-md-3">
+			<select class="form-select mf-form-control" id="empTxnStatusFilter">
+				<option value="">All Statuses</option>
+				<option value="Pending">Pending</option>
+				<option value="Completed">Completed</option>
+				<option value="Failed">Failed</option>
+				<option value="Cancelled">Cancelled</option>
+			</select>
+		</div>
+
+		<!-- Reset Button -->
+		<div class="col-12 col-md-1 d-flex justify-content-end">
+			<button type="button" class="btn btn-outline-secondary w-100 p-2" id="btnClearempTxnSearch" title="Clear all filters">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="1 4 1 10 7 10"/>
+					<path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+				</svg>
+			</button>
+		</div>
+	</div>
+</div>
+
+<!-- Transactions Data Table -->
+<div class="mf-table-card">
+	<div class="table-responsive">
+		<table class="table mf-table">
+			<thead>
+				<tr>
+					<th scope="col" style="min-width: 150px;">Timestamp</th>
+					<th scope="col">TXN Ref</th>
+					<th scope="col" style="min-width: 200px;">Description</th>
+					<th scope="col">Type</th>
+					<th scope="col" class="text-end">Amount</th>
+					<th scope="col" class="text-center">Status</th>
+					<th scope="col" class="text-end">Details</th>
+				</tr>
+			</thead>
+			<tbody id="empTxnTableBody">
+				@foreach (var transaction in Model.Transactions.Items)
+				{
+					var isDeposit = transaction.TransactionType == TransactionType.Deposit;
+					var isWithdrawal = transaction.TransactionType == TransactionType.Withdrawal;
+					var isTransfer = transaction.TransactionType == TransactionType.Transfer;
+
+					var formattedAmount = (isDeposit ? "+" : "-") + "$" + transaction.Amount.ToString("N2");
+					var formattedTime = transaction.TransactionDate.ToString("MMM dd, yyyy, hh:mm tt");
+					var channel = !isTransfer ? "Teller Counter" : "Customer Transfer";
+
+					string senderDisplay = "--";
+					string senderOwner = "--";
+					if (transaction.SenderAccount != null)
+					{
+						senderDisplay = transaction.SenderAccount.AccountNumber + $" ({transaction.SenderAccount.AccountType})";
+						if (transaction.SenderAccount.Customer?.User != null)
+						{
+							senderOwner = $"{transaction.SenderAccount.Customer.User.FirstName} {transaction.SenderAccount.Customer.User.LastName}";
+						}
+					}
+					else if (isDeposit)
+					{
+						senderDisplay = "Teller Counter / Cash Deposit";
+						senderOwner = "Teller In-Branch";
+					}
+
+					string receiverDisplay = "--";
+					string receiverOwner = "--";
+					if (transaction.ReceiverAccount != null)
+					{
+						receiverDisplay = transaction.ReceiverAccount.AccountNumber + $" ({transaction.ReceiverAccount.AccountType})";
+						if (transaction.ReceiverAccount.Customer?.User != null)
+						{
+							receiverOwner = $"{transaction.ReceiverAccount.Customer.User.FirstName} {transaction.ReceiverAccount.Customer.User.LastName}";
+						}
+					}
+					else if (isWithdrawal)
+					{
+						receiverDisplay = "Teller Counter / Cash Withdrawal";
+						receiverOwner = "Teller In-Branch";
+					}
+
+					string descText = !string.IsNullOrEmpty(transaction.Description)
+						? transaction.Description
+						: (isDeposit ? $"Cash Deposit • Account {(transaction.ReceiverAccount?.AccountNumber ?? "MF-Account")}"
+						: isWithdrawal ? $"Cash Withdrawal • Account {(transaction.SenderAccount?.AccountNumber ?? "MF-Account")}"
+						: $"Transfer to {transaction.ReceiverAccount?.AccountNumber ?? "Account"}");
+
+					<tr data-filter-item="true" data-type="@transaction.TransactionType" data-status="@transaction.Status">
+						<td>
+							<div class="fw-bold text-dark">@transaction.TransactionDate.ToString("MMM dd, yyyy, hh:mm tt")</div>
+							<small class="text-muted">@channel</small>
+						</td>
+						<td><span class="mf-txn-code">@transaction.TransactionNumber</span></td>
+						<td>
+							<div class="fw-bold text-dark">@transaction.TransactionType.ToString()</div>
+							@if (transaction.TransactionType == TransactionType.Transfer)
+							{
+								<div class="small text-muted">@transaction.SenderAccount?.AccountNumber -> @transaction.ReceiverAccount?.AccountNumber</div>
+							}
+							else
+							{
+								if (transaction.TransactionType == TransactionType.Deposit)
+								{
+									<div class="small text-muted">
+										Account: @transaction.ReceiverAccount?.AccountNumber (@transaction.ReceiverAccount?.Customer.User.FirstName @transaction.ReceiverAccount?.Customer.User.LastName)
+									</div>
+								}
+								else
+								{
+									<div class="small text-muted">
+										Account: @transaction.SenderAccount?.AccountNumber (@transaction.SenderAccount?.Customer.User.FirstName @transaction.SenderAccount?.Customer.User.LastName)
+									</div>
+								}
+							}
+						</td>
+						@if (transaction.TransactionType == TransactionType.Deposit)
+						{
+							<td><span class="badge bg-success-subtle text-success">Deposit</span></td>
+							<td class="text-end fw-bold text-success">+$@transaction.Amount.ToString("N2")</td>
+						}
+						else if (transaction.TransactionType == TransactionType.Withdrawal)
+						{
+							<td><span class="badge bg-warning-subtle text-warning-emphasis">Withdrawal</span></td>
+							<td class="text-end fw-bold text-dark">-$@transaction.Amount.ToString("N2")</td>
+						}
+						else
+						{
+							<td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
+							<td class="text-end fw-bold text-dark">-$@transaction.Amount.ToString("N2")</td>
+						}
+						@if (transaction.Status == TransactionStatus.Completed)
+						{
+							<td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+						}
+						else if (transaction.Status == TransactionStatus.Pending)
+						{
+							<td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis fw-bold">Pending</span></td>
+						}
+						else
+						{
+							<td class="text-center"><span class="badge bg-danger-subtle text-danger fw-bold">@transaction.Status.ToString()</span></td>
+						}
+						<td class="text-end">
+							<button type="button" 
+								class="btn btn-sm btn-outline-secondary" 
+								data-bs-toggle="modal" 
+								data-bs-target="#txnDetailModal" 
+								data-ref="@transaction.TransactionNumber" 
+								data-type="@transaction.TransactionType" 
+								data-amount="@formattedAmount" 
+								data-status="@transaction.Status" 
+								data-desc="@descText" 
+								data-time="@formattedTime"
+								data-sender="@senderDisplay"
+								data-sender-owner="@senderOwner"
+								data-receiver="@receiverDisplay"
+								data-receiver-owner="@receiverOwner"
+								data-channel="@channel">
+								View
+							</button>
+						</td>
+					</tr>
+				}
+
+				<!-- No Results fallback -->
+				<tr class="mf-no-filter-results" style="display: none;">
+					<td colspan="7" class="text-center py-5 text-muted">
+						<p class="mb-0 fw-bold">No transactions found matching your search filter criteria.</p>
+						<small>Try clearing search terms or selecting 'All Types'.</small>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	@{
+		var startPage = Math.Max(1, Model.Transactions.PageNumber - 1);
+		var endPage = Math.Min(Model.Transactions.TotalPages, startPage + 2);
+
+		if (endPage - startPage < 2)
+		{
+			startPage = endPage - 2;
+		}
+
+		var startItem = Model.Transactions.TotalCount == 0
+		? 0
+		: (Model.Transactions.PageNumber - 1) * Model.Transactions.PageSize + 1;
+
+		var endItem = Math.Min(
+			Model.Transactions.TotalCount, 
+			Model.Transactions.PageNumber * Model.Transactions.PageSize
+		);
+	}
+
+	<!-- Responsive Pagination Footer -->
+	<div class="p-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light" id="txnPagination">
+		<div class="text-muted small">
+			Showing <strong class="text-dark">@startItem</strong> to <strong class="text-dark">@endItem</strong> of <strong class="text-dark">@Model.Transactions.TotalCount</strong> transactions
+		</div>
+		<nav aria-label="Transactions Ledger Pagination">
+			<ul class="pagination pagination-sm mb-0">
+				@if (Model.Transactions.HasPrevious)
+				{
+					<li class="page-item">
+						<a 
+							class="page-link" 
+							asp-action="EmployeeIndex"
+							asp-route-page="@(Model.Transactions.PageNumber - 1)"
+							asp-route-Search="@Model?.Query?.Search"
+							asp-route-TransactionType="@Model?.Query?.TransactionType"
+							asp-route-Status="@Model?.Query?.Status"
+							tabindex="-1" 
+							aria-disabled="true">
+							Previous
+						</a>
+					</li>
+				}
+				else
+				{
+					<li class="page-item disabled">
+						<span class="page-link" tabindex="-1" aria-disabled="true">Previous</span>
+					</li>
+				}
+
+				@for (int i = startPage; i <= endPage; ++i)
+				{
+					<li class="page-item @(i == Model?.Transactions.PageNumber ? "active" : "")" aria-current="page">
+						<a class="page-link"
+						   asp-action="EmployeeIndex"
+						   asp-route-page="@i"
+						   asp-route-Search="@Model?.Query?.Search"
+						   asp-route-TransactionType="@Model?.Query?.TransactionType"
+						   asp-route-Status="@Model?.Query?.Status">
+						@i</a>
+					</li>
+				}
+
+				@if (Model != null && Model.Transactions.HasNext)
+				{
+					<li class="page-item">
+						<a 
+							class="page-link" 
+							asp-action="EmployeeIndex" 
+							asp-route-page="@(Model.Transactions.PageNumber + 1)"
+							asp-route-Search="@Model?.Query?.Search"
+							asp-route-TransactionType="@Model?.Query?.TransactionType"
+							asp-route-Status="@Model?.Query?.Status">
+							Next
+						</a>
+					</li>
+				}
+				else
+				{
+					<li class="page-item disabled">
+						<span class="page-link">Next</span>
+					</li>
+				}
+			</ul>
+		</nav>
+	</div>
+</div>
+
+<!-- Modal: Transaction Details -->
+<div class="modal fade" id="txnDetailModal" tabindex="-1" aria-labelledby="txnDetailModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content border-0 shadow">
+			<div class="modal-header bg-light">
+				<div class="d-flex align-items-center gap-2">
+					<div class="p-2 bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<line x1="12" y1="1" x2="12" y2="23"></line>
+							<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+						</svg>
+					</div>
+					<div>
+						<h5 class="modal-title fw-bold mb-0" id="txnDetailModalLabel">Transaction Details</h5>
+						<span class="text-muted small">Reference: <span class="mf-txn-code" id="modalTxnRef">--</span></span>
+					</div>
+				</div>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body p-4">
+				<!-- Hero Amount & Status Card -->
+				<div class="text-center p-3 mb-4 rounded-3 bg-light border">
+					<div class="text-muted small mb-1">Transaction Amount</div>
+					<div class="display-6 fw-bold mb-2" id="modalTxnAmount">--</div>
+					<div class="d-flex justify-content-center align-items-center gap-2">
+						<span class="badge" id="modalTxnTypeBadge">--</span>
+						<span class="badge" id="modalTxnStatusBadge">--</span>
+					</div>
+				</div>
+
+				<!-- Details Grid -->
+				<div class="row g-3">
+					<div class="col-12 col-md-6">
+						<div class="p-3 border rounded-2 h-100 bg-white">
+							<div class="text-muted small fw-semibold text-uppercase mb-1">Date &amp; Time</div>
+							<div class="fw-bold text-dark" id="modalTxnTime">--</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6">
+						<div class="p-3 border rounded-2 h-100 bg-white">
+							<div class="text-muted small fw-semibold text-uppercase mb-1">Channel / Method</div>
+							<div class="fw-bold text-dark" id="modalTxnChannel">--</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6">
+						<div class="p-3 border rounded-2 h-100 bg-white">
+							<div class="text-muted small fw-semibold text-uppercase mb-1">Source (Sender)</div>
+							<div class="fw-bold text-dark" id="modalTxnSender">--</div>
+							<div class="small text-muted" id="modalTxnSenderOwner">--</div>
+						</div>
+					</div>
+					<div class="col-12 col-md-6">
+						<div class="p-3 border rounded-2 h-100 bg-white">
+							<div class="text-muted small fw-semibold text-uppercase mb-1">Destination (Receiver)</div>
+							<div class="fw-bold text-dark" id="modalTxnReceiver">--</div>
+							<div class="small text-muted" id="modalTxnReceiverOwner">--</div>
+						</div>
+					</div>
+					<div class="col-12">
+						<div class="p-3 border rounded-2 bg-white">
+							<div class="text-muted small fw-semibold text-uppercase mb-1">Description / Notes</div>
+							<div class="text-dark" id="modalTxnDesc">--</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer bg-light">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

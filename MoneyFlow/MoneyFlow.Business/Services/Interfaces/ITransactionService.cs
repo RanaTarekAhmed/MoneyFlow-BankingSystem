@@ -12,8 +12,14 @@ namespace MoneyFlow.Business.Services.Interfaces
 			string? userId,
 			int pageNumber,
 			int pageSize,
-            TransactionQueryVM? query
-            );
+			TransactionQueryVM? query
+			);
+		Task<PagedResult<EmployeeTransactionVM>> GetAllTransactionsPagedAsync
+			(
+			int pageNumber, 
+			int pageSize, 
+			TransactionQueryVM? query
+			);
 		Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId);
-    }
+	}
 }

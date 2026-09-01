@@ -427,20 +427,82 @@ document.addEventListener('DOMContentLoaded', function () {
             const desc = button.getAttribute('data-desc') || 'Transaction';
             const amount = button.getAttribute('data-amount') || '$0.00';
             const status = button.getAttribute('data-status') || 'Completed';
+            const sender = button.getAttribute('data-sender') || '--';
+            const senderOwner = button.getAttribute('data-sender-owner') || '';
+            const receiver = button.getAttribute('data-receiver') || '--';
+            const receiverOwner = button.getAttribute('data-receiver-owner') || '';
+            const channel = button.getAttribute('data-channel') || 'Teller Counter';
 
             const modalRef = txnDetailModalEl.querySelector('#modalTxnRef');
             const modalTime = txnDetailModalEl.querySelector('#modalTxnTime');
-            const modalType = txnDetailModalEl.querySelector('#modalTxnType');
+            const modalTypeBadge = txnDetailModalEl.querySelector('#modalTxnTypeBadge') || txnDetailModalEl.querySelector('#modalTxnType');
+            const modalStatusBadge = txnDetailModalEl.querySelector('#modalTxnStatusBadge') || txnDetailModalEl.querySelector('#modalTxnStatus');
             const modalDesc = txnDetailModalEl.querySelector('#modalTxnDesc');
             const modalAmount = txnDetailModalEl.querySelector('#modalTxnAmount');
-            const modalStatus = txnDetailModalEl.querySelector('#modalTxnStatus');
+            const modalSender = txnDetailModalEl.querySelector('#modalTxnSender');
+            const modalSenderOwner = txnDetailModalEl.querySelector('#modalTxnSenderOwner');
+            const modalReceiver = txnDetailModalEl.querySelector('#modalTxnReceiver');
+            const modalReceiverOwner = txnDetailModalEl.querySelector('#modalTxnReceiverOwner');
+            const modalChannel = txnDetailModalEl.querySelector('#modalTxnChannel');
 
             if (modalRef) modalRef.textContent = ref;
             if (modalTime) modalTime.textContent = time;
-            if (modalType) modalType.textContent = type;
             if (modalDesc) modalDesc.textContent = desc;
-            if (modalAmount) modalAmount.textContent = amount;
-            if (modalStatus) modalStatus.textContent = status;
+            
+            if (modalAmount) {
+                modalAmount.textContent = amount;
+                if (type.toLowerCase() === 'deposit' || amount.startsWith('+')) {
+                    modalAmount.className = 'display-6 fw-bold mb-2 text-success';
+                } else {
+                    modalAmount.className = 'display-6 fw-bold mb-2 text-dark';
+                }
+            }
+
+            if (modalTypeBadge) {
+                modalTypeBadge.textContent = type;
+                if (type.toLowerCase() === 'deposit') {
+                    modalTypeBadge.className = 'badge bg-success-subtle text-success px-3 py-2 fs-6';
+                } else if (type.toLowerCase() === 'withdrawal') {
+                    modalTypeBadge.className = 'badge bg-warning-subtle text-warning-emphasis px-3 py-2 fs-6';
+                } else {
+                    modalTypeBadge.className = 'badge bg-primary-subtle text-primary px-3 py-2 fs-6';
+                }
+            }
+
+            if (modalStatusBadge) {
+                modalStatusBadge.textContent = status;
+                if (status.toLowerCase() === 'completed') {
+                    modalStatusBadge.className = 'badge bg-success text-white px-3 py-2 fs-6';
+                } else if (status.toLowerCase() === 'pending') {
+                    modalStatusBadge.className = 'badge bg-warning-subtle text-warning-emphasis px-3 py-2 fs-6';
+                } else {
+                    modalStatusBadge.className = 'badge bg-danger-subtle text-danger px-3 py-2 fs-6';
+                }
+            }
+
+            if (modalSender) modalSender.textContent = sender;
+            if (modalSenderOwner) {
+                if (senderOwner && senderOwner !== '--') {
+                    modalSenderOwner.textContent = 'Owner: ' + senderOwner;
+                    modalSenderOwner.style.display = 'block';
+                } else {
+                    modalSenderOwner.textContent = '';
+                    modalSenderOwner.style.display = 'none';
+                }
+            }
+
+            if (modalReceiver) modalReceiver.textContent = receiver;
+            if (modalReceiverOwner) {
+                if (receiverOwner && receiverOwner !== '--') {
+                    modalReceiverOwner.textContent = 'Owner: ' + receiverOwner;
+                    modalReceiverOwner.style.display = 'block';
+                } else {
+                    modalReceiverOwner.textContent = '';
+                    modalReceiverOwner.style.display = 'none';
+                }
+            }
+
+            if (modalChannel) modalChannel.textContent = channel;
         });
     }
 
