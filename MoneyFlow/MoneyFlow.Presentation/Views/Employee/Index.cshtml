@@ -8,7 +8,7 @@
 <div class="mf-page-header d-flex flex-wrap align-items-center justify-content-between gap-3">
     <div>
         <h1 class="mf-page-greeting">Employee Operations Dashboard</h1>
-        <p class="mf-page-subtitle">Teller Station 02 • Active Session • System Time: @DateTime.UtcNow.ToString("dd MMM yyyy")</p>
+        <p class="mf-page-subtitle">Active Session • System Time: @DateTime.UtcNow.ToString("dd MMM yyyy")</p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="/Employee/Operations" class="mf-teller-btn mf-teller-btn-primary">
@@ -66,7 +66,7 @@
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="mf-kpi-card">
             <div class="mf-kpi-top">
-                <span class="mf-kpi-label">Teller Cash Drawer</span>
+                <span class="mf-kpi-label">Today's Net Cash Movement</span>
                 <span class="mf-kpi-icon warning">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
@@ -75,12 +75,9 @@
                 </span>
             </div>
             <div>
-                <div class="mf-kpi-value">$42,850.00</div>
-                <div class="mf-kpi-trend positive">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="18 15 12 9 6 15"></polyline>
-                    </svg>
-                    <span>Balanced &amp; Reconciled</span>
+                <div class="mf-kpi-value">@Model.TodayNetCashMovement.ToString("C")</div>
+                <div class="mf-kpi-trend @(Model.TodayNetCashMovement >= 0 ? "positive" : "neutral")">
+                    <span>Completed deposits minus withdrawals today</span>
                 </div>
             </div>
         </div>
@@ -141,9 +138,9 @@
                 </span>
             </div>
             <div>
-                <div class="mf-kpi-value">@Model.TotalCustomers Customers</div>
+                <div class="mf-kpi-value">@Model.TodayCustomersServed Customers</div>
                 <div class="mf-kpi-trend positive">
-                    <span>@Model.TotalAccounts total accounts</span>
+                    <span>@Model.TotalCustomers registered customers • @Model.TotalAccounts accounts</span>
                 </div>
             </div>
         </div>
@@ -232,33 +229,34 @@
             </div>
             
             <div class="mf-activity-timeline">
-                <div class="mf-timeline-item">
-                    <div class="mf-timeline-dot success"></div>
-                    <div class="mf-timeline-time">10 mins ago • Teller 02</div>
-                    <div class="mf-timeline-title">Cash Deposit Completed</div>
-                    <p class="mf-timeline-desc">$2,500.00 deposited into Current Account #MF-100234 (Sarah Jenkins)</p>
-                </div>
+                @if (Model.Transactions.Items.Any())
+                {
+                    @foreach (var transaction in Model.Transactions.Items.Take(5))
+                    {
+                        var isDeposit = transaction.TransactionType == MoneyFlow.Data.Enums.TransactionType.Deposit;
+                        var isWithdrawal = transaction.TransactionType == MoneyFlow.Data.Enums.TransactionType.Withdrawal;
+                        var dotClass = isDeposit ? "success" : isWithdrawal ? "warning" : "";
+                        var title = isDeposit ? "Cash Deposit" : isWithdrawal ? "Cash Withdrawal" : transaction.TransactionType.ToString();
+                        var direction = isDeposit ? "received into" : isWithdrawal ? "withdrawn from" : "processed for";
 
-                <div class="mf-timeline-item">
-                    <div class="mf-timeline-dot warning"></div>
-                    <div class="mf-timeline-time">25 mins ago • Teller 02</div>
-                    <div class="mf-timeline-title">Cash Withdrawal Dispensed</div>
-                    <p class="mf-timeline-desc">$800.00 cash dispensed from Savings Account #MF-100876 (David Miller)</p>
-                </div>
-
-                <div class="mf-timeline-item">
-                    <div class="mf-timeline-dot"></div>
-                    <div class="mf-timeline-time">1 hour ago • Officer ST</div>
-                    <div class="mf-timeline-title">Sub-Account Opened</div>
-                    <p class="mf-timeline-desc">New Savings Account opened for customer Sarah Jenkins.</p>
-                </div>
-
-                <div class="mf-timeline-item mb-0">
-                    <div class="mf-timeline-dot success"></div>
-                    <div class="mf-timeline-time">2 hours ago • Cash Vault</div>
-                    <div class="mf-timeline-title">Teller Drawer Reconciled</div>
-                    <p class="mf-timeline-desc">Morning cash drawer opening balance verified: $42,850.00.</p>
-                </div>
+                        <div class="mf-timeline-item @(transaction == Model.Transactions.Items.Take(5).Last() ? "mb-0" : "")">
+                            <div class="mf-timeline-dot @dotClass"></div>
+                            <div class="mf-timeline-time">@transaction.TransactionDate.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</div>
+                            <div class="mf-timeline-title">@title</div>
+                            <p class="mf-timeline-desc">
+                                @transaction.Amount.ToString("C") @direction @transaction.AccountNumber (@transaction.CustomerName).
+                                @if (!string.IsNullOrWhiteSpace(transaction.Description))
+                                {
+                                    <span>@transaction.Description</span>
+                                }
+                            </p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">No recent activity found.</div>
+                }
             </div>
         </div>
     </div>

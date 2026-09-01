@@ -116,19 +116,39 @@ namespace MoneyFlow.Business.Services
             var today = DateTime.UtcNow.Date;
             var customers = await _customerRepository.GetAllAsync(null);
             var accounts = await _accountRepository.GetAllAsync(null);
-            var todayTransactions = await _transactionRepository.GetAllAsync(t => t.TransactionDate >= today);
-            var paged = await _transactionRepository.GetAllTransactionsPagedAsync(pageNumber, pageSize, null);
+
+            // Only completed transactions count as processed cash operations
+            var todayTransactions = await _transactionRepository.GetAllAsync(t =>
+                t.TransactionDate >= today &&
+                t.Status == TransactionStatus.Completed);
+
+            var paged = await _transactionRepository.GetAllTransactionsPagedAsync(
+                pageNumber,
+                pageSize,
+                null);
+
+            var todayCustomersServed = todayTransactions
+                .SelectMany(t => new[]
+                {
+                    t.SenderAccount?.CustomerId,
+                    t.ReceiverAccount?.CustomerId
+                })
+                .Where(id => id.HasValue)
+                .Select(id => id!.Value)
+                .Distinct()
+                .Count();
 
             return new EmployeeDashboardVM
             {
                 TotalCustomers = customers.Count,
-                TotalAccounts = accounts.Count(a => !a.IsDeleted),
+                TotalAccounts = accounts.Count,
                 TodayTransactionsCount = todayTransactions.Count,
-                TodayDeposits = todayTransactions.Where(t =>
-                        t.TransactionType == TransactionType.Deposit && t.Status == TransactionStatus.Completed)
+                TodayCustomersServed = todayCustomersServed,
+                TodayDeposits = todayTransactions
+                    .Where(t => t.TransactionType == TransactionType.Deposit)
                     .Sum(t => t.Amount),
-                TodayWithdrawals = todayTransactions.Where(t =>
-                        t.TransactionType == TransactionType.Withdrawal && t.Status == TransactionStatus.Completed)
+                TodayWithdrawals = todayTransactions
+                    .Where(t => t.TransactionType == TransactionType.Withdrawal)
                     .Sum(t => t.Amount),
                 Transactions = new PagedResult<EmployeeDashboardTransactionVM>
                 {
@@ -137,19 +157,20 @@ namespace MoneyFlow.Business.Services
                     TotalCount = paged.TotalCount,
                     Items = paged.Items.Select(t =>
                     {
-                        var account = t.TransactionType == TransactionType.Deposit
-                            ? t.ReceiverAccount
-                            : t.SenderAccount ?? t.ReceiverAccount;
+                        var account = t.TransactionType == TransactionType.Deposit ? t.ReceiverAccount : t.SenderAccount ?? t.ReceiverAccount;
                         var customer = account?.Customer?.User;
+                        var customerName = customer == null ? "Unknown Customer" : $"{customer.FirstName} {customer.LastName}".Trim();
                         return new EmployeeDashboardTransactionVM
                         {
+                            Id = t.Id,
                             TransactionNumber = t.TransactionNumber,
                             TransactionType = t.TransactionType,
                             Amount = t.Amount,
                             Status = t.Status,
                             TransactionDate = t.TransactionDate,
+                            Description = t.Description,
                             AccountNumber = account?.AccountNumber ?? "-",
-                            CustomerName = customer == null ? "Unknown Customer" : $"{customer.FirstName} {customer.LastName}".Trim()
+                            CustomerName = string.IsNullOrWhiteSpace(customerName) ? "Unknown Customer" : customerName
                         };
                     }).ToList()
                 }
