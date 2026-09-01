@@ -74,5 +74,14 @@ namespace MoneyFlow.Data.Repositories
 
             return (customers, totalCount);
         }
+
+        public async Task<Customer?> GetCustomerOverviewAsync(int customerId)
+        {
+            return await _context.Customers
+                .Where(c => !c.IsDeleted && c.Id == customerId)
+                .Include(c => c.User)
+                .Include(c => c.Accounts)
+                .FirstOrDefaultAsync();
+        }
     }
 }

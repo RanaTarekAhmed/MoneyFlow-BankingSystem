@@ -84,6 +84,16 @@ namespace MoneyFlow.Presentation.Controllers
                 message = "Customer registered successfully."
             });
         }
+        [HttpGet]
+        public async Task<IActionResult> CustomerOverview(int id)
+        {
+            var customer = await _customerService.GetCustomerOverviewAsync(id);
+
+            if (customer == null)
+                return NotFound();
+
+            return View(customer);
+        }
         public IActionResult CustomerDetails()
         {
             return View();
