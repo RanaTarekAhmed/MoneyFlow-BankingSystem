@@ -25,13 +25,13 @@
 						<line x1="21" y1="21" x2="16.65" y2="16.65"/>
 					</svg>
 				</span>
-				<input type="text" class="form-control mf-form-control" id="empTxnSearch" placeholder="Search by TXN #, description, customer..." />
+				<input name="Search" value="@Model?.Query?.Search" type="text" class="form-control mf-form-control" id="empTxnSearch" placeholder="Search by TXN #, description, customer..." />
 			</div>
 		</div>
 
 		<!-- Transaction Type Filter strictly matching TransactionType Enum -->
 		<div class="col-6 col-md-3">
-			<select class="form-select mf-form-control" id="empTxnTypeFilter">
+			<select asp-for="@Model.Query.TransactionType" class="form-select mf-form-control" id="empTxnTypeFilter">
 				<option value="">All Types</option>
 				<option value="Deposit">Deposit</option>
 				<option value="Withdrawal">Withdrawal</option>
@@ -41,7 +41,7 @@
 
 		<!-- Transaction Status Filter strictly matching TransactionStatus Enum -->
 		<div class="col-6 col-md-3">
-			<select class="form-select mf-form-control" id="empTxnStatusFilter">
+			<select asp-for="@Model.Query.Status" class="form-select mf-form-control" id="empTxnStatusFilter">
 				<option value="">All Statuses</option>
 				<option value="Pending">Pending</option>
 				<option value="Completed">Completed</option>
@@ -64,163 +64,156 @@
 
 <!-- Transactions Data Table -->
 <div class="mf-table-card">
-	<div class="table-responsive">
-		<table class="table mf-table">
-			<thead>
-				<tr>
-					<th scope="col" style="min-width: 150px;">Timestamp</th>
-					<th scope="col">TXN Ref</th>
-					<th scope="col" style="min-width: 200px;">Description</th>
-					<th scope="col">Type</th>
-					<th scope="col" class="text-end">Amount</th>
-					<th scope="col" class="text-center">Status</th>
-					<th scope="col" class="text-end">Details</th>
-				</tr>
-			</thead>
-			<tbody id="empTxnTableBody">
-				@foreach (var transaction in Model.Transactions.Items)
-				{
-					var isDeposit = transaction.TransactionType == TransactionType.Deposit;
-					var isWithdrawal = transaction.TransactionType == TransactionType.Withdrawal;
-					var isTransfer = transaction.TransactionType == TransactionType.Transfer;
-
-					var formattedAmount = (isDeposit ? "+" : "-") + "$" + transaction.Amount.ToString("N2");
-					var formattedTime = transaction.TransactionDate.ToString("MMM dd, yyyy, hh:mm tt");
-					var channel = !isTransfer ? "Teller Counter" : "Customer Transfer";
-
-					string senderDisplay = "--";
-					string senderOwner = "--";
-					if (transaction.SenderAccount != null)
+	@if (Model != null && Model.Transactions.Items.Any())
+	{
+		<div class="table-responsive">
+			<table class="table mf-table">
+				<thead>
+					<tr>
+						<th scope="col" style="min-width: 150px;">Timestamp</th>
+						<th scope="col">TXN Ref</th>
+						<th scope="col" style="min-width: 200px;">Description</th>
+						<th scope="col">Type</th>
+						<th scope="col" class="text-end">Amount</th>
+						<th scope="col" class="text-center">Status</th>
+						<th scope="col" class="text-end">Details</th>
+					</tr>
+				</thead>
+				<tbody id="empTxnTableBody">
+					@foreach (var transaction in Model.Transactions.Items)
 					{
-						senderDisplay = transaction.SenderAccount.AccountNumber + $" ({transaction.SenderAccount.AccountType})";
-						if (transaction.SenderAccount.Customer?.User != null)
+						var isDeposit = transaction.TransactionType == TransactionType.Deposit;
+						var isWithdrawal = transaction.TransactionType == TransactionType.Withdrawal;
+						var isTransfer = transaction.TransactionType == TransactionType.Transfer;
+
+						var formattedAmount = (isDeposit ? "+" : "-") + "$" + transaction.Amount.ToString("N2");
+						var formattedTime = transaction.TransactionDate.ToString("MMM dd, yyyy, hh:mm tt");
+						var channel = !isTransfer ? "Teller Counter" : "Customer Transfer";
+
+						string senderDisplay = "--";
+						string senderOwner = "--";
+						if (transaction.SenderAccount != null)
 						{
-							senderOwner = $"{transaction.SenderAccount.Customer.User.FirstName} {transaction.SenderAccount.Customer.User.LastName}";
-						}
-					}
-					else if (isDeposit)
-					{
-						senderDisplay = "Teller Counter / Cash Deposit";
-						senderOwner = "Teller In-Branch";
-					}
-
-					string receiverDisplay = "--";
-					string receiverOwner = "--";
-					if (transaction.ReceiverAccount != null)
-					{
-						receiverDisplay = transaction.ReceiverAccount.AccountNumber + $" ({transaction.ReceiverAccount.AccountType})";
-						if (transaction.ReceiverAccount.Customer?.User != null)
-						{
-							receiverOwner = $"{transaction.ReceiverAccount.Customer.User.FirstName} {transaction.ReceiverAccount.Customer.User.LastName}";
-						}
-					}
-					else if (isWithdrawal)
-					{
-						receiverDisplay = "Teller Counter / Cash Withdrawal";
-						receiverOwner = "Teller In-Branch";
-					}
-
-					string descText = !string.IsNullOrEmpty(transaction.Description)
-						? transaction.Description
-						: (isDeposit ? $"Cash Deposit • Account {(transaction.ReceiverAccount?.AccountNumber ?? "MF-Account")}"
-						: isWithdrawal ? $"Cash Withdrawal • Account {(transaction.SenderAccount?.AccountNumber ?? "MF-Account")}"
-						: $"Transfer to {transaction.ReceiverAccount?.AccountNumber ?? "Account"}");
-
-					<tr data-filter-item="true" data-type="@transaction.TransactionType" data-status="@transaction.Status">
-						<td>
-							<div class="fw-bold text-dark">@transaction.TransactionDate.ToString("MMM dd, yyyy, hh:mm tt")</div>
-							<small class="text-muted">@channel</small>
-						</td>
-						<td><span class="mf-txn-code">@transaction.TransactionNumber</span></td>
-						<td>
-							<div class="fw-bold text-dark">@transaction.TransactionType.ToString()</div>
-							@if (transaction.TransactionType == TransactionType.Transfer)
+							senderDisplay = transaction.SenderAccount.AccountNumber + $" ({transaction.SenderAccount.AccountType})";
+							if (transaction.SenderAccount.Customer?.User != null)
 							{
-								<div class="small text-muted">@transaction.SenderAccount?.AccountNumber -> @transaction.ReceiverAccount?.AccountNumber</div>
+								senderOwner = $"{transaction.SenderAccount.Customer.User.FirstName} {transaction.SenderAccount.Customer.User.LastName}";
 							}
-							else
+						}
+						else if (isDeposit)
+						{
+							senderDisplay = "Teller Counter / Cash Deposit";
+							senderOwner = "Teller In-Branch";
+						}
+
+						string receiverDisplay = "--";
+						string receiverOwner = "--";
+						if (transaction.ReceiverAccount != null)
+						{
+							receiverDisplay = transaction.ReceiverAccount.AccountNumber + $" ({transaction.ReceiverAccount.AccountType})";
+							if (transaction.ReceiverAccount.Customer?.User != null)
 							{
-								if (transaction.TransactionType == TransactionType.Deposit)
+								receiverOwner = $"{transaction.ReceiverAccount.Customer.User.FirstName} {transaction.ReceiverAccount.Customer.User.LastName}";
+							}
+						}
+						else if (isWithdrawal)
+						{
+							receiverDisplay = "Teller Counter / Cash Withdrawal";
+							receiverOwner = "Teller In-Branch";
+						}
+
+						string descText = !string.IsNullOrEmpty(transaction.Description)
+							? transaction.Description
+							: (isDeposit ? $"Cash Deposit • Account {(transaction.ReceiverAccount?.AccountNumber ?? "MF-Account")}"
+							: isWithdrawal ? $"Cash Withdrawal • Account {(transaction.SenderAccount?.AccountNumber ?? "MF-Account")}"
+							: $"Transfer to {transaction.ReceiverAccount?.AccountNumber ?? "Account"}");
+
+						<tr>
+							<td>
+								<div class="fw-bold text-dark">@transaction.TransactionDate.ToString("MMM dd, yyyy, hh:mm tt")</div>
+								<small class="text-muted">@channel</small>
+							</td>
+							<td><span class="mf-txn-code">@transaction.TransactionNumber</span></td>
+							<td>
+								<div class="fw-bold text-dark">@transaction.TransactionType.ToString()</div>
+								@if (transaction.TransactionType == TransactionType.Transfer)
 								{
-									<div class="small text-muted">
-										Account: @transaction.ReceiverAccount?.AccountNumber (@transaction.ReceiverAccount?.Customer.User.FirstName @transaction.ReceiverAccount?.Customer.User.LastName)
-									</div>
+									<div class="small text-muted">@transaction.SenderAccount?.AccountNumber -> @transaction.ReceiverAccount?.AccountNumber</div>
 								}
 								else
 								{
-									<div class="small text-muted">
-										Account: @transaction.SenderAccount?.AccountNumber (@transaction.SenderAccount?.Customer.User.FirstName @transaction.SenderAccount?.Customer.User.LastName)
-									</div>
+									if (transaction.TransactionType == TransactionType.Deposit)
+									{
+										<div class="small text-muted">
+											Account: @transaction.ReceiverAccount?.AccountNumber (@transaction.ReceiverAccount?.Customer.User.FirstName @transaction.ReceiverAccount?.Customer.User.LastName)
+										</div>
+									}
+									else
+									{
+										<div class="small text-muted">
+											Account: @transaction.SenderAccount?.AccountNumber (@transaction.SenderAccount?.Customer.User.FirstName @transaction.SenderAccount?.Customer.User.LastName)
+										</div>
+									}
 								}
+							</td>
+							@if (transaction.TransactionType == TransactionType.Deposit)
+							{
+								<td><span class="badge bg-success-subtle text-success">Deposit</span></td>
+								<td class="text-end fw-bold text-success">+$@transaction.Amount.ToString("N2")</td>
 							}
-						</td>
-						@if (transaction.TransactionType == TransactionType.Deposit)
-						{
-							<td><span class="badge bg-success-subtle text-success">Deposit</span></td>
-							<td class="text-end fw-bold text-success">+$@transaction.Amount.ToString("N2")</td>
-						}
-						else if (transaction.TransactionType == TransactionType.Withdrawal)
-						{
-							<td><span class="badge bg-warning-subtle text-warning-emphasis">Withdrawal</span></td>
-							<td class="text-end fw-bold text-dark">-$@transaction.Amount.ToString("N2")</td>
-						}
-						else
-						{
-							<td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
-							<td class="text-end fw-bold text-dark">-$@transaction.Amount.ToString("N2")</td>
-						}
-						@if (transaction.Status == TransactionStatus.Completed)
-						{
-							<td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
-						}
-						else if (transaction.Status == TransactionStatus.Pending)
-						{
-							<td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis fw-bold">Pending</span></td>
-						}
-						else
-						{
-							<td class="text-center"><span class="badge bg-danger-subtle text-danger fw-bold">@transaction.Status.ToString()</span></td>
-						}
-						<td class="text-end">
-							<button type="button" 
-								class="btn btn-sm btn-outline-secondary" 
-								data-bs-toggle="modal" 
-								data-bs-target="#txnDetailModal" 
-								data-ref="@transaction.TransactionNumber" 
-								data-type="@transaction.TransactionType" 
-								data-amount="@formattedAmount" 
-								data-status="@transaction.Status" 
-								data-desc="@descText" 
-								data-time="@formattedTime"
-								data-sender="@senderDisplay"
-								data-sender-owner="@senderOwner"
-								data-receiver="@receiverDisplay"
-								data-receiver-owner="@receiverOwner"
-								data-channel="@channel">
-								View
-							</button>
-						</td>
-					</tr>
-				}
+							else if (transaction.TransactionType == TransactionType.Withdrawal)
+							{
+								<td><span class="badge bg-warning-subtle text-warning-emphasis">Withdrawal</span></td>
+								<td class="text-end fw-bold text-dark">-$@transaction.Amount.ToString("N2")</td>
+							}
+							else
+							{
+								<td><span class="badge bg-primary-subtle text-primary">Transfer</span></td>
+								<td class="text-end fw-bold text-dark">-$@transaction.Amount.ToString("N2")</td>
+							}
+							@if (transaction.Status == TransactionStatus.Completed)
+							{
+								<td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+							}
+							else if (transaction.Status == TransactionStatus.Pending)
+							{
+								<td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis fw-bold">Pending</span></td>
+							}
+							else
+							{
+								<td class="text-center"><span class="badge bg-danger-subtle text-danger fw-bold">@transaction.Status.ToString()</span></td>
+							}
+							<td class="text-end">
+								<button type="button" 
+									class="btn btn-sm btn-outline-secondary" 
+									data-bs-toggle="modal" 
+									data-bs-target="#txnDetailModal" 
+									data-ref="@transaction.TransactionNumber" 
+									data-type="@transaction.TransactionType" 
+									data-amount="@formattedAmount" 
+									data-status="@transaction.Status" 
+									data-desc="@descText" 
+									data-time="@formattedTime"
+									data-sender="@senderDisplay"
+									data-sender-owner="@senderOwner"
+									data-receiver="@receiverDisplay"
+									data-receiver-owner="@receiverOwner"
+									data-channel="@channel">
+									View
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 
-				<!-- No Results fallback -->
-				<tr class="mf-no-filter-results" style="display: none;">
-					<td colspan="7" class="text-center py-5 text-muted">
-						<p class="mb-0 fw-bold">No transactions found matching your search filter criteria.</p>
-						<small>Try clearing search terms or selecting 'All Types'.</small>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-
-	@{
 		var startPage = Math.Max(1, Model.Transactions.PageNumber - 1);
 		var endPage = Math.Min(Model.Transactions.TotalPages, startPage + 2);
 
 		if (endPage - startPage < 2)
 		{
-			startPage = endPage - 2;
+			startPage = Math.Max(1, endPage - 2);
 		}
 
 		var startItem = Model.Transactions.TotalCount == 0
@@ -231,74 +224,88 @@
 			Model.Transactions.TotalCount, 
 			Model.Transactions.PageNumber * Model.Transactions.PageSize
 		);
-	}
 
-	<!-- Responsive Pagination Footer -->
-	<div class="p-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light" id="txnPagination">
-		<div class="text-muted small">
-			Showing <strong class="text-dark">@startItem</strong> to <strong class="text-dark">@endItem</strong> of <strong class="text-dark">@Model.Transactions.TotalCount</strong> transactions
+		<!-- Responsive Pagination Footer -->
+		<div class="p-3 border-top d-flex flex-wrap align-items-center justify-content-between gap-3 bg-light" id="txnPagination">
+			<div class="text-muted small">
+				Showing <strong class="text-dark">@startItem</strong> to <strong class="text-dark">@endItem</strong> of <strong class="text-dark">@Model.Transactions.TotalCount</strong> transactions
+			</div>
+			<nav aria-label="Transactions Ledger Pagination">
+				<ul class="pagination pagination-sm mb-0">
+					@if (Model.Transactions.HasPrevious)
+					{
+						<li class="page-item">
+							<a 
+								class="page-link" 
+								asp-action="EmployeeIndex"
+								asp-route-page="@(Model.Transactions.PageNumber - 1)"
+								asp-route-Search="@Model?.Query?.Search"
+								asp-route-TransactionType="@Model?.Query?.TransactionType"
+								asp-route-Status="@Model?.Query?.Status"
+								tabindex="-1" 
+								aria-disabled="true">
+								Previous
+							</a>
+						</li>
+					}
+					else
+					{
+						<li class="page-item disabled">
+							<span class="page-link" tabindex="-1" aria-disabled="true">Previous</span>
+						</li>
+					}
+
+					@for (int i = startPage; i <= endPage; ++i)
+					{
+						<li class="page-item @(i == Model?.Transactions.PageNumber ? "active" : "")" aria-current="page">
+							<a class="page-link"
+							   asp-action="EmployeeIndex"
+							   asp-route-page="@i"
+							   asp-route-Search="@Model?.Query?.Search"
+							   asp-route-TransactionType="@Model?.Query?.TransactionType"
+							   asp-route-Status="@Model?.Query?.Status">
+							@i</a>
+						</li>
+					}
+
+					@if (Model != null && Model.Transactions.HasNext)
+					{
+						<li class="page-item">
+							<a 
+								class="page-link" 
+								asp-action="EmployeeIndex" 
+								asp-route-page="@(Model.Transactions.PageNumber + 1)"
+								asp-route-Search="@Model?.Query?.Search"
+								asp-route-TransactionType="@Model?.Query?.TransactionType"
+								asp-route-Status="@Model?.Query?.Status">
+								Next
+							</a>
+						</li>
+					}
+					else
+					{
+						<li class="page-item disabled">
+							<span class="page-link">Next</span>
+						</li>
+					}
+				</ul>
+			</nav>
 		</div>
-		<nav aria-label="Transactions Ledger Pagination">
-			<ul class="pagination pagination-sm mb-0">
-				@if (Model.Transactions.HasPrevious)
-				{
-					<li class="page-item">
-						<a 
-							class="page-link" 
-							asp-action="EmployeeIndex"
-							asp-route-page="@(Model.Transactions.PageNumber - 1)"
-							asp-route-Search="@Model?.Query?.Search"
-							asp-route-TransactionType="@Model?.Query?.TransactionType"
-							asp-route-Status="@Model?.Query?.Status"
-							tabindex="-1" 
-							aria-disabled="true">
-							Previous
-						</a>
-					</li>
-				}
-				else
-				{
-					<li class="page-item disabled">
-						<span class="page-link" tabindex="-1" aria-disabled="true">Previous</span>
-					</li>
-				}
-
-				@for (int i = startPage; i <= endPage; ++i)
-				{
-					<li class="page-item @(i == Model?.Transactions.PageNumber ? "active" : "")" aria-current="page">
-						<a class="page-link"
-						   asp-action="EmployeeIndex"
-						   asp-route-page="@i"
-						   asp-route-Search="@Model?.Query?.Search"
-						   asp-route-TransactionType="@Model?.Query?.TransactionType"
-						   asp-route-Status="@Model?.Query?.Status">
-						@i</a>
-					</li>
-				}
-
-				@if (Model != null && Model.Transactions.HasNext)
-				{
-					<li class="page-item">
-						<a 
-							class="page-link" 
-							asp-action="EmployeeIndex" 
-							asp-route-page="@(Model.Transactions.PageNumber + 1)"
-							asp-route-Search="@Model?.Query?.Search"
-							asp-route-TransactionType="@Model?.Query?.TransactionType"
-							asp-route-Status="@Model?.Query?.Status">
-							Next
-						</a>
-					</li>
-				}
-				else
-				{
-					<li class="page-item disabled">
-						<span class="page-link">Next</span>
-					</li>
-				}
-			</ul>
-		</nav>
-	</div>
+	}
+	else
+	{
+		<!-- Empty State when no transactions found -->
+		<div class="p-5 text-center" id="empTxnEmptyState">
+			<div class="text-muted mb-2">
+				<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+					<circle cx="11" cy="11" r="8" />
+					<line x1="21" y1="21" x2="16.65" y2="16.65" />
+				</svg>
+			</div>
+			<h3 class="h6 fw-bold text-dark mb-1">No Transactions Found</h3>
+			<p class="text-muted small">Try adjusting your search terms or filter criteria.</p>
+		</div>
+	}
 </div>
 
 <!-- Modal: Transaction Details -->
