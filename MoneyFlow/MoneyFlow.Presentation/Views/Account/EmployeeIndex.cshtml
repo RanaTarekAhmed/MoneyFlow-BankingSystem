@@ -92,13 +92,13 @@
 						<line x1="21" y1="21" x2="16.65" y2="16.65"/>
 					</svg>
 				</span>
-				<input type="text" class="form-control mf-form-control" id="empAccountSearch" placeholder="Search by Account #, Customer name..." />
+				<input name="Search" value="@Model?.Query?.Search" type="text" class="form-control mf-form-control" id="empAccountSearch" placeholder="Search by Account #, Customer name..." />
 			</div>
 		</div>
 
 		<!-- Account Type Filter strictly following AccountType Enum -->
 		<div class="col-6 col-md-3">
-			<select class="form-select mf-form-control" id="empAccountTypeFilter">
+			<select asp-for="@Model.Query.AccountType" class="form-select mf-form-control" id="empAccountTypeFilter">
 				<option value="">All Account Types</option>
 				<option value="Current">Current</option>
 				<option value="Savings">Savings</option>
@@ -107,7 +107,7 @@
 
 		<!-- Account Status Filter strictly following AccountStatus Enum -->
 		<div class="col-6 col-md-3">
-			<select class="form-select mf-form-control" id="empAccountStatusFilter">
+			<select asp-for="@Model.Query.Status" class="form-select mf-form-control" id="empAccountStatusFilter">
 				<option value="">All Statuses</option>
 				<option value="Active">Active</option>
 				<option value="Suspended">Suspended</option>
@@ -146,7 +146,7 @@
 				<tbody id="empAccountTableBody">
 					@foreach (var account in Model.Accounts.Items)
 					{
-						<tr data-filter-item="true" data-type="Current" data-status="Active">
+						<tr>
 							<td>
 								<span class="mf-txn-code fs-6 fw-bold">@account.AccountNumber</span>
 								<div class="small text-muted">Opened @account.OpenDate.ToString("dd MMM yyyy")</div>

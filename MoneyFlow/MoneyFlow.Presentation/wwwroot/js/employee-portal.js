@@ -408,7 +408,86 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     setupTableFiltering('empCustomerSearch', null, 'empCustomerTableBody', 'empCustomerStatusFilter');
-    setupTableFiltering('empAccountSearch', 'empAccountTypeFilter', 'empAccountTableBody', 'empAccountStatusFilter');
+
+    // -------------------------------------------------------------------------
+    // 5c. Employee Accounts Server-Side Search & Filters
+    // -------------------------------------------------------------------------
+    const empAccountSearch = document.getElementById('empAccountSearch');
+    const empAccountTypeFilter = document.getElementById('empAccountTypeFilter');
+    const empAccountStatusFilter = document.getElementById('empAccountStatusFilter');
+    const btnClearEmpAccountSearch = document.getElementById('btnClearempAccountSearch');
+
+    if (empAccountSearch || empAccountTypeFilter || empAccountStatusFilter) {
+        let debounceTimer;
+
+        // Restore focus and cursor at end of input if search parameter exists
+        if (empAccountSearch && empAccountSearch.value) {
+            empAccountSearch.focus();
+            empAccountSearch.setSelectionRange(empAccountSearch.value.length, empAccountSearch.value.length);
+        }
+
+        function applyEmpAccountFilters() {
+            const url = new URL(window.location.origin + window.location.pathname);
+
+            // Search
+            const query = empAccountSearch ? empAccountSearch.value.trim() : '';
+            if (query) {
+                url.searchParams.set('Search', query);
+            }
+
+            // Account Type
+            const type = empAccountTypeFilter ? empAccountTypeFilter.value : '';
+            if (type) {
+                url.searchParams.set('AccountType', type);
+            }
+
+            // Status
+            const status = empAccountStatusFilter ? empAccountStatusFilter.value : '';
+            if (status) {
+                url.searchParams.set('Status', status);
+            }
+
+            // Reset page number to 1 on any filter or search update
+            url.searchParams.set('page', '1');
+
+            window.location.href = url.toString();
+        }
+
+        // Debounce search input (500ms)
+        if (empAccountSearch) {
+            empAccountSearch.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(applyEmpAccountFilters, 500);
+            });
+        }
+
+        // Account type filter auto-trigger
+        if (empAccountTypeFilter) {
+            empAccountTypeFilter.addEventListener('change', function () {
+                clearTimeout(debounceTimer);
+                applyEmpAccountFilters();
+            });
+        }
+
+        // Status filter auto-trigger
+        if (empAccountStatusFilter) {
+            empAccountStatusFilter.addEventListener('change', function () {
+                clearTimeout(debounceTimer);
+                applyEmpAccountFilters();
+            });
+        }
+
+        // Reset / Clear filters button
+        if (btnClearEmpAccountSearch) {
+            btnClearEmpAccountSearch.addEventListener('click', function () {
+                clearTimeout(debounceTimer);
+                if (empAccountSearch) empAccountSearch.value = '';
+                if (empAccountTypeFilter) empAccountTypeFilter.value = '';
+                if (empAccountStatusFilter) empAccountStatusFilter.value = '';
+                applyEmpAccountFilters();
+            });
+        }
+    }
 
     // -------------------------------------------------------------------------
     // 5b. Employee Transactions Server-Side Search & Filters
