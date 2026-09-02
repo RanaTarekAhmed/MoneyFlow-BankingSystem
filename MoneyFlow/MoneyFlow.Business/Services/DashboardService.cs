@@ -122,6 +122,7 @@ namespace MoneyFlow.Business.Services
                 t.TransactionDate >= today &&
                 t.Status == TransactionStatus.Completed);
             
+            var todayCashOperations = todayTransactions.Where(t => t.TransactionType == TransactionType.Deposit || t.TransactionType == TransactionType.Withdrawal).ToList();
             var recentCashOperations = await _transactionRepository.GetAllTransactionsPagedAsync(
                 1,
                 5,
@@ -132,7 +133,7 @@ namespace MoneyFlow.Business.Services
                 5,
                 null);
 
-            var todayCustomersServed = todayTransactions
+            var todayCustomersServed = todayCashOperations
                 .SelectMany(t => new[]
                 {
                     t.SenderAccount?.CustomerId,
@@ -147,12 +148,12 @@ namespace MoneyFlow.Business.Services
             {
                 TotalCustomers = customers.Count,
                 TotalAccounts = accounts.Count,
-                TodayTransactionsCount = todayTransactions.Count,
+                TodayDepositsCount = todayCashOperations.Count(t => t.TransactionType == TransactionType.Deposit),
                 TodayCustomersServed = todayCustomersServed,
-                TodayDeposits = todayTransactions
+                TodayDeposits = todayCashOperations
                     .Where(t => t.TransactionType == TransactionType.Deposit)
                     .Sum(t => t.Amount),
-                TodayWithdrawals = todayTransactions
+                TodayWithdrawals = todayCashOperations
                     .Where(t => t.TransactionType == TransactionType.Withdrawal)
                     .Sum(t => t.Amount),
                 RecentCashOperations = recentCashOperations.Items.Select(MapEmployeeDashboardTransaction).ToList(),

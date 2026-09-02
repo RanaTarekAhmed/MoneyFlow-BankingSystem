@@ -6,7 +6,7 @@ public class EmployeeDashboardVM
 {
     public int TotalCustomers { get; set; }
     public int TotalAccounts { get; set; }
-    public int TodayTransactionsCount { get; set; }
+    public int TodayDepositsCount { get; set; }
     public int TodayCustomersServed { get; set; }
     public decimal TodayDeposits { get; set; }
     public decimal TodayWithdrawals { get; set; }
