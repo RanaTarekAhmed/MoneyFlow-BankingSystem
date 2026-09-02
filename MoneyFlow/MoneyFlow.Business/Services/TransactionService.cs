@@ -20,8 +20,8 @@ namespace MoneyFlow.Business.Services
 			_customerRepository = customerRepository;
 		}
 
-        public async Task<PagedResult<EmployeeTransactionVM>> GetAllTransactionsPagedAsync(int pageNumber, int pageSize, TransactionQueryVM? query)
-        {
+		public async Task<PagedResult<EmployeeTransactionVM>> GetAllTransactionsPagedAsync(int pageNumber, int pageSize, TransactionQueryVM? query)
+		{
 			Expression<Func<Transaction, bool>>? filter = null;
 
 			if (query != null)
@@ -40,11 +40,15 @@ namespace MoneyFlow.Business.Services
 					|| (t.ReceiverAccount != null && t.ReceiverAccount.AccountNumber.Contains(search))
 					|| (t.SenderAccount != null && t.SenderAccount.Customer.User.FirstName.Contains(search))
 					|| (t.ReceiverAccount != null && t.ReceiverAccount.Customer.User.LastName.Contains(search)))
+					|| (t.SenderAccount != null && (t.SenderAccount.Customer.User.FirstName 
+					+ " " + t.SenderAccount.Customer.User.LastName).Contains(search) 
+					|| t.ReceiverAccount != null && (t.ReceiverAccount.Customer.User.FirstName
+					+ " " + t.ReceiverAccount.Customer.User.LastName).Contains(search))
 					&&
 					(!query.TransactionType.HasValue || t.TransactionType == query.TransactionType)
 					&&
 					(!query.Status.HasValue || t.Status == query.Status);
-                }
+				}
 			}
 
 			var (transactions, totalCount) = await _transactionRepository.GetAllTransactionsPagedAsync(pageNumber, pageSize, filter);
@@ -74,9 +78,9 @@ namespace MoneyFlow.Business.Services
 				PageSize = pageSize,
 				TotalCount = totalCount
 			};
-        }
+		}
 
-        public async Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId)
+		public async Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId)
 		{
 			var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
 

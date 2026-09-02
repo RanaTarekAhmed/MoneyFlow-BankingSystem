@@ -8,7 +8,7 @@ using MoneyFlow.Business.ViewModels.Accounts;
 
 namespace MoneyFlow.Presentation.Controllers
 {
-    [Authorize(Roles = "Customer")]
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
@@ -23,6 +23,7 @@ namespace MoneyFlow.Presentation.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -42,6 +43,7 @@ namespace MoneyFlow.Presentation.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AccountDetails(int id)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -64,7 +66,7 @@ namespace MoneyFlow.Presentation.Controllers
             return View(model);
         }
 
-
+        [Authorize(Roles = "Customer")]
         [HttpGet]
         public async Task<IActionResult> Transfer()
         {
@@ -87,6 +89,7 @@ namespace MoneyFlow.Presentation.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Customer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Transfer(TransferVM model)
@@ -150,6 +153,31 @@ namespace MoneyFlow.Presentation.Controllers
 
 
             return View(model);
+        }
+
+        [Authorize(Roles = "Employee, Admin")]
+        public async Task<IActionResult> EmployeeIndex(int page = 1, AccountQueryVM? query = null)
+        {
+            int pageSize = 5;
+
+            var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
+
+            var summary = await _accountService.GetAllAccountsSummaryAsync();
+
+            var result = new EmployeeAccountIndexVM
+            {
+                Summary = summary,
+                Accounts = accounts,
+                Query = query
+            };
+
+            return View(result);
+        }
+
+        [Authorize(Roles = "Employee, Admin")]
+        public async Task<IActionResult> EmployeeDetails()
+        {
+            return View();
         }
     }
 }

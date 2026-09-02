@@ -58,5 +58,27 @@ namespace MoneyFlow.Data.Repositories
             _context.Accounts.Update(account);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<(List<Account> Items, int TotalCount)> GetAllAccountsPagedAsync(int pageNumber, int pageSize, Expression<Func<Account, bool>>? filter)
+        {
+            IQueryable<Account> query = _context.Accounts;
+
+            if (filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var items = await query
+                .Include(a => a.Customer)
+                    .ThenInclude(c => c.User)
+                .OrderByDescending(a => a.OpenDate)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (items, totalCount);
+        }
     }
 }
