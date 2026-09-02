@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MoneyFlow.Business.Common;
 using MoneyFlow.Business.Services.Interfaces;
+using MoneyFlow.Business.ViewModels.Accounts;
 using MoneyFlow.Business.ViewModels.Customer;
 using MoneyFlow.Data.Entities;
 using MoneyFlow.Data.Repositories.Interfaces;
@@ -13,12 +14,13 @@ namespace MoneyFlow.Business.Services
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		private readonly ICustomerRepository _customerRepository;
-
-		public CustomerService(UserManager<ApplicationUser> userManager, ICustomerRepository customerRepository)
-		{
+        private readonly ITransactionRepository _transactionRepository;
+        public CustomerService(UserManager<ApplicationUser> userManager, ICustomerRepository customerRepository, ITransactionRepository transactionRepository)
+        {
 			_userManager = userManager;
 			_customerRepository = customerRepository;
-		}
+            _transactionRepository = transactionRepository;
+        }
 
 		public async Task<IdentityResult> ChangePasswordAsync(string? userId, ChangePasswordVM model)
 		{
@@ -151,6 +153,53 @@ namespace MoneyFlow.Business.Services
                 TotalCount = totalCount
             };
         }
+
+
+
+        public async Task<CustomerDetailsVM?> GetCustomerOverviewAsync(int customerId)
+        {
+            var customer = await _customerRepository.GetCustomerOverviewAsync(customerId);
+            if (customer == null) return null;
+
+            var transactions = await _transactionRepository.GetCustomerTransactionsPagedAsync(customerId, 1, 5, null);
+
+            return new CustomerDetailsVM
+            {
+                Id = customer.Id,
+                FirstName = customer.User.FirstName,
+                LastName = customer.User.LastName,
+                Email = customer.User.Email ?? string.Empty,
+                NationalId = customer.NationalId,
+                Address = customer.User.Address ?? string.Empty,
+                DateOfBirth = customer.User.DateOfBirth,
+                Status = customer.IsDeleted ? "Deleted" : "Active",
+                MemberSince = customer.CreatedAt,
+
+                Accounts = customer.Accounts
+                    .Where(a => !a.IsDeleted)
+                    .Select(a => new AccountSummaryVM
+                    {
+                        Id = a.Id,
+                        AccountNumber = a.AccountNumber,
+                        AccountType = a.AccountType,
+                        Status = a.Status,
+                        Balance = a.Balance,
+                        OpenDate = a.OpenDate
+                    }).ToList(),
+
+                Transactions = transactions.Items.Select(t => new TransactionVM
+                {
+                    Id = t.Id,
+                    TransactionNumber = t.TransactionNumber,
+                    TransactionType = t.TransactionType,
+                    Amount = t.Amount,
+                    Status = t.Status,
+                    TransactionDate = t.TransactionDate,
+                    Description = t.Description
+                }).ToList()
+            };
+        }
+
 
     }
 }
