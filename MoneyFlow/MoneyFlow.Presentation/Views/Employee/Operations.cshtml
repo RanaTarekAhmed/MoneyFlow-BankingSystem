@@ -10,11 +10,10 @@
 <style>
     /* CSS Print Rules: Only print the receipt slip */
     @@media print {
-        /* Hide everything on the page */
         body * {
             visibility: hidden !important;
         }
-        /* Hide modal backdrops, dialog borders, headers, and buttons */
+
         .modal-backdrop,
         .modal-footer,
         .btn-close,
@@ -22,13 +21,13 @@
         #cashOpsForm {
             display: none !important;
         }
-        /* Show ONLY the receipt container and its content */
+
         #tellerReceiptModal,
         .mf-receipt-container,
         .mf-receipt-container * {
             visibility: visible !important;
         }
-        /* Position the receipt cleanly at the top-center of the paper */
+
         #tellerReceiptModal {
             position: absolute !important;
             left: 0 !important;
@@ -188,6 +187,16 @@
                     </div>
                     <span asp-validation-for="Amount" class="text-danger small d-block mt-1"></span>
 
+                    <!-- Drawer Insufficiency Warning -->
+                    <div id="drawerExceededError" class="alert alert-danger py-2 px-3 mt-2 small fw-bold" style="display: none;" role="alert">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="drawerExceededText">Insufficient cash in teller drawer!</span>
+                    </div>
+
                     <!-- Quick Cash Chips -->
                     <div class="mf-quick-chips mt-2">
                         <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="100">$100</button>
@@ -205,7 +214,7 @@
                            type="text"
                            class="form-control mf-form-control"
                            id="opsMemoInput"
-                           placeholder="e.g. Counter cash deposit" />
+                           placeholder="e.g. Counter cash transaction" />
                     <span asp-validation-for="Description" class="text-danger small d-block mt-1"></span>
                 </div>
 
@@ -245,13 +254,16 @@
             </div>
 
             <div class="mf-card">
-                <h2 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">Teller Drawer Balance</h2>
+                <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                    <h2 class="h6 fw-bold text-dark mb-0">Teller Drawer Balance</h2>
+                    <button type="button" class="btn btn-link btn-sm text-decoration-none p-0" id="btnResetDrawer" title="Reset Drawer to $500,000.00">Reset</button>
+                </div>
                 <div class="d-flex align-items-center justify-content-between">
                     <div>
-                        <div class="fs-5 fw-bold text-dark">$42,850.00</div>
+                        <div class="fs-5 fw-bold text-dark" id="drawerBalanceDisplay">$500,000.00</div>
                         <div class="text-muted small">Station 02 Cash Box</div>
                     </div>
-                    <span class="badge bg-success text-white">Balanced</span>
+                    <span class="badge bg-success text-white" id="drawerStatusBadge">Balanced</span>
                 </div>
             </div>
         </div>
@@ -319,15 +331,51 @@
     <script>
         function setOperationType(type) {
             document.getElementById('OperationType').value = type;
+            if (typeof validateDrawerLimit === 'function') {
+                validateDrawerLimit();
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('cashOpsForm');
             const amountInput = document.getElementById('opsAmountInput');
             const totalDisplay = document.getElementById('opsTotalDisplay');
             const btnLookup = document.getElementById('btnLookupAccount');
             const accountInput = document.getElementById('opsAccountInput');
             const lookupCard = document.getElementById('opsLookupResult');
             const lookupError = document.getElementById('accountLookupError');
+            const drawerDisplay = document.getElementById('drawerBalanceDisplay');
+            const resetBtn = document.getElementById('btnResetDrawer');
+
+            const drawerExceededError = document.getElementById('drawerExceededError');
+            const drawerExceededText = document.getElementById('drawerExceededText');
+            const btnSubmitOps = document.getElementById('btnSubmitOps');
+
+            const INITIAL_DRAWER_BALANCE = 500000.00;
+
+            function getDrawerBalance() {
+                const stored = localStorage.getItem('tellerDrawerBalance');
+                if (stored === null || isNaN(stored)) {
+                    localStorage.setItem('tellerDrawerBalance', INITIAL_DRAWER_BALANCE.toString());
+                    return INITIAL_DRAWER_BALANCE;
+                }
+                return parseFloat(stored);
+            }
+
+            function updateDrawerUI() {
+                const currentBal = getDrawerBalance();
+                if (drawerDisplay) {
+                    drawerDisplay.textContent = formatCurrency(currentBal);
+                }
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    localStorage.setItem('tellerDrawerBalance', INITIAL_DRAWER_BALANCE.toString());
+                    updateDrawerUI();
+                    validateDrawerLimit();
+                });
+            }
 
             function formatCurrency(val) {
                 const num = parseFloat(val) || 0;
@@ -339,7 +387,26 @@
                 if (totalDisplay) {
                     totalDisplay.textContent = formatCurrency(val);
                 }
+                validateDrawerLimit();
             }
+
+            // Real-Time Drawer Liquidity Validation
+            window.validateDrawerLimit = function() {
+                const currentOp = document.getElementById('OperationType').value;
+                const requestedAmt = parseFloat(amountInput.value) || 0;
+                const availableDrawer = getDrawerBalance();
+
+                if (currentOp.toLowerCase().includes('withdraw') && requestedAmt > availableDrawer) {
+                    drawerExceededText.textContent = `Insufficient cash in teller drawer! Available cash: ${formatCurrency(availableDrawer)}, requested: ${formatCurrency(requestedAmt)}.`;
+                    drawerExceededError.style.display = 'block';
+                    btnSubmitOps.disabled = true;
+                    return false;
+                } else {
+                    drawerExceededError.style.display = 'none';
+                    btnSubmitOps.disabled = false;
+                    return true;
+                }
+            };
 
             if (amountInput) {
                 amountInput.addEventListener('input', updateSummary);
@@ -353,6 +420,17 @@
                     updateSummary();
                 });
             });
+
+            // Prevent Form Submission if Withdrawal > Drawer Cash
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (!validateDrawerLimit()) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                });
+            }
 
             function showError(msg) {
                 if (lookupError) {
@@ -431,14 +509,32 @@
                 });
             }
 
+            updateDrawerUI();
+
             @if (TempData["TransactionNumber"] != null)
             {
                     <text>
-                        const receiptModalEl = document.getElementById('tellerReceiptModal');
-                        if (receiptModalEl) {
-                            const receiptModal = new bootstrap.Modal(receiptModalEl);
-                            receiptModal.show();
-                        }
+                            const executedOp = '@(TempData["OperationType"] ?? "Deposit")';
+                            const rawAmt = '@(TempData["Amount"] ?? "0")'.replace(/[^0-9.-]+/g, "");
+                            const executedAmt = parseFloat(rawAmt) || 0;
+
+                            if (executedAmt > 0) {
+                                let currentBal = getDrawerBalance();
+                                if (executedOp.toLowerCase().includes('deposit')) {
+                                    currentBal += executedAmt;
+                                } else if (executedOp.toLowerCase().includes('withdraw')) {
+                                    // Ensure withdrawal doesn't push drawer below zero
+                                    currentBal = Math.max(0, currentBal - executedAmt);
+                                }
+                                localStorage.setItem('tellerDrawerBalance', currentBal.toString());
+                                updateDrawerUI();
+                            }
+
+                            const receiptModalEl = document.getElementById('tellerReceiptModal');
+                            if (receiptModalEl) {
+                                const receiptModal = new bootstrap.Modal(receiptModalEl);
+                                receiptModal.show();
+                            }
                     </text>
             }
         });
