@@ -318,7 +318,7 @@ namespace MoneyFlow.Business.Services
 						activeSavingsAccounts++;
 					}
 				}
-				else if(account.Status == AccountStatus.Suspended)
+				else if (account.Status == AccountStatus.Suspended)
 				{
 					suspendedAccounts++;
 				}
@@ -445,6 +445,50 @@ namespace MoneyFlow.Business.Services
             await _transactionRepository.AddAsync(transaction);
 
             return (true,"Withdrawal completed successfully.",transaction);
+        }
+
+        public async Task<bool> OpenAccountAsync(OpenAccountVM model)
+        {
+			var customer = await _customerRepository.GetAsync(c => c.Id == model.CustomerId);
+			if (customer == null)
+			{
+				return false;
+			}
+
+			if (model.AccountType != AccountType.Current && model.AccountType != AccountType.Savings)
+			{
+				return false;
+			}
+
+			if (model.InitialDeposit < 0)
+			{
+				return false;
+			}
+
+			var accountNumber = await GenerateAccountNumberAsync();
+			var account = new Account(accountNumber, model.AccountType, model.CustomerId);
+
+			if (model.InitialDeposit != 0)
+			{
+                account.Deposit(model.InitialDeposit);
+            }
+
+            await _accountRepository.AddAsync(account);
+
+			return true;
+        }
+
+        private async Task<string> GenerateAccountNumberAsync()
+        {
+			string accountNumber;
+
+			do
+			{
+				accountNumber = $"MF-{Random.Shared.NextInt64(1000000000, 10000000000)}";
+			}
+			while (await _accountRepository.AnyAsync(a => a.AccountNumber == accountNumber));
+
+			return accountNumber;
         }
     }
 }

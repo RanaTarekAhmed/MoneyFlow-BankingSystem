@@ -80,5 +80,15 @@ namespace MoneyFlow.Data.Repositories
 
             return (items, totalCount);
         }
+
+        public async Task<bool> AnyAsync(Expression<Func<Account, bool>>? filter)
+        {
+            if (filter != null)
+            {
+                return await _context.Accounts.AnyAsync(filter);
+            }
+
+            return await _context.Accounts.AnyAsync();
+        }
     }
 }

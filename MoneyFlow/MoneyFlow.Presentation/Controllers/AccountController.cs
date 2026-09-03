@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
@@ -14,14 +14,16 @@ namespace MoneyFlow.Presentation.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly UserManager<ApplicationUser> _userManager;
-
+        private readonly ICustomerService _customerService;
 
         public AccountController(
              IAccountService accountService,
-             UserManager<ApplicationUser> userManager)
+             UserManager<ApplicationUser> userManager,
+             ICustomerService customerService)
         {
             _accountService = accountService;
             _userManager = userManager;
+            _customerService = customerService;
         }
 
         [Authorize(Roles = "Customer")]
@@ -161,10 +163,80 @@ namespace MoneyFlow.Presentation.Controllers
             {
                 Summary = summary,
                 Accounts = accounts,
-                Query = query
+                Query = query,
+                OpenAccount = new OpenAccountVM()
             };
 
             return View(result);
+        }
+
+        [Authorize(Roles = "Employee, Admin")]
+        [HttpGet]
+        public async Task<IActionResult> SearchCustomers(string? query)
+        {
+            var pagedCustomers = await _customerService.GetCustomersPagedAsync(1, 10, query);
+            var results = pagedCustomers.Items.Select(c => new
+            {
+                id = c.Id,
+                name = $"{c.FirstName} {c.LastName}".Trim(),
+                email = c.Email,
+                nationalId = c.NationalId
+            });
+
+            return Json(results);
+        }
+
+        [Authorize(Roles = "Employee, Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Open(OpenAccountVM model, int page = 1, AccountQueryVM? query = null)
+        {
+            if (model.CustomerId <= 0)
+            {
+                ModelState.AddModelError(nameof(model.CustomerId), "Please select a valid customer.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ShowOpenAccountModal = true;
+                int pageSize = 5;
+                var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
+                var summary = await _accountService.GetAllAccountsSummaryAsync();
+
+                var indexModel = new EmployeeAccountIndexVM
+                {
+                    Summary = summary,
+                    Accounts = accounts,
+                    Query = query,
+                    OpenAccount = model
+                };
+
+                return View("EmployeeIndex", indexModel);
+            }
+
+            var result = await _accountService.OpenAccountAsync(model);
+
+            if (!result)
+            {
+                ModelState.AddModelError(string.Empty, "Failed to open account. Please check customer status and try again.");
+                ViewBag.ShowOpenAccountModal = true;
+                int pageSize = 5;
+                var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
+                var summary = await _accountService.GetAllAccountsSummaryAsync();
+
+                var indexModel = new EmployeeAccountIndexVM
+                {
+                    Summary = summary,
+                    Accounts = accounts,
+                    Query = query,
+                    OpenAccount = model
+                };
+
+                return View("EmployeeIndex", indexModel);
+            }
+
+            TempData["SuccessMessage"] = $"New {model.AccountType} account created successfully.";
+            return RedirectToAction("EmployeeIndex");
         }
 
         [Authorize(Roles = "Employee, Admin")]

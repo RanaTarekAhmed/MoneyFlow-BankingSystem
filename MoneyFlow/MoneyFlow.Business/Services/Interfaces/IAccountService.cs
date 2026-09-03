@@ -17,6 +17,7 @@ namespace MoneyFlow.Business.Services.Interfaces
             AccountQueryVM? query
             );
         Task<EmployeeAccountSummaryVM> GetAllAccountsSummaryAsync();
+        Task<bool> OpenAccountAsync(OpenAccountVM model);
         Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId, TransferVM model);
 
         Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model);
