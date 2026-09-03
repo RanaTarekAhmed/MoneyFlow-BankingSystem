@@ -17,4 +17,10 @@
     <ProjectReference Include="..\MoneyFlow.Business\MoneyFlow.Business.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Employee\Operations.cshtml">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

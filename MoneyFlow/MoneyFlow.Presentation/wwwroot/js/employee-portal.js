@@ -289,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!opsAccountInput) return;
         const acct = opsAccountInput.value.trim().toUpperCase();
         if (!acct) {
-            if (window.MoneyFlowToast) window.MoneyFlowToast.warning('Please enter an account number to lookup');
             return;
         }
 
@@ -325,10 +324,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     statusEl.textContent = 'Active';
                 }
             }
-
-            if (window.MoneyFlowToast) {
-                window.MoneyFlowToast.success('Account found: ' + data.name);
-            }
         }
     }
 
@@ -359,7 +354,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const opType = isWithdraw ? 'Withdrawal' : 'Deposit';
 
             if (amount <= 0) {
-                if (window.MoneyFlowToast) window.MoneyFlowToast.error('Please enter a valid amount');
                 return;
             }
 
@@ -380,10 +374,6 @@ document.addEventListener('DOMContentLoaded', function () {
             if (receiptModalEl) {
                 const modal = new bootstrap.Modal(receiptModalEl);
                 modal.show();
-            }
-
-            if (window.MoneyFlowToast) {
-                window.MoneyFlowToast.success(opType + ' executed successfully!');
             }
         });
     }
