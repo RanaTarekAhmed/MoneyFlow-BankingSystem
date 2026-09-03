@@ -1,0 +1,108 @@
+@model OpenAccountVM
+
+@using MoneyFlow.Business.ViewModels.Accounts
+@using MoneyFlow.Data.Enums
+
+<!-- Modal: Open Account with Searchable Customer Select -->
+<div class="modal fade" id="openAccountForCustomerModal" tabindex="-1" aria-labelledby="openAccountForCustomerModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content border-0 shadow">
+			<div class="modal-header bg-primary text-white">
+				<div>
+					<h5 class="modal-title fw-bold" id="openAccountForCustomerModalLabel">Open Bank Account for Customer</h5>
+					<div class="small text-white-50">Issue a new Current or Savings account to a customer.</div>
+				</div>
+				<a asp-controller="Account" asp-action="EmployeeIndex" class="btn-close btn-close-white text-decoration-none" aria-label="Close"></a>
+			</div>
+			<div class="modal-body p-4">
+				<form id="openAccountForm" method="post" asp-controller="Account" asp-action="Open" novalidate>
+					@Html.AntiForgeryToken()
+
+					<!-- Validation Summary (model-level errors) -->
+					<div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 px-3 mb-3" role="alert"></div>
+
+					<!-- 1. Searchable Customer Select Component -->
+					<div class="mb-4">
+						<label class="form-label fw-bold small text-dark d-flex justify-content-between">
+							<span>Select Customer <span class="text-danger">*</span></span>
+							<button type="button" class="btn btn-link p-0 text-decoration-none small @(Model?.CustomerId > 0 ? "" : "d-none")" id="btnChangeCustomer">
+								Change / Search Another
+							</button>
+						</label>
+
+						<!-- Searchable Select Input & Dropdown -->
+						<div class="mf-searchable-select-wrap position-relative" id="customerSearchableSelectBox" style="display: @(Model?.CustomerId > 0 ? "none" : "block");">
+							<div class="input-group">
+								<span class="input-group-text bg-white border-end-0">
+									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<circle cx="11" cy="11" r="8"/>
+										<line x1="21" y1="21" x2="16.65" y2="16.65"/>
+									</svg>
+								</span>
+								<input type="text" class="form-control mf-form-control border-start-0" id="inputSearchCustomerModal" placeholder="Type customer name, National ID, or email to search..." autocomplete="off" />
+							</div>
+
+							<!-- Floating Searchable Results Dropdown -->
+							<div class="mf-searchable-dropdown shadow border rounded" id="customerSearchDropdown" style="display: none;">
+								<div class="mf-searchable-list" id="customerSearchList">
+									<div class="p-3 text-center text-muted small" id="customerSearchPrompt">
+										Type at least 1 character to search registered customers...
+									</div>
+								</div>
+								<div class="p-3 text-center text-muted small" id="customerSearchNoMatch" style="display: none;">
+									No registered customers match your search query.
+								</div>
+							</div>
+						</div>
+
+						<!-- Selected Customer Active Banner -->
+						<div class="p-3 bg-light rounded d-flex align-items-center justify-content-between border mt-2"
+							 id="selectedCustomerBanner"
+							 style="display: @(Model?.CustomerId > 0 ? "flex" : "none");">
+							<div class="d-flex align-items-center gap-3">
+								<div class="mf-lookup-avatar" style="width: 44px; height: 44px; font-size: 1.1rem;" id="modalCustAvatar">
+									@(!string.IsNullOrWhiteSpace(Model?.CustomerName) ? (Model.CustomerName.Trim().Length >= 2 ? Model.CustomerName.Trim().Substring(0, 2).ToUpper() : "CU") : "--")
+								</div>
+								<div>
+									<div class="fw-bold text-dark fs-6" id="modalCustDisplayName">@(Model?.CustomerName ?? "--")</div>
+									<div class="small text-muted">ID: <strong id="modalCustDisplayId">@(Model?.CustomerId > 0 ? $"CUST-{Model.CustomerId}" : "--")</strong></div>
+								</div>
+							</div>
+							<span class="badge bg-success-subtle text-success fw-bold px-3 py-1">Selected</span>
+						</div>
+
+						<input asp-for="CustomerId" type="hidden" id="selectedCustomerIdVal" />
+						<input asp-for="CustomerName" type="hidden" id="selectedCustomerNameVal" />
+						<span asp-validation-for="CustomerId" class="text-danger small mt-1 d-block"></span>
+					</div>
+
+					<!-- 2. Account Specifications -->
+					<div class="row g-3 pt-3 border-top">
+						<!-- Account Type matching AccountType enum (Savings, Current) -->
+						<div class="col-12 col-md-6">
+							<label asp-for="AccountType" class="form-label fw-bold small text-dark">Account Type <span class="text-danger">*</span></label>
+							<select asp-for="AccountType" class="form-select mf-form-control" id="modalAccountTypeSelect">
+								<option value="Current">Current Account</option>
+								<option value="Savings">Savings Account</option>
+							</select>
+							<span asp-validation-for="AccountType" class="text-danger small mt-1 d-block"></span>
+						</div>
+						<div class="col-12 col-md-6">
+							<label asp-for="InitialDeposit" class="form-label fw-bold small text-dark">Initial Deposit Amount ($)</label>
+							<input asp-for="InitialDeposit" type="number" step="any" class="form-control mf-form-control" id="modalInitialDepositInput" placeholder="0.00" />
+							<div class="form-text">Initial counter or cash deposit amount.</div>
+							<span asp-validation-for="InitialDeposit" class="text-danger small mt-1 d-block"></span>
+						</div>
+					</div>
+
+					<div class="modal-footer bg-light mt-4 -mx-4 -mb-4 px-0 pb-0 pt-3 border-top">
+						<a asp-controller="Account" asp-action="EmployeeIndex" class="btn btn-secondary text-decoration-none">Cancel</a>
+						<button type="submit" class="btn btn-primary fw-bold px-4" id="btnConfirmOpenAccount">
+							Create &amp; Issue Account
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

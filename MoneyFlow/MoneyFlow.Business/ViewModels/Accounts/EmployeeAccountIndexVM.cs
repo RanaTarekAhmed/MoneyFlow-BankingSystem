@@ -1,4 +1,4 @@
-﻿using MoneyFlow.Business.Common;
+using MoneyFlow.Business.Common;
 
 
 namespace MoneyFlow.Business.ViewModels.Accounts
@@ -8,5 +8,6 @@ namespace MoneyFlow.Business.ViewModels.Accounts
         public EmployeeAccountSummaryVM Summary { get; set; } = new();
         public PagedResult<EmployeeAccountVM> Accounts { get; set; } = null!;
         public AccountQueryVM? Query { get; set; } = new();
+        public OpenAccountVM OpenAccount { get; set; } = new();
     }
 }

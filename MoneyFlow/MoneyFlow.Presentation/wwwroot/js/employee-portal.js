@@ -51,168 +51,207 @@ document.addEventListener('DOMContentLoaded', function () {
     // 3. Open Account Modal with Searchable Customer Select
     // -------------------------------------------------------------------------
     const openAccountModalEl = document.getElementById('openAccountForCustomerModal');
-    let openAccountModalInstance = null;
-    if (openAccountModalEl) {
-        openAccountModalInstance = new bootstrap.Modal(openAccountModalEl);
-    }
+    let openAccountModalInstance = openAccountModalEl ? new bootstrap.Modal(openAccountModalEl) : null;
+    let custSearchDebounceTimer;
+    let openAccFormSubmitting = false; // guard against double-submit
 
-    const inputSearchCustomer = document.getElementById('inputSearchCustomerModal');
-    const customerDropdown = document.getElementById('customerSearchDropdown');
-    const customerSearchList = document.getElementById('customerSearchList');
-    const customerSearchNoMatch = document.getElementById('customerSearchNoMatch');
-    const customerSearchBox = document.getElementById('customerSearchableSelectBox');
-    const selectedBanner = document.getElementById('selectedCustomerBanner');
-    const btnChangeCustomer = document.getElementById('btnChangeCustomer');
-    const selectedCustIdVal = document.getElementById('selectedCustomerIdVal');
+    // ---- Live element accessors (always re-query after innerHTML swap) --------
+    const oa = {
+        form:          () => document.getElementById('openAccountForm'),
+        searchInput:   () => document.getElementById('inputSearchCustomerModal'),
+        dropdown:      () => document.getElementById('customerSearchDropdown'),
+        searchList:    () => document.getElementById('customerSearchList'),
+        noMatch:       () => document.getElementById('customerSearchNoMatch'),
+        searchBox:     () => document.getElementById('customerSearchableSelectBox'),
+        banner:        () => document.getElementById('selectedCustomerBanner'),
+        changeBtn:     () => document.getElementById('btnChangeCustomer'),
+        custIdInput:   () => document.getElementById('selectedCustomerIdVal'),
+        nameEl:        () => document.getElementById('modalCustDisplayName'),
+        idEl:          () => document.getElementById('modalCustDisplayId'),
+        natIdEl:       () => document.getElementById('modalCustDisplayNatId'),
+        avatarEl:      () => document.getElementById('modalCustAvatar'),
+        submitBtn:     () => document.getElementById('btnConfirmOpenAccount'),
+        modal:         () => document.getElementById('openAccountForCustomerModal'),
+        custValSpan:   () => document.querySelector('[data-valmsg-for="CustomerId"]'),
+        custNameInput: () => document.getElementById('selectedCustomerNameVal'),
+    };
 
     function selectCustomer(id, name, email, natId) {
-        if (selectedCustIdVal) selectedCustIdVal.value = id;
-
-        const nameEl = document.getElementById('modalCustDisplayName');
-        const idEl = document.getElementById('modalCustDisplayId');
-        const natIdEl = document.getElementById('modalCustDisplayNatId');
-        const avatarEl = document.getElementById('modalCustAvatar');
-
-        if (nameEl) nameEl.textContent = name;
-        if (idEl) idEl.textContent = id;
-        if (natIdEl) natIdEl.textContent = natId || '--';
-        if (avatarEl) {
-            const parts = name.split(' ');
-            avatarEl.textContent = (parts[0]?.[0] || 'C') + (parts[1]?.[0] || 'U');
+        const custIdInput = oa.custIdInput();
+        if (custIdInput) {
+            custIdInput.value = id;
+            custIdInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
-        if (customerSearchBox) customerSearchBox.style.display = 'none';
-        if (customerDropdown) customerDropdown.style.display = 'none';
-        if (selectedBanner) selectedBanner.style.display = 'flex';
-        if (btnChangeCustomer) btnChangeCustomer.classList.remove('d-none');
+        const custNameInput = oa.custNameInput();
+        if (custNameInput) {
+            custNameInput.value = name;
+        }
+
+        // Clear server/client validation error message when customer is chosen
+        const custValSpan = oa.custValSpan();
+        if (custValSpan) {
+            custValSpan.textContent = '';
+            custValSpan.classList.remove('field-validation-error');
+            custValSpan.classList.add('field-validation-valid');
+        }
+
+        const nameEl  = oa.nameEl();
+        const idEl    = oa.idEl();
+        const natIdEl = oa.natIdEl();
+        const avatarEl = oa.avatarEl();
+
+        if (nameEl)  nameEl.textContent  = name;
+        if (idEl)    idEl.textContent    = 'CUST-' + id;
+        if (natIdEl) natIdEl.textContent = natId || '--';
+        if (avatarEl) {
+            const parts = name.trim().split(' ');
+            avatarEl.textContent = ((parts[0]?.[0] || 'C') + (parts[1]?.[0] || 'U')).toUpperCase();
+        }
+
+        const searchBox = oa.searchBox();
+        const dropdown  = oa.dropdown();
+        const banner    = oa.banner();
+        const changeBtn = oa.changeBtn();
+        if (searchBox) searchBox.style.display = 'none';
+        if (dropdown)  dropdown.style.display  = 'none';
+        if (banner)    banner.style.display    = 'flex';
+        if (changeBtn) changeBtn.classList.remove('d-none');
     }
 
     function resetCustomerSelect() {
-        if (selectedCustIdVal) selectedCustIdVal.value = '';
-        if (inputSearchCustomer) inputSearchCustomer.value = '';
-        if (customerSearchBox) customerSearchBox.style.display = 'block';
-        if (selectedBanner) selectedBanner.style.display = 'none';
-        if (btnChangeCustomer) btnChangeCustomer.classList.add('d-none');
-        if (customerDropdown) customerDropdown.style.display = 'none';
+        const custIdInput   = oa.custIdInput();
+        const custNameInput = oa.custNameInput();
+        const searchInput   = oa.searchInput();
+        const searchBox     = oa.searchBox();
+        const banner        = oa.banner();
+        const changeBtn     = oa.changeBtn();
+        const dropdown      = oa.dropdown();
+        const custValSpan   = oa.custValSpan();
+
+        // Use '0' so the hidden int field is always parseable by the model binder
+        if (custIdInput)   custIdInput.value = '0';
+        if (custNameInput) custNameInput.value = '';
+        if (searchInput)   searchInput.value = '';
+        if (searchBox)     searchBox.style.display = 'block';
+        if (banner)        banner.style.display    = 'none';
+        if (changeBtn)     changeBtn.classList.add('d-none');
+        if (dropdown)      dropdown.style.display  = 'none';
+        if (custValSpan) {
+            custValSpan.textContent = '';
+            custValSpan.classList.remove('field-validation-error');
+            custValSpan.classList.add('field-validation-valid');
+        }
     }
 
-    if (btnChangeCustomer) {
-        btnChangeCustomer.addEventListener('click', function () {
-            resetCustomerSelect();
-            if (inputSearchCustomer) inputSearchCustomer.focus();
+    function renderCustomerResults(customers) {
+        const list    = oa.searchList();
+        const noMatch = oa.noMatch();
+        if (!list) return;
+
+        if (!customers || customers.length === 0) {
+            list.innerHTML = '';
+            if (noMatch) noMatch.style.display = 'block';
+            return;
+        }
+
+        if (noMatch) noMatch.style.display = 'none';
+        list.innerHTML = customers.map(c => {
+            const parts   = (c.name || 'CU').trim().split(' ');
+            const initials = ((parts[0]?.[0] || 'C') + (parts[1]?.[0] || 'U')).toUpperCase();
+            return `
+                <div class="mf-searchable-item" data-cust-id="${c.id}" data-cust-name="${c.name}" data-cust-email="${c.email || ''}" data-cust-natid="${c.nationalId || ''}">
+                    <div class="mf-lookup-avatar-xs">${initials}</div>
+                    <div class="mf-searchable-meta">
+                        <div class="mf-searchable-name">${c.name} <span class="badge bg-light text-muted border ms-1">ID: ${c.id}</span></div>
+                        <div class="mf-searchable-sub">${c.email || 'No email'} • Nat ID: ${c.nationalId || '--'}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function fetchCustomers(query) {
+        fetch('/Account/SearchCustomers?query=' + encodeURIComponent(query || ''))
+            .then(res => res.json())
+            .then(data => {
+                const dropdown = oa.dropdown();
+                if (dropdown) dropdown.style.display = 'block';
+                renderCustomerResults(data);
+            })
+            .catch(err => console.error('Error fetching customers:', err));
+    }
+
+    // ---- Event Delegation on the modal element (survives innerHTML swap) ------
+    const modalContainer = document.getElementById('openAccountForCustomerModal');
+    if (modalContainer) {
+
+        // Customer search input — debounced
+        modalContainer.addEventListener('input', function (e) {
+            if (!e.target.matches('#inputSearchCustomerModal')) return;
+            clearTimeout(custSearchDebounceTimer);
+            custSearchDebounceTimer = setTimeout(() => fetchCustomers(e.target.value.trim()), 300);
         });
+
+        // Customer search focus — load immediately
+        modalContainer.addEventListener('focusin', function (e) {
+            if (!e.target.matches('#inputSearchCustomerModal')) return;
+            fetchCustomers(e.target.value.trim());
+        });
+
+        // Select customer from dropdown
+        modalContainer.addEventListener('click', function (e) {
+            const item = e.target.closest('.mf-searchable-item');
+            if (item) {
+                selectCustomer(
+                    item.getAttribute('data-cust-id')   || '',
+                    item.getAttribute('data-cust-name') || '',
+                    item.getAttribute('data-cust-email')  || '',
+                    item.getAttribute('data-cust-natid')  || ''
+                );
+                return;
+            }
+
+            // Change / Search Another button
+            if (e.target.closest('#btnChangeCustomer')) {
+                resetCustomerSelect();
+                const searchInput = oa.searchInput();
+                if (searchInput) searchInput.focus();
+                return;
+            }
+        });
+
+        // Close dropdown when clicking outside the searchable select
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.mf-searchable-select-wrap')) {
+                const dropdown = oa.dropdown();
+                if (dropdown) dropdown.style.display = 'none';
+            }
+        });
+
     }
 
-    // Top general "+ Open Bank Account" button opens with fresh search
-    const btnGeneralOpenAcc = document.getElementById('btnOpenGeneralAccountModal') || document.getElementById('btnOpenAccModalLedger');
+    // ---- Trigger buttons outside the modal element (not affected by innerHTML swap) ---
+    const btnGeneralOpenAcc = document.getElementById('btnOpenAccModalLedger') || document.getElementById('btnOpenGeneralAccountModal');
     if (btnGeneralOpenAcc) {
         btnGeneralOpenAcc.addEventListener('click', function () {
             resetCustomerSelect();
             if (openAccountModalInstance) openAccountModalInstance.show();
+            fetchCustomers('');
         });
     }
 
-    // Direct "+ Open Account" buttons from row pre-select the customer
-    const openAccButtons = document.querySelectorAll('.btn-open-account-for-cust');
-    openAccButtons.forEach(btn => {
+    document.querySelectorAll('.btn-open-account-for-cust').forEach(btn => {
         btn.addEventListener('click', function () {
-            const custId = this.getAttribute('data-cust-id') || 'CUST-4091';
-            const custName = this.getAttribute('data-cust-name') || 'Sarah Jenkins';
-            const custEmail = this.getAttribute('data-cust-email') || '';
-            const custNatId = this.getAttribute('data-cust-natid') || '';
-
-            selectCustomer(custId, custName, custEmail, custNatId);
-
-            if (openAccountModalInstance) {
-                openAccountModalInstance.show();
-            }
+            selectCustomer(
+                this.getAttribute('data-cust-id')   || '1',
+                this.getAttribute('data-cust-name') || 'Customer',
+                this.getAttribute('data-cust-email')  || '',
+                this.getAttribute('data-cust-natid')  || ''
+            );
+            if (openAccountModalInstance) openAccountModalInstance.show();
         });
     });
-
-    // Live search typing in searchable select
-    if (inputSearchCustomer) {
-        inputSearchCustomer.addEventListener('input', function () {
-            const query = this.value.toLowerCase().trim();
-            if (!customerDropdown) return;
-
-            customerDropdown.style.display = 'block';
-            const items = customerSearchList?.querySelectorAll('.mf-searchable-item') || [];
-            let matchCount = 0;
-
-            items.forEach(item => {
-                const text = item.innerText.toLowerCase();
-                if (!query || text.includes(query)) {
-                    item.style.display = 'flex';
-                    matchCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            if (customerSearchNoMatch) {
-                customerSearchNoMatch.style.display = (matchCount === 0) ? 'block' : 'none';
-            }
-        });
-
-        inputSearchCustomer.addEventListener('focus', function () {
-            if (customerDropdown) {
-                customerDropdown.style.display = 'block';
-                this.dispatchEvent(new Event('input'));
-            }
-        });
-    }
-
-    // Click on item in searchable dropdown
-    if (customerSearchList) {
-        customerSearchList.addEventListener('click', function (e) {
-            const item = e.target.closest('.mf-searchable-item');
-            if (!item) return;
-
-            const id = item.getAttribute('data-cust-id') || '';
-            const name = item.getAttribute('data-cust-name') || '';
-            const email = item.getAttribute('data-cust-email') || '';
-            const natId = item.getAttribute('data-cust-natid') || '';
-
-            selectCustomer(id, name, email, natId);
-        });
-    }
-
-    // Close dropdown on outside click
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.mf-searchable-select-wrap')) {
-            if (customerDropdown) customerDropdown.style.display = 'none';
-        }
-    });
-
-    // Confirm & Issue Account
-    const btnConfirmOpenAccount = document.getElementById('btnConfirmOpenAccount');
-    if (btnConfirmOpenAccount) {
-        btnConfirmOpenAccount.addEventListener('click', function () {
-            const custId = selectedCustIdVal?.value;
-            const custName = document.getElementById('modalCustDisplayName')?.textContent || 'Customer';
-
-            if (!custId && selectedBanner?.style.display === 'none') {
-                if (window.MoneyFlowToast) window.MoneyFlowToast.error('Please select a customer first.');
-                return;
-            }
-
-            const acctType = document.getElementById('modalAccountTypeSelect')?.value || 'Current';
-            const deposit = parseFloat(document.getElementById('modalInitialDepositInput')?.value || '0');
-            const newAccNum = 'MF-' + Math.floor(100000 + Math.random() * 900000);
-
-            if (openAccountModalInstance) {
-                openAccountModalInstance.hide();
-            }
-
-            if (window.MoneyFlowToast) {
-                let msg = 'New ' + acctType + ' Account (#' + newAccNum + ') opened for ' + custName + '.';
-                if (deposit > 0) {
-                    msg += ' Initial deposit $' + deposit.toFixed(2) + ' credited.';
-                }
-                window.MoneyFlowToast.success(msg);
-            }
-        });
-    }
 
     // -------------------------------------------------------------------------
     // 4. Teller Cash Operations Interactive Wizard
