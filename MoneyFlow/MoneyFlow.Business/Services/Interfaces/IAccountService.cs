@@ -8,6 +8,7 @@ namespace MoneyFlow.Business.Services.Interfaces
     {
         Task<MyAccountsVM?> GetMyAccountsAsync(string userId);
         Task<AccountDetailsVM?> GetAccountDetailsAsync(string userId, int accountId);
+        Task<AccountDetailsVM?> GetAccountByNumberAsync(string accountNumber);
         Task<TransferVM?> GetTransferModelAsync(string userId);
         Task<PagedResult<EmployeeAccountVM>> GetAllAccountsPagedAsync
             (
@@ -17,5 +18,9 @@ namespace MoneyFlow.Business.Services.Interfaces
             );
         Task<EmployeeAccountSummaryVM> GetAllAccountsSummaryAsync();
         Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId, TransferVM model);
+
+        Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model);
+
+        Task<(bool Success, string Message, Transaction? Transaction)> WithdrawAsync(CashOperationVM model);
     }
 }

@@ -1,7 +1,66 @@
+@model MoneyFlow.Business.ViewModels.Accounts.CashOperationVM
 @{
     Layout = "_EmployeeLayout";
     ViewData["Title"] = "Teller Cash Operations";
+
+    string currentOp = string.IsNullOrWhiteSpace(Model?.OperationType) ? "Deposit" : Model.OperationType;
+    bool isWithdraw = string.Equals(currentOp, "Withdraw", StringComparison.OrdinalIgnoreCase);
 }
+
+<style>
+    /* CSS Print Rules: Only print the receipt slip */
+    @@media print {
+        /* Hide everything on the page */
+        body * {
+            visibility: hidden !important;
+        }
+        /* Hide modal backdrops, dialog borders, headers, and buttons */
+        .modal-backdrop,
+        .modal-footer,
+        .btn-close,
+        .mf-page-header,
+        #cashOpsForm {
+            display: none !important;
+        }
+        /* Show ONLY the receipt container and its content */
+        #tellerReceiptModal,
+        .mf-receipt-container,
+        .mf-receipt-container * {
+            visibility: visible !important;
+        }
+        /* Position the receipt cleanly at the top-center of the paper */
+        #tellerReceiptModal {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: none !important;
+        }
+
+        .modal-dialog {
+            max-width: 100% !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+        }
+
+        .modal-content {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .mf-receipt-container {
+            width: 100% !important;
+            max-width: 480px !important;
+            margin: 0 auto !important;
+            padding: 20px !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
 
 <!-- Page Header -->
 <div class="mf-page-header">
@@ -9,136 +68,195 @@
     <p class="mf-page-subtitle">Process physical cash deposits and withdrawals with real-time balance checks and instant receipt slips.</p>
 </div>
 
-<div class="row g-4">
-    <!-- Left Column: Operations Form -->
-    <div class="col-12 col-lg-8">
-        <div class="mf-card">
-            <!-- Tabs: Deposit vs Withdrawal -->
-            <ul class="nav mf-ops-nav-pills" id="opsTab" role="tablist">
-                <li class="nav-item flex-fill" role="presentation">
-                    <button class="mf-ops-pill deposit-active active" id="pills-deposit-tab" data-bs-toggle="pill" data-bs-target="#pills-deposit" type="button" role="tab">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="19" x2="12" y2="5"></line>
-                            <polyline points="5 12 12 5 19 12"></polyline>
-                        </svg>
-                        <span>Cash Deposit (Inflow)</span>
-                    </button>
-                </li>
-                <li class="nav-item flex-fill" role="presentation">
-                    <button class="mf-ops-pill withdraw-active" id="pills-withdraw-tab" data-bs-toggle="pill" data-bs-target="#pills-withdraw" type="button" role="tab">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <polyline points="19 12 12 19 5 12"></polyline>
-                        </svg>
-                        <span>Cash Withdrawal (Outflow)</span>
-                    </button>
-                </li>
-            </ul>
+<!-- TempData Success Banner -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 d-flex align-items-center" role="alert">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <div>
+            <strong>Success!</strong> @TempData["SuccessMessage"]
+            @if (TempData["TransactionNumber"] != null)
+            {
+                <span class="ms-1">(Ref: <strong>@TempData["TransactionNumber"]</strong>)</span>
+            }
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-            <!-- Step 1: Account Identification -->
-            <div class="mb-4">
-                <label class="form-label fw-bold small text-dark">Target Account Number <span class="text-danger">*</span></label>
-                <div class="input-group">
-                    <input type="text" class="form-control mf-form-control text-uppercase" id="opsAccountInput" placeholder="e.g. MF-100234 or MF-100876" value="MF-100234" />
-                    <button class="btn btn-primary fw-bold px-4" type="button" id="btnLookupAccount">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        Verify Account
-                    </button>
-                </div>
-                <div class="form-text">Type account number and click Verify or press Enter. Try <code>MF-100234</code>, <code>MF-100876</code>, or <code>MF-100912</code>.</div>
+<form asp-controller="Account" asp-action="Operations" method="post" id="cashOpsForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="OperationType" id="OperationType" value="@currentOp" />
 
-                <!-- Verified Account Preview Ribbon -->
-                <div class="mf-lookup-result-card" id="opsLookupResult">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="mf-lookup-avatar" id="lookupAvatarText">SJ</div>
-                        <div>
-                            <div class="fw-bold text-dark fs-6" id="lookupCustName">Sarah Jenkins</div>
-                            <div class="small text-muted" id="lookupAcctType">Current Account • MF-100234</div>
+    <div class="row g-4">
+        <!-- Left Column: Operations Form -->
+        <div class="col-12 col-lg-8">
+            <div class="mf-card">
+
+                <!-- Server-Side Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger shadow-sm mb-4" role="alert"></div>
+
+                <!-- Tabs: Deposit vs Withdrawal -->
+                <ul class="nav mf-ops-nav-pills mb-4" id="opsTab" role="tablist">
+                    <li class="nav-item flex-fill" role="presentation">
+                        <button class="mf-ops-pill deposit-active @(!isWithdraw ? "active" : "")"
+                                id="pills-deposit-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#pills-deposit"
+                                type="button"
+                                role="tab"
+                                onclick="setOperationType('Deposit')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="19" x2="12" y2="5"></line>
+                                <polyline points="5 12 12 5 19 12"></polyline>
+                            </svg>
+                            <span>Cash Deposit (Inflow)</span>
+                        </button>
+                    </li>
+                    <li class="nav-item flex-fill" role="presentation">
+                        <button class="mf-ops-pill withdraw-active @(isWithdraw ? "active" : "")"
+                                id="pills-withdraw-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#pills-withdraw"
+                                type="button"
+                                role="tab"
+                                onclick="setOperationType('Withdraw')">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <polyline points="19 12 12 19 5 12"></polyline>
+                            </svg>
+                            <span>Cash Withdrawal (Outflow)</span>
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Step 1: Account Identification -->
+                <div class="mb-4">
+                    <label asp-for="AccountNumber" class="form-label fw-bold small text-dark">Target Account Number <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input asp-for="AccountNumber"
+                               type="text"
+                               class="form-control mf-form-control text-uppercase"
+                               id="opsAccountInput"
+                               placeholder="e.g. MF-100234 or MF-100876" />
+                        <button class="btn btn-primary fw-bold px-4" type="button" id="btnLookupAccount">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            Verify Account
+                        </button>
+                    </div>
+                    <span asp-validation-for="AccountNumber" class="text-danger small d-block mt-1"></span>
+
+                    <!-- Inline Error Display -->
+                    <div id="accountLookupError" class="text-danger small mt-1 fw-bold" style="display: none;"></div>
+
+                    <div class="form-text">Type account number and click Verify or press Enter.</div>
+
+                    <!-- Verified Account Preview Ribbon -->
+                    <div class="mf-lookup-result-card mt-3" id="opsLookupResult" style="display: none;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="mf-lookup-avatar" id="lookupAvatarText">--</div>
+                            <div>
+                                <div class="fw-bold text-dark fs-6" id="lookupCustName">Verified Account</div>
+                                <div class="small text-muted" id="lookupAcctType">--</div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="text-muted small">Current Ledger Balance</div>
+                            <div class="fs-5 fw-bold text-dark" id="lookupAcctBal">$0.00</div>
+                            <span class="badge bg-success-subtle text-success fw-bold mt-1" id="lookupAcctStatus">Active</span>
                         </div>
                     </div>
-                    <div class="text-end">
-                        <div class="text-muted small">Current Ledger Balance</div>
-                        <div class="fs-5 fw-bold text-dark" id="lookupAcctBal">$14,520.50</div>
-                        <span class="badge bg-success-subtle text-success fw-bold mt-1" id="lookupAcctStatus">Active</span>
+                </div>
+
+                <!-- Step 2: Amount & Denomination Chips -->
+                <div class="mb-4">
+                    <label asp-for="Amount" class="form-label fw-bold small text-dark">Cash Amount ($) <span class="text-danger">*</span></label>
+                    <div class="mf-amount-hero-input">
+                        <span class="mf-amount-currency">$</span>
+                        <input asp-for="Amount"
+                               type="number"
+                               step="0.01"
+                               min="0.01"
+                               class="form-control mf-amount-input"
+                               id="opsAmountInput"
+                               placeholder="0.00" />
+                    </div>
+                    <span asp-validation-for="Amount" class="text-danger small d-block mt-1"></span>
+
+                    <!-- Quick Cash Chips -->
+                    <div class="mf-quick-chips mt-2">
+                        <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="100">$100</button>
+                        <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="500">$500</button>
+                        <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="1000">$1,000</button>
+                        <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="2000">$2,000</button>
+                        <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="5000">$5,000</button>
                     </div>
                 </div>
+
+                <!-- Notes & Teller Verification Details -->
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold small text-dark">Transaction Memo</label>
+                    <input asp-for="Description"
+                           type="text"
+                           class="form-control mf-form-control"
+                           id="opsMemoInput"
+                           placeholder="e.g. Counter cash deposit" />
+                    <span asp-validation-for="Description" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <!-- Submission Action -->
+                <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                    <div class="text-muted small">
+                        Teller Authorization: <strong>Station 02 (Officer ST)</strong>
+                    </div>
+                    <button type="submit" class="mf-teller-btn mf-teller-btn-primary px-4 py-2" id="btnSubmitOps">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        <span>Execute Operation &amp; Print Slip</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Live Summary & Drawer Balance -->
+        <div class="col-12 col-lg-4">
+            <div class="mf-card mb-4">
+                <h2 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">Transaction Settlement</h2>
+
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted small">Posting Speed</span>
+                    <span class="badge bg-success-subtle text-success fw-bold">Immediate Posting</span>
+                </div>
+
+                <div class="d-flex justify-content-between py-3">
+                    <span class="fw-bold text-dark">Net Ledger Impact</span>
+                    <span class="fs-5 fw-bold text-primary" id="opsTotalDisplay">$0.00</span>
+                </div>
+
+                <div class="p-3 bg-light rounded text-muted" style="font-size: 0.75rem;">
+                    Cash transactions update customer balances instantly upon teller execution.
+                </div>
             </div>
 
-            <!-- Step 2: Amount & Denomination Chips -->
-            <div class="mb-4">
-                <label class="form-label fw-bold small text-dark">Cash Amount ($) <span class="text-danger">*</span></label>
-                <div class="mf-amount-hero-input">
-                    <span class="mf-amount-currency">$</span>
-                    <input type="number" step="0.01" min="1" class="form-control mf-amount-input" id="opsAmountInput" placeholder="0.00" value="500.00" />
+            <div class="mf-card">
+                <h2 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">Teller Drawer Balance</h2>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="fs-5 fw-bold text-dark">$42,850.00</div>
+                        <div class="text-muted small">Station 02 Cash Box</div>
+                    </div>
+                    <span class="badge bg-success text-white">Balanced</span>
                 </div>
-                <!-- Quick Cash Chips -->
-                <div class="mf-quick-chips">
-                    <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="50">+$50</button>
-                    <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="100">+$100</button>
-                    <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="500">+$500</button>
-                    <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="1000">+$1,000</button>
-                    <button type="button" class="btn btn-sm mf-chip-btn mf-ops-chip" data-val="5000">+$5,000</button>
-                </div>
-            </div>
-
-            <!-- Notes & Teller Verification Details -->
-            <div class="mb-4">
-                <label class="form-label fw-bold small text-dark">Transaction Memo</label>
-                <input type="text" class="form-control mf-form-control" id="opsMemoInput" placeholder="e.g. Counter cash deposit" />
-            </div>
-
-            <!-- Submission Action -->
-            <div class="d-flex align-items-center justify-content-between pt-3 border-top">
-                <div class="text-muted small">
-                    Teller Authorization: <strong>Station 02 (Officer ST)</strong>
-                </div>
-                <button type="button" class="mf-teller-btn mf-teller-btn-primary px-4 py-2" id="btnSubmitOps">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                    <span>Execute Operation &amp; Print Slip</span>
-                </button>
             </div>
         </div>
     </div>
-
-    <!-- Right Column: Live Summary & Drawer Balance -->
-    <div class="col-12 col-lg-4">
-        <!-- Settlement Preview Card -->
-        <div class="mf-card mb-4">
-            <h2 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">Transaction Settlement</h2>
-            
-            <div class="d-flex justify-content-between py-2 border-bottom">
-                <span class="text-muted small">Posting Speed</span>
-                <span class="badge bg-success-subtle text-success fw-bold">Immediate Posting</span>
-            </div>
-
-            <div class="d-flex justify-content-between py-3">
-                <span class="fw-bold text-dark">Net Ledger Impact</span>
-                <span class="fs-5 fw-bold text-primary" id="opsTotalDisplay">$500.00</span>
-            </div>
-
-            <div class="p-3 bg-light rounded text-muted" style="font-size: 0.75rem;">
-                Cash transactions update customer balances instantly upon teller execution.
-            </div>
-        </div>
-
-        <!-- Teller Cash Drawer Mini Status -->
-        <div class="mf-card">
-            <h2 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">Teller Drawer Balance</h2>
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <div class="fs-5 fw-bold text-dark">$42,850.00</div>
-                    <div class="text-muted small">Station 02 Cash Box</div>
-                </div>
-                <span class="badge bg-success text-white">Balanced</span>
-            </div>
-        </div>
-    </div>
-</div>
+</form>
 
 <!-- Modal: Digital Teller Receipt -->
 <div class="modal fade" id="tellerReceiptModal" tabindex="-1" aria-labelledby="tellerReceiptModalLabel" aria-hidden="true">
@@ -154,28 +272,24 @@
 
                     <div class="mf-receipt-row">
                         <span class="mf-receipt-label">Transaction Ref:</span>
-                        <span class="mf-receipt-val" id="receiptRefCode">MF-98214501</span>
+                        <span class="mf-receipt-val" id="receiptRefCode">@(TempData["TransactionNumber"] ?? "N/A")</span>
                     </div>
                     <div class="mf-receipt-row">
                         <span class="mf-receipt-label">Operation Type:</span>
-                        <span class="mf-receipt-val text-success" id="receiptOpType">Deposit</span>
+                        <span class="mf-receipt-val text-success" id="receiptOpType">@(TempData["OperationType"] ?? "Deposit")</span>
                     </div>
                     <div class="mf-receipt-row">
                         <span class="mf-receipt-label">Target Account:</span>
-                        <span class="mf-receipt-val" id="receiptAcctNum">MF-100234</span>
-                    </div>
-                    <div class="mf-receipt-row">
-                        <span class="mf-receipt-label">Account Holder:</span>
-                        <span class="mf-receipt-val">Sarah Jenkins</span>
+                        <span class="mf-receipt-val" id="receiptAcctNum">@(TempData["AccountNumber"] ?? "N/A")</span>
                     </div>
                     <div class="mf-receipt-row">
                         <span class="mf-receipt-label">Date &amp; Time:</span>
-                        <span class="mf-receipt-val" id="receiptTimestamp">--</span>
+                        <span class="mf-receipt-val" id="receiptTimestamp">@(TempData["TransactionDate"] ?? DateTime.Now.ToString("g"))</span>
                     </div>
 
                     <div class="mf-receipt-amount-box">
                         <span class="fw-bold text-dark">Amount Settled:</span>
-                        <span class="mf-receipt-total" id="receiptTotalAmt">$500.00</span>
+                        <span class="mf-receipt-total" id="receiptTotalAmt">$@(TempData["Amount"] ?? "0.00")</span>
                     </div>
 
                     <div class="mf-receipt-footer">
@@ -187,10 +301,146 @@
             <div class="modal-footer bg-light d-flex justify-content-between">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" onclick="window.print();">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
                     Print Slip
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function setOperationType(type) {
+            document.getElementById('OperationType').value = type;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const amountInput = document.getElementById('opsAmountInput');
+            const totalDisplay = document.getElementById('opsTotalDisplay');
+            const btnLookup = document.getElementById('btnLookupAccount');
+            const accountInput = document.getElementById('opsAccountInput');
+            const lookupCard = document.getElementById('opsLookupResult');
+            const lookupError = document.getElementById('accountLookupError');
+
+            function formatCurrency(val) {
+                const num = parseFloat(val) || 0;
+                return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function updateSummary() {
+                const val = amountInput.value;
+                if (totalDisplay) {
+                    totalDisplay.textContent = formatCurrency(val);
+                }
+            }
+
+            if (amountInput) {
+                amountInput.addEventListener('input', updateSummary);
+                updateSummary();
+            }
+
+            document.querySelectorAll('.mf-ops-chip').forEach(chip => {
+                chip.addEventListener('click', function () {
+                    const chipVal = parseFloat(this.getAttribute('data-val')) || 0;
+                    amountInput.value = chipVal.toFixed(2);
+                    updateSummary();
+                });
+            });
+
+            function showError(msg) {
+                if (lookupError) {
+                    lookupError.textContent = msg;
+                    lookupError.style.display = 'block';
+                }
+                if (lookupCard) {
+                    lookupCard.style.display = 'none';
+                }
+            }
+
+            function clearError() {
+                if (lookupError) {
+                    lookupError.textContent = '';
+                    lookupError.style.display = 'none';
+                }
+            }
+
+            async function verifyAccount() {
+                clearError();
+                const accountNumber = accountInput.value.trim();
+
+                if (!accountNumber) {
+                    showError("Please enter an account number to verify.");
+                    return;
+                }
+
+                btnLookup.disabled = true;
+                const originalBtnHtml = btnLookup.innerHTML;
+                btnLookup.innerHTML = `<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Verifying...`;
+
+                try {
+                    const response = await fetch(`/Account/GetAccountLookup?accountNumber=${encodeURIComponent(accountNumber)}`);
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        document.getElementById('lookupAvatarText').textContent = data.initials || 'NA';
+                        document.getElementById('lookupCustName').textContent = data.customerName || 'Verified Account';
+                        document.getElementById('lookupAcctType').textContent = `${data.accountType} • ${data.accountNumber}`;
+                        document.getElementById('lookupAcctBal').textContent = data.balance;
+
+                        const statusBadge = document.getElementById('lookupAcctStatus');
+                        statusBadge.textContent = data.status;
+                        statusBadge.className = (data.status.toLowerCase() === 'active')
+                            ? 'badge bg-success-subtle text-success fw-bold mt-1'
+                            : 'badge bg-danger-subtle text-danger fw-bold mt-1';
+
+                        lookupCard.style.display = 'flex';
+                    } else {
+                        showError(data.message || 'Account number not found.');
+                    }
+                } catch (err) {
+                    console.error('Error fetching account details:', err);
+                    showError('An error occurred while verifying the account.');
+                } finally {
+                    btnLookup.disabled = false;
+                    btnLookup.innerHTML = originalBtnHtml;
+                }
+            }
+
+            if (btnLookup) {
+                btnLookup.addEventListener('click', verifyAccount);
+            }
+
+            if (accountInput) {
+                accountInput.addEventListener('input', function() {
+                    clearError();
+                    if (lookupCard) lookupCard.style.display = 'none';
+                });
+
+                accountInput.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        verifyAccount();
+                    }
+                });
+            }
+
+            @if (TempData["TransactionNumber"] != null)
+            {
+                    <text>
+                        const receiptModalEl = document.getElementById('tellerReceiptModal');
+                        if (receiptModalEl) {
+                            const receiptModal = new bootstrap.Modal(receiptModalEl);
+                            receiptModal.show();
+                        }
+                    </text>
+            }
+        });
+    </script>
+}

@@ -172,5 +172,79 @@ namespace MoneyFlow.Presentation.Controllers
         {
             return View();
         }
+
+
+        [Authorize(Roles = "Employee, Admin")]
+        [HttpGet]
+        public IActionResult Operations()
+        {
+            return View("~/Views/Employee/Operations.cshtml", new CashOperationVM());
+        }
+
+        [Authorize(Roles = "Employee, Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Operations(CashOperationVM model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View("~/Views/Employee/Operations.cshtml", model);
+            }
+
+            var result = model.OperationType.Equals("Withdraw", StringComparison.OrdinalIgnoreCase)
+                ? await _accountService.WithdrawAsync(model)
+                : await _accountService.DepositAsync(model);
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View("~/Views/Employee/Operations.cshtml", model);
+            }
+
+            TempData["SuccessMessage"] = result.Message;
+            TempData["TransactionNumber"] = result.Transaction?.TransactionNumber;
+            TempData["OperationType"] = model.OperationType;
+            TempData["AccountNumber"] = model.AccountNumber;
+            TempData["Amount"] = model.Amount.ToString("N2");
+            TempData["TransactionDate"] = (result.Transaction?.TransactionDate ?? DateTime.Now).ToString("g");
+
+            return RedirectToAction(nameof(Operations));
+        }
+
+        [Authorize(Roles = "Employee, Admin")]
+        [HttpGet]
+        public async Task<IActionResult> GetAccountLookup(string accountNumber)
+        {
+            if (string.IsNullOrWhiteSpace(accountNumber))
+            {
+                return BadRequest(new { success = false, message = "Please enter an account number." });
+            }
+
+            var account = await _accountService.GetAccountByNumberAsync(accountNumber);
+
+            if (account == null)
+            {
+                return NotFound(new { success = false, message = "Account number not found." });
+            }
+
+            string initials = "NA";
+            if (!string.IsNullOrWhiteSpace(account.Account.AccountNumber))
+            {
+                var parts = account.Account.AccountNumber.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                initials = parts.Length > 1
+                    ? $"{parts[0][0]}{parts[^1][0]}".ToUpper()
+                    : $"{parts[0][0]}".ToUpper();
+            }
+
+            return Json(new
+            {
+                success = true,
+                accountType = account.Account.AccountType,
+                accountNumber = account.Account.AccountNumber,
+                balance = account.Account.Balance.ToString("C2"),
+                status = account.Account.Status.ToString(),
+                initials = initials
+            });
+        }
     }
 }
