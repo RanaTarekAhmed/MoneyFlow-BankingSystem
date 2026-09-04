@@ -179,5 +179,20 @@ namespace MoneyFlow.Business.Services
 				TotalCount = totalCount
 			};
 		}
-	}
+
+        public async Task<string> GenerateTransactionNumberAsync()
+        {
+            string transactionNumber;
+
+            do
+            {
+                transactionNumber =
+                    $"TRX-{Random.Shared.NextInt64(1000000000, 10000000000)}";
+            }
+            while (await _transactionRepository.AnyAsync(
+                t => t.TransactionNumber == transactionNumber));
+
+            return transactionNumber;
+        }
+    }
 }

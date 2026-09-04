@@ -12,15 +12,17 @@ namespace MoneyFlow.Business.Services
 		private readonly IAccountRepository _accountRepository;
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly ICustomerRepository _customerRepository;
-
-		public AccountService(
+		private readonly ITransactionService _transactionService;
+        public AccountService(
 			IAccountRepository accountRepository,
 			ITransactionRepository transactionRepository,
-			ICustomerRepository customerRepository)
+			ICustomerRepository customerRepository,
+			ITransactionService transactionService)
 		{
 			_accountRepository = accountRepository;
 			_transactionRepository = transactionRepository;
 			_customerRepository = customerRepository;
+			_transactionService = transactionService;
 		}
 
 		public async Task<MyAccountsVM?> GetMyAccountsAsync(string userId)
@@ -189,63 +191,61 @@ namespace MoneyFlow.Business.Services
 		}
 
 
-		public async Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId,TransferVM model)
-		{
-			var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
+        public async Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId,TransferVM model)
+        {
+            var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
 
-			if (customer == null)
-			{
-				return (false, "Customer was not found.", null);
-			}
+            if (customer == null)
+            {
+                return (false, "Customer was not found.", null);
+            }
 
-			var senderAccount = await _accountRepository.GetAsync(a => a.Id == model.SenderAccountId && a.CustomerId == customer.Id);
+            var senderAccount = await _accountRepository.GetAsync(a =>a.Id == model.SenderAccountId &&a.CustomerId == customer.Id);
 
-			if (senderAccount == null)
-			{
-				return (false,"The selected sender account does not belong to you.",null);
-			}
+            if (senderAccount == null)
+            {
+                return (false,"The selected sender account does not belong to you.",null);
+            }
 
-			if (string.IsNullOrWhiteSpace(model.ReceiverAccountNumber))
-			{
-				return (false,"Please enter the receiver account number.",null);
-			}
+            if (string.IsNullOrWhiteSpace(model.ReceiverAccountNumber))
+            {
+                return (false,"Please enter the receiver account number.",null);
+            }
 
-			var receiverAccount = await _accountRepository.GetAsync(a => a.AccountNumber == model.ReceiverAccountNumber.Trim());
+            var receiverAccount = await _accountRepository.GetAsync(a => a.AccountNumber == model.ReceiverAccountNumber.Trim());
 
-			if (receiverAccount == null)
-			{
-				return (false,"The receiver account was not found.",null);
-			}
+            if (receiverAccount == null)
+            {
+                return (false,"The receiver account was not found.",null);
+            }
 
-			try
-			{
-				senderAccount.Transfer(receiverAccount,model.Amount);
-			}
-			catch (ArgumentException ex)
-			{
-				return (false, ex.Message, null);
-			}
-			catch (InvalidOperationException ex)
-			{
-				return (false, ex.Message, null);
-			}
+            try
+            {
+                senderAccount.Transfer(receiverAccount,model.Amount);
+            }
+            catch (ArgumentException ex)
+            {
+                return (false, ex.Message, null);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return (false, ex.Message, null);
+            }
 
-			var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
+            var transactionNumber = await _transactionService.GenerateTransactionNumberAsync();
 
-			var transaction = new Transaction(transactionNumber,TransactionType.Transfer,model.Amount, model.Description,null,senderAccount.Id,receiverAccount.Id);
+            var transaction = new Transaction(transactionNumber,TransactionType.Transfer,model.Amount,model.Description,null,senderAccount.Id,receiverAccount.Id);
 
-			transaction.UpdateStatus(TransactionStatus.Completed);
+            transaction.UpdateStatus(TransactionStatus.Completed);
 
-			await _accountRepository.UpdateAsync(senderAccount);
+            await _accountRepository.UpdateAsync(senderAccount);
+            await _accountRepository.UpdateAsync(receiverAccount);
+            await _transactionRepository.AddAsync(transaction);
 
-			await _accountRepository.UpdateAsync(receiverAccount);
+            return (true,"Transfer completed successfully.",transaction);
+        }
 
-			await _transactionRepository.AddAsync(transaction);
-
-			return (true,"Transfer completed successfully.",transaction);
-		}
-
-		public async Task<PagedResult<EmployeeAccountVM>> GetAllAccountsPagedAsync(int pageNumber, int pageSize, AccountQueryVM? query)
+        public async Task<PagedResult<EmployeeAccountVM>> GetAllAccountsPagedAsync(int pageNumber, int pageSize, AccountQueryVM? query)
 		{
 			Expression<Func<Account, bool>>? filter = null;
 
@@ -334,29 +334,29 @@ namespace MoneyFlow.Business.Services
 		}
 
 
-		public async Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model)
-		{
-			if (string.IsNullOrWhiteSpace(model.AccountNumber))
-			{
-				return (false, "Please enter the account number.", null);
-			}
+        public async Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model)
+        {
+            if (string.IsNullOrWhiteSpace(model.AccountNumber))
+            {
+                return (false,"Please enter the account number.",null);
+            }
 
-			if (model.Amount <= 0)
-			{
-				return (false, "Deposit amount must be greater than zero.", null);
-			}
+            if (model.Amount <= 0)
+            {
+                return (false,"Deposit amount must be greater than zero.",null);
+            }
 
 			var account = await _accountRepository.GetAsync(a => a.AccountNumber == model.AccountNumber.Trim());
 
-			if (account == null)
-			{
-				return (false, "The account was not found.", null);
-			}
+            if (account == null)
+            {
+                return (false,"The account was not found.",null);
+            }
 
-			if (account.Status != AccountStatus.Active)
-			{
-				return (false, "The account is not active.", null);
-			}
+            if (account.Status != AccountStatus.Active)
+            {
+                return (false,"The account is not active.",null);
+            }
 
 			try
 			{
@@ -367,7 +367,7 @@ namespace MoneyFlow.Business.Services
 				return (false, ex.Message, null);
 			}
 
-			var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
+            var transactionNumber = await _transactionService.GenerateTransactionNumberAsync();
 
 			var transaction = new Transaction(
 				transactionNumber,
@@ -381,37 +381,35 @@ namespace MoneyFlow.Business.Services
 
 			transaction.UpdateStatus(TransactionStatus.Completed);
 
-			await _accountRepository.UpdateAsync(account);
-
-			await _transactionRepository.AddAsync(transaction);
+            await _accountRepository.UpdateAsync(account);
+            await _transactionRepository.AddAsync(transaction);
 
 			return (true,"Deposit completed successfully.",transaction);
 		}
 
+        public async Task<(bool Success, string Message, Transaction? Transaction)> WithdrawAsync(CashOperationVM model)
+        {
+            if (string.IsNullOrWhiteSpace(model.AccountNumber))
+            {
+                return (false,"Please enter the account number.",null);
+            }
 
-		public async Task<(bool Success, string Message, Transaction? Transaction)> WithdrawAsync(CashOperationVM model)
-		{
-			if (string.IsNullOrWhiteSpace(model.AccountNumber))
-			{
-				return (false, "Please enter the account number.", null);
-			}
-
-			if (model.Amount <= 0)
-			{
-				return (false, "Withdrawal amount must be greater than zero.", null);
-			}
+            if (model.Amount <= 0)
+            {
+                return (false,"Withdrawal amount must be greater than zero.",null);
+            }
 
 			var account = await _accountRepository.GetAsync(a => a.AccountNumber == model.AccountNumber.Trim());
 
-			if (account == null)
-			{
-				return (false, "The account was not found.", null);
-			}
+            if (account == null)
+            {
+                return (false,"The account was not found.",null);
+            }
 
-			if (account.Status != AccountStatus.Active)
-			{
-				return (false, "The account is not active.", null);
-			}
+            if (account.Status != AccountStatus.Active)
+            {
+                return (false,"The account is not active.",null);
+            }
 
 			try
 			{
@@ -426,7 +424,7 @@ namespace MoneyFlow.Business.Services
 				return (false, ex.Message, null);
 			}
 
-			var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
+            var transactionNumber = await _transactionService.GenerateTransactionNumberAsync();
 
 			var transaction = new Transaction(
 				transactionNumber,
@@ -440,9 +438,8 @@ namespace MoneyFlow.Business.Services
 
 			transaction.UpdateStatus(TransactionStatus.Completed);
 
-			await _accountRepository.UpdateAsync(account);
-
-			await _transactionRepository.AddAsync(transaction);
+            await _accountRepository.UpdateAsync(account);
+            await _transactionRepository.AddAsync(transaction);
 
 			return (true,"Withdrawal completed successfully.",transaction);
 		}
