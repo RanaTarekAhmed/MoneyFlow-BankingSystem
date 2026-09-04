@@ -25,7 +25,7 @@
                 <form asp-controller="Account" asp-action="Transfer" method="post" id="mfTransferForm">
                     @Html.AntiForgeryToken()
 
-                    <!-- Validation Summary for Errors (Displays error messages if recipient doesn't exist or balance is low) -->
+                    <!-- Validation Summary for Errors -->
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3 mb-4" role="alert"></div>
 
                     <!-- STEP 1: Account Details -->
@@ -45,8 +45,8 @@
                                     {
                                         foreach (var account in Model.Accounts)
                                         {
-                                            <option value="@account.Id" 
-                                                    data-account-number="@account.AccountNumber" 
+                                            <option value="@account.Id"
+                                                    data-account-number="@account.AccountNumber"
                                                     data-balance="@account.Balance">
                                                 @account.AccountNumber &mdash; Balance: @account.Balance.ToString("N2")
                                             </option>
@@ -59,10 +59,10 @@
                             <!-- Receiver Account -->
                             <div class="col-12">
                                 <label asp-for="ReceiverAccountNumber" class="mf-form-label">To Account / Recipient</label>
-                                <input asp-for="ReceiverAccountNumber" 
-                                       class="form-control mf-form-control" 
-                                       id="toAccountInput" 
-                                       placeholder="Enter receiver account number" 
+                                <input asp-for="ReceiverAccountNumber"
+                                       class="form-control mf-form-control"
+                                       id="toAccountInput"
+                                       placeholder="Enter receiver account number"
                                        autocomplete="off" />
                                 <span asp-validation-for="ReceiverAccountNumber" class="text-danger"></span>
                             </div>
@@ -83,12 +83,12 @@
                             <label asp-for="Amount" class="mf-form-label">Amount</label>
                             <div class="mf-amount-hero-input">
                                 <span class="mf-amount-currency">$</span>
-                                <input asp-for="Amount" 
-                                       type="number" 
-                                       step="0.01" 
-                                       min="5.00" 
-                                       class="form-control mf-amount-input" 
-                                       id="transferAmountInput" 
+                                <input asp-for="Amount"
+                                       type="number"
+                                       step="0.01"
+                                       min="5.00"
+                                       class="form-control mf-amount-input"
+                                       id="transferAmountInput"
                                        placeholder="5.00" />
                             </div>
                             <span asp-validation-for="Amount" class="text-danger"></span>
@@ -102,10 +102,10 @@
 
                             <!-- Quick Amount Chips -->
                             <div class="mf-quick-chips mt-3">
-                                <button type="button" class="mf-chip-btn" data-amount="50">+$50</button>
-                                <button type="button" class="mf-chip-btn" data-amount="100">+$100</button>
-                                <button type="button" class="mf-chip-btn" data-amount="500">+$500</button>
-                                <button type="button" class="mf-chip-btn" data-amount="1000">+$1,000</button>
+                                <button type="button" class="mf-chip-btn" data-amount="50">$50</button>
+                                <button type="button" class="mf-chip-btn" data-amount="100">$100</button>
+                                <button type="button" class="mf-chip-btn" data-amount="500">$500</button>
+                                <button type="button" class="mf-chip-btn" data-amount="1000">$1,000</button>
                                 <button type="button" class="mf-chip-btn" id="maxAmountButton">Max</button>
                             </div>
                         </div>
@@ -115,10 +115,10 @@
                             <label asp-for="Description" class="mf-form-label">
                                 Description <span class="fw-normal text-muted">(Optional)</span>
                             </label>
-                            <textarea asp-for="Description" 
-                                      class="form-control mf-form-control" 
-                                      id="transferDescriptionInput" 
-                                      rows="3" 
+                            <textarea asp-for="Description"
+                                      class="form-control mf-form-control"
+                                      id="transferDescriptionInput"
+                                      rows="3"
                                       placeholder="What is this transfer for?"></textarea>
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
@@ -329,9 +329,8 @@ else
                     if (button.id === "maxAmountButton") {
                         targetAmount = balance;
                     } else {
-                        const chipVal = parseFloat(button.dataset.amount);
-                        const currentVal = parseFloat(amountInput.value) || 0;
-                        targetAmount = currentVal + chipVal;
+                        // Set value directly instead of adding to current input value
+                        targetAmount = parseFloat(button.dataset.amount);
                     }
 
                     if (!isNaN(targetAmount) && targetAmount > 0) {
