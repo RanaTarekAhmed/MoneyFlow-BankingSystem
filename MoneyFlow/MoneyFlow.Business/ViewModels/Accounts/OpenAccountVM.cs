@@ -16,5 +16,7 @@ namespace MoneyFlow.Business.ViewModels.Accounts
         public decimal InitialDeposit { get; set; }
 
         public string? CustomerName { get; set; }
+
+        public string? ReturnUrl { get; set; }
     }
 }

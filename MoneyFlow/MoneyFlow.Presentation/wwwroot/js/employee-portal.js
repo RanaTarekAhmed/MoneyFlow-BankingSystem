@@ -77,9 +77,10 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     function selectCustomer(id, name, email, natId) {
+        const cleanId = (id || '').toString().replace(/^CUST-/i, '').trim();
         const custIdInput = oa.custIdInput();
         if (custIdInput) {
-            custIdInput.value = id;
+            custIdInput.value = cleanId;
             custIdInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
@@ -102,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const avatarEl = oa.avatarEl();
 
         if (nameEl)  nameEl.textContent  = name;
-        if (idEl)    idEl.textContent    = 'CUST-' + id;
+        if (idEl)    idEl.textContent    = cleanId ? 'CUST-' + cleanId : '--';
         if (natIdEl) natIdEl.textContent = natId || '--';
         if (avatarEl) {
             const parts = name.trim().split(' ');
@@ -241,17 +242,43 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    document.querySelectorAll('.btn-open-account-for-cust').forEach(btn => {
-        btn.addEventListener('click', function () {
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-open-account-for-cust');
+        if (btn) {
             selectCustomer(
-                this.getAttribute('data-cust-id')   || '1',
-                this.getAttribute('data-cust-name') || 'Customer',
-                this.getAttribute('data-cust-email')  || '',
-                this.getAttribute('data-cust-natid')  || ''
+                btn.getAttribute('data-cust-id')   || '',
+                btn.getAttribute('data-cust-name') || 'Customer',
+                btn.getAttribute('data-cust-email')  || '',
+                btn.getAttribute('data-cust-natid')  || ''
             );
-            if (openAccountModalInstance) openAccountModalInstance.show();
-        });
+            const modalEl = document.getElementById('openAccountForCustomerModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                bootstrap.Modal.getOrCreateInstance(modalEl).show();
+            }
+        }
     });
+
+    // Submit validation guard: ensure CustomerId > 0 before sending
+    const formEl = document.getElementById('openAccountForm');
+    if (formEl) {
+        formEl.addEventListener('submit', function (e) {
+            const custIdInput = oa.custIdInput();
+            const rawVal = custIdInput ? custIdInput.value.replace(/^CUST-/i, '').trim() : '0';
+            const custIdVal = parseInt(rawVal, 10);
+            if (!custIdVal || custIdVal <= 0) {
+                e.preventDefault();
+                const custValSpan = oa.custValSpan();
+                if (custValSpan) {
+                    custValSpan.textContent = 'Please select a valid customer.';
+                    custValSpan.classList.remove('field-validation-valid');
+                    custValSpan.classList.add('field-validation-error');
+                }
+                const searchInput = oa.searchInput();
+                if (searchInput) searchInput.focus();
+                return false;
+            }
+        });
+    }
 
     // -------------------------------------------------------------------------
     // 4. Teller Cash Operations Interactive Wizard

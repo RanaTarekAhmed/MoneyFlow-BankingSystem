@@ -3,6 +3,10 @@
 @using MoneyFlow.Business.ViewModels.Accounts
 @using MoneyFlow.Data.Enums
 
+@{
+    var cancelUrl = !string.IsNullOrWhiteSpace(Model?.ReturnUrl) ? Model.ReturnUrl : "/Account/EmployeeIndex";
+}
+
 <!-- Modal: Open Account with Searchable Customer Select -->
 <div class="modal fade" id="openAccountForCustomerModal" tabindex="-1" aria-labelledby="openAccountForCustomerModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-lg">
@@ -12,11 +16,14 @@
 					<h5 class="modal-title fw-bold" id="openAccountForCustomerModalLabel">Open Bank Account for Customer</h5>
 					<div class="small text-white-50">Issue a new Current or Savings account to a customer.</div>
 				</div>
-				<a asp-controller="Account" asp-action="EmployeeIndex" class="btn-close btn-close-white text-decoration-none" aria-label="Close"></a>
+				<a href="@cancelUrl" class="btn-close btn-close-white text-decoration-none" aria-label="Close"></a>
 			</div>
 			<div class="modal-body p-4">
 				<form id="openAccountForm" method="post" asp-controller="Account" asp-action="Open" novalidate>
 					@Html.AntiForgeryToken()
+
+					<!-- ReturnUrl (originating page) -->
+					<input asp-for="ReturnUrl" type="hidden" />
 
 					<!-- Validation Summary (model-level errors) -->
 					<div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 px-3 mb-3" role="alert"></div>
@@ -96,7 +103,7 @@
 					</div>
 
 					<div class="modal-footer bg-light mt-4 -mx-4 -mb-4 px-0 pb-0 pt-3 border-top">
-						<a asp-controller="Account" asp-action="EmployeeIndex" class="btn btn-secondary text-decoration-none">Cancel</a>
+						<a href="@cancelUrl" class="btn btn-secondary text-decoration-none">Cancel</a>
 						<button type="submit" class="btn btn-primary fw-bold px-4" id="btnConfirmOpenAccount">
 							Create &amp; Issue Account
 						</button>

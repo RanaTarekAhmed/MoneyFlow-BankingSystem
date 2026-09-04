@@ -189,7 +189,7 @@ namespace MoneyFlow.Presentation.Controllers
         [Authorize(Roles = "Employee, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Open(OpenAccountVM model, int page = 1, AccountQueryVM? query = null)
+        public async Task<IActionResult> Open(OpenAccountVM model)
         {
             if (model.CustomerId <= 0)
             {
@@ -199,19 +199,7 @@ namespace MoneyFlow.Presentation.Controllers
             if (!ModelState.IsValid)
             {
                 ViewBag.ShowOpenAccountModal = true;
-                int pageSize = 5;
-                var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
-                var summary = await _accountService.GetAllAccountsSummaryAsync();
-
-                var indexModel = new EmployeeAccountIndexVM
-                {
-                    Summary = summary,
-                    Accounts = accounts,
-                    Query = query,
-                    OpenAccount = model
-                };
-
-                return View("EmployeeIndex", indexModel);
+                return await RerenderOriginatingView(model);
             }
 
             var result = await _accountService.OpenAccountAsync(model);
@@ -220,23 +208,66 @@ namespace MoneyFlow.Presentation.Controllers
             {
                 ModelState.AddModelError(string.Empty, "Failed to open account. Please check customer status and try again.");
                 ViewBag.ShowOpenAccountModal = true;
-                int pageSize = 5;
-                var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
-                var summary = await _accountService.GetAllAccountsSummaryAsync();
-
-                var indexModel = new EmployeeAccountIndexVM
-                {
-                    Summary = summary,
-                    Accounts = accounts,
-                    Query = query,
-                    OpenAccount = model
-                };
-
-                return View("EmployeeIndex", indexModel);
+                return await RerenderOriginatingView(model);
             }
 
             TempData["SuccessMessage"] = $"New {model.AccountType} account created successfully.";
-            return RedirectToAction("EmployeeIndex");
+
+            return Redirect(GetReturnUrl(model.ReturnUrl));
+        }
+
+        private string GetReturnUrl(string? returnUrl)
+        {
+            if (!string.IsNullOrWhiteSpace(returnUrl) &&
+                (returnUrl.StartsWith("/Employee/", StringComparison.OrdinalIgnoreCase) ||
+                 returnUrl.Equals("/Account/EmployeeIndex", StringComparison.OrdinalIgnoreCase)))
+            {
+                return returnUrl;
+            }
+            return "/Account/EmployeeIndex";
+        }
+
+        private async Task<IActionResult> RerenderOriginatingView(OpenAccountVM model)
+        {
+            var returnUrl = model.ReturnUrl ?? string.Empty;
+            ViewBag.OpenAccountModel = model;
+
+            // Customer Directory
+            if (returnUrl.Equals("/Employee/allCustomers", StringComparison.OrdinalIgnoreCase))
+            {
+                var customers = await _customerService.GetCustomersPagedAsync(1, 5, null);
+                var custIndexVm = new MoneyFlow.Business.ViewModels.Customer.CustomerIndexVM
+                {
+                    Customers = customers,
+                    Search = null
+                };
+                return View("~/Views/Employee/allCustomers.cshtml", custIndexVm);
+            }
+
+            // Customer Overview
+            if (returnUrl.StartsWith("/Employee/CustomerOverview/", StringComparison.OrdinalIgnoreCase))
+            {
+                var parts = returnUrl.Split('/');
+                if (parts.Length > 0 && int.TryParse(parts[^1], out int custId))
+                {
+                    var custDetails = await _customerService.GetCustomerOverviewAsync(custId);
+                    if (custDetails != null)
+                        return View("~/Views/Employee/CustomerOverview.cshtml", custDetails);
+                }
+            }
+
+            // Default: Accounts Ledger
+            int pageSize = 5;
+            var accounts = await _accountService.GetAllAccountsPagedAsync(1, pageSize, null);
+            var summary = await _accountService.GetAllAccountsSummaryAsync();
+            var indexModel = new EmployeeAccountIndexVM
+            {
+                Summary = summary,
+                Accounts = accounts,
+                Query = null,
+                OpenAccount = model
+            };
+            return View("EmployeeIndex", indexModel);
         }
 
         [Authorize(Roles = "Employee, Admin")]
