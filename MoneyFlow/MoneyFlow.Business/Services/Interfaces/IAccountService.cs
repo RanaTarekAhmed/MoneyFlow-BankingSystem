@@ -19,6 +19,7 @@ namespace MoneyFlow.Business.Services.Interfaces
         Task<EmployeeAccountDetailsVM?> GetAccountDetailsAsync(int accountId);
         Task<EmployeeAccountSummaryVM> GetAllAccountsSummaryAsync();
         Task<bool> OpenAccountAsync(OpenAccountVM model);
+        Task<bool> UpdateStatusAsync(UpdateStatusVM model);
         Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId, TransferVM model);
         Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model);
         Task<(bool Success, string Message, Transaction? Transaction)> WithdrawAsync(CashOperationVM model);

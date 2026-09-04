@@ -780,21 +780,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // -------------------------------------------------------------------------
     // 8. Account Status Modification Modal
     // -------------------------------------------------------------------------
-    const freezeConfirmBtn = document.getElementById('btnConfirmFreezeAccount');
-    if (freezeConfirmBtn) {
-        freezeConfirmBtn.addEventListener('click', function () {
-            const acctNum = this.getAttribute('data-target-acct') || 'the selected account';
-            const targetStatus = document.getElementById('accountStatusTargetSelect')?.value || 'Suspended';
-            const modalEl = document.getElementById('freezeAccountModal');
-            if (modalEl) {
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-            }
-            if (window.MoneyFlowToast) {
-                window.MoneyFlowToast.info('Account ' + acctNum + ' status updated to ' + targetStatus + '.');
-            }
-        });
-    }
+    const updateStatusModalEl = document.getElementById('updateAccountStatusModal');
+
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-open-update-status');
+        if (!btn) return;
+
+        const accountId = btn.getAttribute('data-account-id');
+        const accountNumber = btn.getAttribute('data-account-number');
+        const accountStatus = btn.getAttribute('data-account-status');
+
+        const inputAccountId = document.getElementById('updateStatusAccountId');
+        const inputAccountNumber = document.getElementById('updateStatusAccountNumber');
+        const displayAccNum = document.getElementById('updateStatusDisplayAccNum');
+        const displayBadge = document.getElementById('updateStatusDisplayCurrentBadge');
+        const selectStatus = document.getElementById('updateStatusSelect');
+
+        if (inputAccountId) inputAccountId.value = accountId || '';
+        if (inputAccountNumber) inputAccountNumber.value = accountNumber || '';
+        if (displayAccNum) displayAccNum.textContent = accountNumber || '--';
+        if (displayBadge) displayBadge.textContent = 'Current: ' + (accountStatus || '--');
+        if (selectStatus && accountStatus) selectStatus.value = accountStatus;
+
+        if (updateStatusModalEl && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getOrCreateInstance(updateStatusModalEl);
+            modal.show();
+        }
+    });
 
     // -------------------------------------------------------------------------
     // 9. Register New Customer Modal Interactive Validation & Submission

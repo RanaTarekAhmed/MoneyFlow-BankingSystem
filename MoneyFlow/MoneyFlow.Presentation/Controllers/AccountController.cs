@@ -240,6 +240,7 @@ namespace MoneyFlow.Presentation.Controllers
         }
 
         [Authorize(Roles = "Employee, Admin")]
+        [HttpGet]
         public async Task<IActionResult> EmployeeDetails(int id)
         {
             var result = await _accountService.GetAccountDetailsAsync(id);
@@ -252,6 +253,59 @@ namespace MoneyFlow.Presentation.Controllers
             return View(result);
         }
 
+
+        [Authorize(Roles = "Employee, Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateStatus(UpdateStatusVM model, int page = 1, AccountQueryVM? query = null)
+        {
+            if (model.AccountId <= 0)
+            {
+                ModelState.AddModelError(nameof(model.AccountId), "Invalid account selected.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.ShowUpdateStatusModal = true;
+                int pageSize = 5;
+                var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
+                var summary = await _accountService.GetAllAccountsSummaryAsync();
+
+                var indexModel = new EmployeeAccountIndexVM
+                {
+                    Summary = summary,
+                    Accounts = accounts,
+                    Query = query,
+                    UpdateStatus = model
+                };
+
+                return View("EmployeeIndex", indexModel);
+            }
+
+            var result = await _accountService.UpdateStatusAsync(model);
+
+            if (!result)
+            {
+                ModelState.AddModelError(string.Empty, "Failed to update account status. Account not found.");
+                ViewBag.ShowUpdateStatusModal = true;
+                int pageSize = 5;
+                var accounts = await _accountService.GetAllAccountsPagedAsync(page, pageSize, query);
+                var summary = await _accountService.GetAllAccountsSummaryAsync();
+
+                var indexModel = new EmployeeAccountIndexVM
+                {
+                    Summary = summary,
+                    Accounts = accounts,
+                    Query = query,
+                    UpdateStatus = model
+                };
+
+                return View("EmployeeIndex", indexModel);
+            }
+
+            TempData["SuccessMessage"] = $"Account {model.AccountNumber ?? ""} status updated to {model.Status} successfully.";
+            return RedirectToAction("EmployeeIndex");
+        }
 
         [Authorize(Roles = "Employee, Admin")]
         [HttpGet]

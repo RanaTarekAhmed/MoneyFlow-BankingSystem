@@ -1,0 +1,63 @@
+@model UpdateStatusVM
+
+<!-- Modal: Update Account Status -->
+<div class="modal fade" id="updateAccountStatusModal" tabindex="-1" aria-labelledby="updateAccountStatusModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content border-0 shadow">
+			<div class="modal-header bg-primary text-white">
+				<div>
+					<h5 class="modal-title fw-bold" id="updateAccountStatusModalLabel">Update Account Status</h5>
+					<div class="small text-white-50">Change the operational status of this bank account.</div>
+				</div>
+				<a asp-controller="Account" asp-action="EmployeeIndex" class="btn-close btn-close-white text-decoration-none" aria-label="Close"></a>
+			</div>
+			<div class="modal-body p-4">
+				<form id="updateStatusForm" method="post" asp-controller="Account" asp-action="UpdateStatus" novalidate>
+					@Html.AntiForgeryToken()
+
+					<!-- Validation Summary (model-level errors) -->
+					<div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 px-3 mb-3" role="alert"></div>
+
+					<!-- Hidden Fields -->
+					<input type="hidden" asp-for="AccountId" id="updateStatusAccountId" />
+					<input type="hidden" asp-for="AccountNumber" id="updateStatusAccountNumber" />
+
+					<!-- Target Account Information Card -->
+					<div class="p-3 bg-light rounded d-flex align-items-center justify-content-between border mb-3">
+						<div>
+							<div class="text-muted small">Target Account</div>
+							<div class="fw-bold fs-5 text-dark mf-txn-code" id="updateStatusDisplayAccNum">
+								@(string.IsNullOrWhiteSpace(Model?.AccountNumber) ? "--" : Model.AccountNumber)
+							</div>
+						</div>
+						<span class="badge bg-secondary-subtle text-dark border px-3 py-2" id="updateStatusDisplayCurrentBadge">
+							Current: @(Model != null ? Model.Status.ToString() : "--")
+						</span>
+					</div>
+
+					<!-- Status Selection matching AccountStatus enum -->
+					<div class="mb-3">
+						<label asp-for="Status" class="form-label fw-bold small text-dark">Target Status <span class="text-danger">*</span></label>
+						<select asp-for="Status" class="form-select mf-form-control" id="updateStatusSelect">
+							<option value="Active">Active</option>
+							<option value="Suspended">Suspended</option>
+							<option value="Closed">Closed</option>
+						</select>
+						<span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
+						<span asp-validation-for="AccountId" class="text-danger small mt-1 d-block"></span>
+					</div>
+
+					<div class="modal-footer bg-light mt-4 -mx-4 -mb-4 px-0 pb-0 pt-3 border-top">
+						<a 
+							asp-controller="Account" 
+							asp-action="EmployeeIndex"
+							class="btn btn-secondary text-decoration-none">Cancel</a>
+						<button type="submit" class="btn btn-primary fw-bold px-4" id="btnSubmitUpdateStatus">
+							Save Status
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

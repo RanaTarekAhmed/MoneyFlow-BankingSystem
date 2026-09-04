@@ -182,7 +182,7 @@
 										<li><a class="dropdown-item" asp-action="EmployeeDetails" asp-route-id="@account.Id">View Account Details</a></li>
 										<li><a class="dropdown-item" href="/Employee/Operations">Deposit / Withdraw</a></li>
 										<li><hr class="dropdown-divider"></li>
-										<li><a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#freezeAccountModal">Update Status</a></li>
+										<li><button type="button" class="dropdown-item text-danger btn-open-update-status" data-account-id="@account.Id" data-account-number="@account.AccountNumber" data-account-status="@account.Status">Update Status</button></li>
 									</ul>
 								</div>
 							</td>
@@ -290,39 +290,11 @@
 	}
 </div>
 
-<!-- Modal: Update Account Status -->
-<div class="modal fade" id="freezeAccountModal" tabindex="-1" aria-labelledby="freezeAccountModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-dialog-centered">
-		<div class="modal-content border-0 shadow">
-			<div class="modal-header bg-danger text-white">
-				<h5 class="modal-title fw-bold" id="freezeAccountModalLabel">Update Account Status</h5>
-				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body p-4">
-				<p class="mb-3 text-dark">Select the new status for account <strong class="mf-txn-code">MF-100234</strong>.</p>
-				<div class="mb-3">
-					<label class="form-label fw-bold small text-dark">Target Status <span class="text-danger">*</span></label>
-					<select class="form-select mf-form-control" id="accountStatusTargetSelect">
-						<option value="Suspended">Suspended</option>
-						<option value="Closed">Closed</option>
-						<option value="Active">Active</option>
-					</select>
-				</div>
-				<div>
-					<label class="form-label fw-bold small text-dark">Staff Remarks</label>
-					<textarea class="form-control mf-form-control" rows="2" placeholder="Specify reason for status modification..."></textarea>
-				</div>
-			</div>
-			<div class="modal-footer bg-light">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-danger fw-bold" id="btnConfirmFreezeAccount" data-target-acct="MF-100234">Save Status</button>
-			</div>
-		</div>
-	</div>
-</div>
+<!-- Modal: Update Account Status (Partial) -->
+<partial name="_UpdateStatusModal" model="Model.UpdateStatus"/>
 
 <!-- Modal: Open Account with Searchable Customer Select (Partial) -->
-<partial name="_OpenAccountModal" model="Model.OpenAccount" />
+<partial name="_OpenAccountModal" model="Model.OpenAccount"/>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
@@ -331,6 +303,18 @@
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
 				const modalEl = document.getElementById('openAccountForCustomerModal');
+				if (modalEl && typeof bootstrap !== 'undefined') {
+					const modal = new bootstrap.Modal(modalEl);
+					modal.show();
+				}
+			});
+		</script>
+	}
+	@if (ViewBag.ShowUpdateStatusModal == true)
+	{
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const modalEl = document.getElementById('updateAccountStatusModal');
 				if (modalEl && typeof bootstrap !== 'undefined') {
 					const modal = new bootstrap.Modal(modalEl);
 					modal.show();

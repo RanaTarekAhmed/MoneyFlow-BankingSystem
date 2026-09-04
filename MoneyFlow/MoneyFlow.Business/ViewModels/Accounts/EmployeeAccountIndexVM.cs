@@ -9,5 +9,6 @@ namespace MoneyFlow.Business.ViewModels.Accounts
         public PagedResult<EmployeeAccountVM> Accounts { get; set; } = null!;
         public AccountQueryVM? Query { get; set; } = new();
         public OpenAccountVM OpenAccount { get; set; } = new();
+        public UpdateStatusVM UpdateStatus { get; set; } = new();
     }
 }
