@@ -35,7 +35,11 @@
   width: 100%;
   position: relative;
 }
-
+.mf-profile-verified-badge {
+  background-color: #ffffff;
+  color: var(--mf-navy) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+}
 /* ==========================================================================
    Sidebar Navigation (Desktop Persistent, Mobile Offcanvas)
    ========================================================================== */

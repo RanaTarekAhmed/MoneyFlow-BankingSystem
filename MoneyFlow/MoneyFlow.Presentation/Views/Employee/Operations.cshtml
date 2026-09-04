@@ -68,7 +68,7 @@
 </div>
 
 <!-- TempData Success Banner -->
-@if (TempData["SuccessMessage"] != null)
+@* @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 d-flex align-items-center" role="alert">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2">
@@ -83,7 +83,7 @@
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-}
+} *@
 
 <form asp-controller="Account" asp-action="Operations" method="post" id="cashOpsForm">
     @Html.AntiForgeryToken()
