@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Authentication;
 using MoneyFlow.Business.ViewModels.Customer;
-using MoneyFlow.Business.Services;
+
 
 namespace MoneyFlow.Presentation.Controllers
 {
@@ -21,22 +21,11 @@ namespace MoneyFlow.Presentation.Controllers
             _authService = authService;
             _dashboardService = dashboardService;
         }
+
         public async Task<IActionResult> Index()
         {
             var dashboard = await _dashboardService.GetEmployeeDashboardAsync(1, 5);
             return View(dashboard);
-        }
-        public IActionResult Accounts()
-        {
-            return View();
-        }
-        public IActionResult AccountDetails()
-        {
-            return View();
-        }
-        public IActionResult Customers()
-        {
-            return View();
         }
 
         public async Task<IActionResult> allCustomers(int page = 1, string? search = null)
@@ -83,6 +72,7 @@ namespace MoneyFlow.Presentation.Controllers
                 message = "Customer registered successfully."
             });
         }
+
         [HttpGet]
         public async Task<IActionResult> CustomerOverview(int id)
         {
@@ -92,18 +82,6 @@ namespace MoneyFlow.Presentation.Controllers
                 return NotFound();
 
             return View(customer);
-        }
-        public IActionResult CustomerDetails()
-        {
-            return View();
-        }
-        public IActionResult Transactions()
-        {
-            return View();
-        }
-        public IActionResult Operations()
-        {
-            return View();
         }
 
         public IActionResult Profile()

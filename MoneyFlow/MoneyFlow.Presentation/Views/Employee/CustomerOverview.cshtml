@@ -144,7 +144,7 @@
         <div class="mf-table-card mt-4">
             <div class="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
                 <h2 class="h6 mb-0 fw-bold text-dark">Recent Transactions Ledger</h2>
-                <a asp-controller="Transaction" asp-action="EmployeeIndex" class="small text-decoration-none">View All TXNs</a>
+                <a asp-controller="Transaction" asp-action="EmployeeIndex" asp-route-search='@(Model.FirstName + " " + Model.LastName)' class="small text-decoration-none">View All TXNs</a>
             </div>
 
             <div class="table-responsive">

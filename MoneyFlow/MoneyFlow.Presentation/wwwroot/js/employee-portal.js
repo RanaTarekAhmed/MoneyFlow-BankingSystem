@@ -406,67 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // -------------------------------------------------------------------------
-    // 5. Live Table Search & Filter Helper strictly conforming to Enum attributes
-    // -------------------------------------------------------------------------
-    function setupTableFiltering(searchInputId, filterSelectId, tableBodyId, statusFilterId) {
-        const searchInput = document.getElementById(searchInputId);
-        const typeFilter = filterSelectId ? document.getElementById(filterSelectId) : null;
-        const statusFilter = statusFilterId ? document.getElementById(statusFilterId) : null;
-        const tableBody = document.getElementById(tableBodyId);
-
-        if (!tableBody) return;
-
-        function applyFilter() {
-            const query = (searchInput?.value || '').toLowerCase().trim();
-            const selectedType = (typeFilter?.value || '').toLowerCase();
-            const selectedStatus = (statusFilter?.value || '').toLowerCase();
-
-            const rows = tableBody.querySelectorAll('tr[data-filter-item="true"]');
-            let visibleCount = 0;
-
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                const rowType = (row.getAttribute('data-type') || '').toLowerCase();
-                const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
-
-                const matchQuery = !query || text.includes(query);
-                const matchType = !selectedType || rowType === selectedType;
-                const matchStatus = !selectedStatus || rowStatus === selectedStatus;
-
-                if (matchQuery && matchType && matchStatus) {
-                    row.style.display = '';
-                    visibleCount++;
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            const noResultsRow = tableBody.querySelector('.mf-no-filter-results');
-            if (noResultsRow) {
-                noResultsRow.style.display = (visibleCount === 0) ? '' : 'none';
-            }
-        }
-
-        if (searchInput) searchInput.addEventListener('input', applyFilter);
-        if (typeFilter) typeFilter.addEventListener('change', applyFilter);
-        if (statusFilter) statusFilter.addEventListener('change', applyFilter);
-
-        // Reset button
-        const resetBtn = document.getElementById('btnClear' + searchInputId);
-        if (resetBtn) {
-            resetBtn.addEventListener('click', function () {
-                if (searchInput) searchInput.value = '';
-                if (typeFilter) typeFilter.value = '';
-                if (statusFilter) statusFilter.value = '';
-                applyFilter();
-            });
-        }
-    }
-
-    setupTableFiltering('empCustomerSearch', null, 'empCustomerTableBody', 'empCustomerStatusFilter');
-
-    // -------------------------------------------------------------------------
-    // 5c. Employee Accounts Server-Side Search & Filters
+    // 5a. Employee Accounts Server-Side Search & Filters
     // -------------------------------------------------------------------------
     const empAccountSearch = document.getElementById('empAccountSearch');
     const empAccountTypeFilter = document.getElementById('empAccountTypeFilter');
@@ -621,6 +561,58 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (empTxnTypeFilter) empTxnTypeFilter.value = '';
                 if (empTxnStatusFilter) empTxnStatusFilter.value = '';
                 applyEmpTransactionFilters();
+            });
+        }
+    }
+
+
+    // -------------------------------------------------------------------------
+    // 5c. Employee Customers Server-Side Search
+    // -------------------------------------------------------------------------
+    const empCustomerSearch = document.getElementById('empCustomerSearch');
+    const btnClearEmpCustomerSearch = document.getElementById('btnClearempCustomerSearch');
+
+    if (empCustomerSearch) {
+        let debounceTimer;
+
+        // Restore focus and cursor at end of input if search parameter exists
+        if (empCustomerSearch.value) {
+            empCustomerSearch.focus();
+            empCustomerSearch.setSelectionRange(empCustomerSearch.value.length, empCustomerSearch.value.length);
+        }
+
+        function applyEmpCustomerSearch() {
+            const url = new URL(window.location.origin + window.location.pathname);
+            const query = empCustomerSearch ? empCustomerSearch.value.trim() : '';
+            if (query) {
+                url.searchParams.set('search', query);
+            }
+            // Reset page to 1 on search update
+            url.searchParams.set('page', '1');
+            window.location.href = url.toString();
+        }
+
+        // Debounce search input (500ms)
+        empCustomerSearch.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(applyEmpCustomerSearch, 500);
+        });
+
+        // Enter key immediately triggers search
+        empCustomerSearch.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                clearTimeout(debounceTimer);
+                applyEmpCustomerSearch();
+            }
+        });
+
+        // Reset / Clear search button
+        if (btnClearEmpCustomerSearch) {
+            btnClearEmpCustomerSearch.addEventListener('click', function () {
+                clearTimeout(debounceTimer);
+                empCustomerSearch.value = '';
+                applyEmpCustomerSearch();
             });
         }
     }

@@ -34,16 +34,15 @@ namespace MoneyFlow.Business.Services
 					)
 				{
 					filter = t =>
-					(string.IsNullOrEmpty(search) || t.TransactionNumber.Contains(search)
+					(string.IsNullOrEmpty(search)
+					|| t.TransactionNumber.Contains(search)
 					|| (t.Description != null && t.Description.Contains(search))
 					|| (t.SenderAccount != null && t.SenderAccount.AccountNumber.Contains(search))
 					|| (t.ReceiverAccount != null && t.ReceiverAccount.AccountNumber.Contains(search))
 					|| (t.SenderAccount != null && t.SenderAccount.Customer.User.FirstName.Contains(search))
-					|| (t.ReceiverAccount != null && t.ReceiverAccount.Customer.User.LastName.Contains(search)))
-					|| (t.SenderAccount != null && (t.SenderAccount.Customer.User.FirstName 
-					+ " " + t.SenderAccount.Customer.User.LastName).Contains(search) 
-					|| t.ReceiverAccount != null && (t.ReceiverAccount.Customer.User.FirstName
-					+ " " + t.ReceiverAccount.Customer.User.LastName).Contains(search))
+					|| (t.ReceiverAccount != null && t.ReceiverAccount.Customer.User.LastName.Contains(search))
+					|| (t.SenderAccount != null && (t.SenderAccount.Customer.User.FirstName + " " + t.SenderAccount.Customer.User.LastName).Contains(search))
+					|| (t.ReceiverAccount != null && (t.ReceiverAccount.Customer.User.FirstName + " " + t.ReceiverAccount.Customer.User.LastName).Contains(search)))
 					&&
 					(!query.TransactionType.HasValue || t.TransactionType == query.TransactionType)
 					&&
