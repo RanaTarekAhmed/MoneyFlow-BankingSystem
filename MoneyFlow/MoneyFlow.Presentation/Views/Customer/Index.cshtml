@@ -151,7 +151,7 @@
                     var amountClass = transaction.IsIncoming ? "positive" : "negative";
                     var amountPrefix = transaction.IsIncoming ? "+" : "-";
 
-                    <a href="@Url.Action("Details", "Transaction", new { id = transaction.Id })" class="mf-transaction-row">
+                    <a asp-controller="Transaction" asp-action="CustomerDetails" asp-route-id="@transaction.Id" asp-route-pageNumber="1" class="mf-transaction-row">
                         <div class="mf-txn-left">
                             @if (transaction.IsIncoming)
                             {
