@@ -134,7 +134,7 @@
 								}
 							</td>
 							<td class="text-end fw-extrabold @(transaction.IsIncoming ? "text-success" : "text-navy") fs-6">
-								@(transaction.IsIncoming ? "+" : "-") $@transaction.Amount
+								@(transaction.IsIncoming ? "+" : "-")$@transaction.Amount
 							</td>
 							<td class="text-center">
 								<span class="mf-status-badge @transaction.Status.ToString().ToLower()"><span class="dot"></span>@transaction.Status.ToString()</span>

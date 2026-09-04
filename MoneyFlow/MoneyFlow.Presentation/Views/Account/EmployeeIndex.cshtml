@@ -179,7 +179,7 @@
 								<div class="dropdown">
 									<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Manage</button>
 									<ul class="dropdown-menu dropdown-menu-end">
-										<li><a class="dropdown-item" href="/Account/EmployeeDetails">View Account Details</a></li>
+										<li><a class="dropdown-item" asp-action="EmployeeDetails" asp-route-id="@account.Id">View Account Details</a></li>
 										<li><a class="dropdown-item" href="/Employee/Operations">Deposit / Withdraw</a></li>
 										<li><hr class="dropdown-divider"></li>
 										<li><a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#freezeAccountModal">Update Status</a></li>

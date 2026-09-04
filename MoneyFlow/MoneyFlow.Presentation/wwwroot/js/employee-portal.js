@@ -934,4 +934,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // -------------------------------------------------------------------------
+    // 12. Account Details: Recent Activity "See More" / "See Less" Toggle
+    // -------------------------------------------------------------------------
+    const toggleTxnBtn = document.getElementById('toggleTransactions');
+    if (toggleTxnBtn) {
+        toggleTxnBtn.addEventListener('click', function () {
+            const rows = document.querySelectorAll('.transaction-row');
+            const isExpanded = toggleTxnBtn.textContent.trim().toLowerCase() === 'see less';
+
+            rows.forEach((row, index) => {
+                if (index >= 5) {
+                    if (isExpanded) {
+                        row.classList.add('d-none');
+                    } else {
+                        row.classList.remove('d-none');
+                    }
+                }
+            });
+
+            toggleTxnBtn.textContent = isExpanded ? 'See More' : 'See Less';
+        });
+    }
 });

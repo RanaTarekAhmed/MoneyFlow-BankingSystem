@@ -240,9 +240,16 @@ namespace MoneyFlow.Presentation.Controllers
         }
 
         [Authorize(Roles = "Employee, Admin")]
-        public async Task<IActionResult> EmployeeDetails()
+        public async Task<IActionResult> EmployeeDetails(int id)
         {
-            return View();
+            var result = await _accountService.GetAccountDetailsAsync(id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return View(result);
         }
 
 

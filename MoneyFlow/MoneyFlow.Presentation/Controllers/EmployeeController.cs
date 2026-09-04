@@ -39,7 +39,6 @@ namespace MoneyFlow.Presentation.Controllers
             return View();
         }
 
-       
         public async Task<IActionResult> allCustomers(int page = 1, string? search = null)
         {
             int pageSize = 5;

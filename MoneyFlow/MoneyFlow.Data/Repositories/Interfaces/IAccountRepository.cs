@@ -13,6 +13,7 @@ namespace MoneyFlow.Data.Repositories.Interfaces
             int pageSize,
             Expression<Func<Account, bool>>? filter
             );
+        Task<Account?> GetAccountDetailsAsync(int accountId);
         Task<bool> AnyAsync(Expression<Func<Account, bool>>? filter);
         Task AddAsync(Account account);
         Task UpdateAsync(Account account);

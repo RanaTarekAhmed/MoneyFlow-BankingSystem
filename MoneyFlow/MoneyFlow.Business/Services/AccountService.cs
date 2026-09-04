@@ -295,8 +295,8 @@ namespace MoneyFlow.Business.Services
 			};
 		}
 
-        public async Task<EmployeeAccountSummaryVM> GetAllAccountsSummaryAsync()
-        {
+		public async Task<EmployeeAccountSummaryVM> GetAllAccountsSummaryAsync()
+		{
 			var accounts = await _accountRepository.GetAllAsync();
 
 			decimal totalDepositsHeld = 0;
@@ -311,8 +311,8 @@ namespace MoneyFlow.Business.Services
 				{
 					if (account.AccountType == AccountType.Current)
 					{
-                        activeCurrentAccounts++;
-                    }
+						activeCurrentAccounts++;
+					}
 					else
 					{
 						activeSavingsAccounts++;
@@ -331,124 +331,124 @@ namespace MoneyFlow.Business.Services
 				ActiveSavingsAccounts = activeSavingsAccounts,
 				SuspendedAccounts = suspendedAccounts
 			};
-        }
+		}
 
 
-        public async Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model)
-        {
-            if (string.IsNullOrWhiteSpace(model.AccountNumber))
-            {
-                return (false, "Please enter the account number.", null);
-            }
+		public async Task<(bool Success, string Message, Transaction? Transaction)> DepositAsync(CashOperationVM model)
+		{
+			if (string.IsNullOrWhiteSpace(model.AccountNumber))
+			{
+				return (false, "Please enter the account number.", null);
+			}
 
-            if (model.Amount <= 0)
-            {
-                return (false, "Deposit amount must be greater than zero.", null);
-            }
+			if (model.Amount <= 0)
+			{
+				return (false, "Deposit amount must be greater than zero.", null);
+			}
 
-            var account = await _accountRepository.GetAsync(a => a.AccountNumber == model.AccountNumber.Trim());
+			var account = await _accountRepository.GetAsync(a => a.AccountNumber == model.AccountNumber.Trim());
 
-            if (account == null)
-            {
-                return (false, "The account was not found.", null);
-            }
+			if (account == null)
+			{
+				return (false, "The account was not found.", null);
+			}
 
-            if (account.Status != AccountStatus.Active)
-            {
-                return (false, "The account is not active.", null);
-            }
+			if (account.Status != AccountStatus.Active)
+			{
+				return (false, "The account is not active.", null);
+			}
 
-            try
-            {
-                account.Deposit(model.Amount);
-            }
-            catch (ArgumentException ex)
-            {
-                return (false, ex.Message, null);
-            }
+			try
+			{
+				account.Deposit(model.Amount);
+			}
+			catch (ArgumentException ex)
+			{
+				return (false, ex.Message, null);
+			}
 
-            var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
+			var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
 
-            var transaction = new Transaction(
-                transactionNumber,
-                TransactionType.Deposit,
-                model.Amount,
-                model.Description,
-                null,
-                null,
-                account.Id
-            );
+			var transaction = new Transaction(
+				transactionNumber,
+				TransactionType.Deposit,
+				model.Amount,
+				model.Description,
+				null,
+				null,
+				account.Id
+			);
 
-            transaction.UpdateStatus(TransactionStatus.Completed);
+			transaction.UpdateStatus(TransactionStatus.Completed);
 
-            await _accountRepository.UpdateAsync(account);
+			await _accountRepository.UpdateAsync(account);
 
-            await _transactionRepository.AddAsync(transaction);
+			await _transactionRepository.AddAsync(transaction);
 
-            return (true,"Deposit completed successfully.",transaction);
-        }
+			return (true,"Deposit completed successfully.",transaction);
+		}
 
 
-        public async Task<(bool Success, string Message, Transaction? Transaction)> WithdrawAsync(CashOperationVM model)
-        {
-            if (string.IsNullOrWhiteSpace(model.AccountNumber))
-            {
-                return (false, "Please enter the account number.", null);
-            }
+		public async Task<(bool Success, string Message, Transaction? Transaction)> WithdrawAsync(CashOperationVM model)
+		{
+			if (string.IsNullOrWhiteSpace(model.AccountNumber))
+			{
+				return (false, "Please enter the account number.", null);
+			}
 
-            if (model.Amount <= 0)
-            {
-                return (false, "Withdrawal amount must be greater than zero.", null);
-            }
+			if (model.Amount <= 0)
+			{
+				return (false, "Withdrawal amount must be greater than zero.", null);
+			}
 
-            var account = await _accountRepository.GetAsync(a => a.AccountNumber == model.AccountNumber.Trim());
+			var account = await _accountRepository.GetAsync(a => a.AccountNumber == model.AccountNumber.Trim());
 
-            if (account == null)
-            {
-                return (false, "The account was not found.", null);
-            }
+			if (account == null)
+			{
+				return (false, "The account was not found.", null);
+			}
 
-            if (account.Status != AccountStatus.Active)
-            {
-                return (false, "The account is not active.", null);
-            }
+			if (account.Status != AccountStatus.Active)
+			{
+				return (false, "The account is not active.", null);
+			}
 
-            try
-            {
-                account.Withdraw(model.Amount);
-            }
-            catch (ArgumentException ex)
-            {
-                return (false, ex.Message, null);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return (false, ex.Message, null);
-            }
+			try
+			{
+				account.Withdraw(model.Amount);
+			}
+			catch (ArgumentException ex)
+			{
+				return (false, ex.Message, null);
+			}
+			catch (InvalidOperationException ex)
+			{
+				return (false, ex.Message, null);
+			}
 
-            var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
+			var transactionNumber = $"TRX-{Guid.NewGuid():N}".ToUpper();
 
-            var transaction = new Transaction(
-                transactionNumber,
-                TransactionType.Withdrawal,
-                model.Amount,
-                model.Description,
-                null,
-                account.Id,
-                null
-            );
+			var transaction = new Transaction(
+				transactionNumber,
+				TransactionType.Withdrawal,
+				model.Amount,
+				model.Description,
+				null,
+				account.Id,
+				null
+			);
 
-            transaction.UpdateStatus(TransactionStatus.Completed);
+			transaction.UpdateStatus(TransactionStatus.Completed);
 
-            await _accountRepository.UpdateAsync(account);
+			await _accountRepository.UpdateAsync(account);
 
-            await _transactionRepository.AddAsync(transaction);
+			await _transactionRepository.AddAsync(transaction);
 
-            return (true,"Withdrawal completed successfully.",transaction);
-        }
+			return (true,"Withdrawal completed successfully.",transaction);
+		}
 
-        public async Task<bool> OpenAccountAsync(OpenAccountVM model)
-        {
+		public async Task<bool> OpenAccountAsync(OpenAccountVM model)
+		{
 			var customer = await _customerRepository.GetAsync(c => c.Id == model.CustomerId);
 			if (customer == null)
 			{
@@ -470,16 +470,16 @@ namespace MoneyFlow.Business.Services
 
 			if (model.InitialDeposit != 0)
 			{
-                account.Deposit(model.InitialDeposit);
-            }
+				account.Deposit(model.InitialDeposit);
+			}
 
-            await _accountRepository.AddAsync(account);
+			await _accountRepository.AddAsync(account);
 
 			return true;
-        }
+		}
 
-        private async Task<string> GenerateAccountNumberAsync()
-        {
+		private async Task<string> GenerateAccountNumberAsync()
+		{
 			string accountNumber;
 
 			do
@@ -489,6 +489,45 @@ namespace MoneyFlow.Business.Services
 			while (await _accountRepository.AnyAsync(a => a.AccountNumber == accountNumber));
 
 			return accountNumber;
-        }
-    }
+		}
+
+		public async Task<EmployeeAccountDetailsVM?> GetAccountDetailsAsync(int accountId)
+		{
+			var account = await _accountRepository.GetAccountDetailsAsync(accountId);
+			if (account == null)
+			{
+				return null;
+			}
+
+            var transactions = await _transactionRepository.GetAllAsync(t => t.ReceiverAccountId == accountId || t.SenderAccountId == accountId);
+
+            var transactionVMs = transactions
+				.OrderByDescending(t => t.TransactionDate)
+                .Select(t => new ViewModels.Transaction.TransactionVM
+                {
+                    Id = t.Id,
+                    TransactionNumber = t.TransactionNumber,
+                    TransactionType = t.TransactionType,
+                    Amount = t.Amount,
+                    Status = t.Status,
+                    TransactionDate = t.TransactionDate,
+                    Description = t.Description,
+                    IsIncoming = t.ReceiverAccountId == accountId
+                })
+                .ToList();
+
+            return new EmployeeAccountDetailsVM
+			{
+				AccountNumber = account.AccountNumber,
+				AccountType = account.AccountType,
+				Status = account.Status,
+				Balance = account.Balance,
+				OpenDate = account.OpenDate,
+				CustomerId = account.CustomerId,
+				CustomerName = account.Customer.User.FirstName + " " + account.Customer.User.LastName,
+				CustomerEmail = account.Customer.User.Email ?? "",
+				RecentTransactions = transactionVMs
+            };
+		}
+	}
 }
