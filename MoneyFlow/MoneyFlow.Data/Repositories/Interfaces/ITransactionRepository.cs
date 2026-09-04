@@ -25,5 +25,7 @@ namespace MoneyFlow.Data.Repositories.Interfaces
         Task<Transaction?> GetCustomerTransactionByIdAsync(int transactionId, int customerId);
 		Task AddAsync(Transaction transaction);
 		Task UpdateStatusAsync(int id, TransactionStatus status);
-	}
+
+        Task<bool> AnyAsync(Expression<Func<Transaction, bool>>? filter);
+    }
 }

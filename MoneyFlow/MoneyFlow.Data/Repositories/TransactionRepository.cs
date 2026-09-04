@@ -129,5 +129,11 @@ namespace MoneyFlow.Data.Repositories
 			}
 
 		}
-	}
+
+        public async Task<bool> AnyAsync(Expression<Func<Transaction, bool>>? filter)
+        {
+            return await _context.Transactions.AnyAsync(filter);
+        }
+
+    }
 }

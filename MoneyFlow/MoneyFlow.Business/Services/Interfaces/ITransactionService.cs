@@ -20,5 +20,7 @@ namespace MoneyFlow.Business.Services.Interfaces
 			TransactionQueryVM? query
 			);
 		Task<TransactionDetailsVM?> GetCustomerTransactionByIdAsync(int transactionId, string? userId);
-	}
+
+        Task<string> GenerateTransactionNumberAsync();
+    }
 }
