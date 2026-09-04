@@ -160,45 +160,97 @@
 <!-- Modal: Edit Employee Profile Details -->
 <div class="modal fade" id="editEmployeeProfileModal" tabindex="-1" aria-labelledby="editEmployeeProfileModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-dialog-centered modal-lg">
-		<div class="modal-content border-0 shadow">
-			<div class="modal-header bg-light">
-				<h5 class="modal-title fw-bold" id="editEmployeeProfileModalLabel">Edit Staff Personal Information</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		<div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+			<div class="modal-header border-0 pb-0 pt-4 px-4 align-items-start">
+				<div class="d-flex align-items-center gap-3">
+					<div class="mf-modal-icon-badge">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+							<circle cx="12" cy="7" r="4"></circle>
+						</svg>
+					</div>
+					<div>
+						<h5 class="modal-title fw-bold text-dark mb-0" id="editEmployeeProfileModalLabel">Edit Staff Personal Information</h5>
+						<p class="text-muted small mb-0">Update your personal contact details and residential address.</p>
+					</div>
+				</div>
+				<a asp-controller="Employee" asp-action="Profile" class="btn-close" aria-label="Close"></a>
 			</div>
-			<div class="modal-body p-4">
-				<form id="editEmpInfoForm">
+
+			<form asp-controller="Employee" asp-action="Profile" method="post">
+				@Html.AntiForgeryToken()
+				<input type="hidden" asp-for="ProfileInformation.EmployeeId" />
+				<input type="hidden" asp-for="ProfileInformation.Salary" />
+				<input type="hidden" asp-for="ProfileInformation.HireDate" />
+				<input type="hidden" asp-for="ProfileInformation.CreatedAt" />
+
+				<div class="modal-body p-4">
+					<div asp-validation-summary="ModelOnly" class="alert alert-danger small py-2 px-3 mb-3 d-none:empty" role="alert"></div>
+
 					<div class="row g-3">
+						<!-- First Name & Last Name -->
 						<div class="col-12 col-md-6">
-							<label class="form-label fw-bold small text-dark">First Name <span class="text-danger">*</span></label>
-							<input type="text" class="form-control mf-form-control" value="Staff" id="empEditFirstName" required />
+							<label class="form-label fw-bold small text-dark" asp-for="ProfileInformation.FirstName">First Name <span class="text-danger">*</span></label>
+							<input type="text" class="form-control mf-form-control" asp-for="ProfileInformation.FirstName" id="empEditFirstName" placeholder="First name" />
+							<span asp-validation-for="ProfileInformation.FirstName" class="text-danger small"></span>
 						</div>
 						<div class="col-12 col-md-6">
-							<label class="form-label fw-bold small text-dark">Last Name <span class="text-danger">*</span></label>
-							<input type="text" class="form-control mf-form-control" value="Officer" id="empEditLastName" required />
+							<label class="form-label fw-bold small text-dark" asp-for="ProfileInformation.LastName">Last Name <span class="text-danger">*</span></label>
+							<input type="text" class="form-control mf-form-control" asp-for="ProfileInformation.LastName" id="empEditLastName" placeholder="Last name" />
+							<span asp-validation-for="ProfileInformation.LastName" class="text-danger small"></span>
 						</div>
+
+						<!-- Email Address -->
 						<div class="col-12 col-md-6">
-							<label class="form-label fw-bold small text-dark">Date of Birth</label>
-							<input type="date" class="form-control mf-form-control" value="1990-05-12" id="empEditDOB" />
+							<label class="form-label fw-bold small text-dark" asp-for="ProfileInformation.Email">Work Email <span class="text-danger">*</span></label>
+							<input type="email" class="form-control mf-form-control" asp-for="ProfileInformation.Email" id="empEditEmail" placeholder="name@example.com" />
+							<span asp-validation-for="ProfileInformation.Email" class="text-danger small"></span>
 						</div>
+
+						<!-- Date of Birth -->
 						<div class="col-12 col-md-6">
-							<label class="form-label fw-bold small text-dark">Phone Number</label>
-							<input type="tel" class="form-control mf-form-control" value="+1 (555) 019-4412" id="empEditPhone" />
+							<label class="form-label fw-bold small text-dark" asp-for="ProfileInformation.DateOfBirth">Date of Birth <span class="text-danger">*</span></label>
+							<input type="date" class="form-control mf-form-control" asp-for="ProfileInformation.DateOfBirth" id="empEditDOB" value="@(Model.ProfileInformation.DateOfBirth?.ToString("yyyy-MM-dd"))" />
+							<span asp-validation-for="ProfileInformation.DateOfBirth" class="text-danger small"></span>
 						</div>
+
+						<!-- Residential Address -->
 						<div class="col-12">
-							<label class="form-label fw-bold small text-dark">Residential Address</label>
-							<input type="text" class="form-control mf-form-control" value="742 Evergreen Terrace, Springfield, OR" id="empEditAddress" />
+							<label class="form-label fw-bold small text-dark" asp-for="ProfileInformation.Address">Residential Address <span class="text-danger">*</span></label>
+							<input type="text" class="form-control mf-form-control" asp-for="ProfileInformation.Address" id="empEditAddress" placeholder="Street address, City, Country" />
+							<span asp-validation-for="ProfileInformation.Address" class="text-danger small"></span>
 						</div>
 					</div>
-				</form>
-			</div>
-			<div class="modal-footer bg-light">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-primary fw-bold" id="btnSaveEmpInfo">Save Changes</button>
-			</div>
+				</div>
+
+				<div class="modal-footer bg-light px-4 py-3 border-0 d-flex justify-content-end gap-2">
+					<a asp-controller="Employee" asp-action="Profile" class="btn btn-outline-secondary px-4 rounded-3">Cancel</a>
+					<button type="submit" class="btn btn-primary fw-bold px-4 rounded-3 d-inline-flex align-items-center gap-2" id="btnSaveEmpInfo">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+							<polyline points="17 21 17 13 7 13 7 21"></polyline>
+							<polyline points="7 3 7 8 15 8"></polyline>
+						</svg>
+						<span>Save Changes</span>
+					</button>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+	@if (!ViewData.ModelState.IsValid && ViewData.ModelState.Keys.Any(k => k.StartsWith("ProfileInformation")))
+	{
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const modalEl = document.getElementById('editEmployeeProfileModal');
+				if (modalEl && typeof bootstrap !== 'undefined') {
+					const modal = new bootstrap.Modal(modalEl);
+					modal.show();
+				}
+			});
+		</script>
+	}
 }

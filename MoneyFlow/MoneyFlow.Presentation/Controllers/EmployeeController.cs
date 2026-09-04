@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Authentication;
 using MoneyFlow.Business.ViewModels.Customer;
 using MoneyFlow.Business.ViewModels.Employee;
-using MoneyFlow.Data.Entities;
-using System.Net;
 using System.Security.Claims;
 
 
@@ -110,6 +107,69 @@ namespace MoneyFlow.Presentation.Controllers
 			};
 
 			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Profile(EmployeeProfileVM model)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			// Clear any ChangePassword validation errors — this POST is only for ProfileInformation
+			foreach (var key in ModelState.Keys.Where(k => k.StartsWith("ChangePassword")).ToList())
+			{
+				ModelState.Remove(key);
+			}
+
+			if (!ModelState.IsValid)
+			{
+				var currentProfile = await _employeeService.GetEmployeeProfileAsync(userId);
+				if (currentProfile != null)
+				{
+					model.ProfileInformation.EmployeeId = currentProfile.EmployeeId;
+					model.ProfileInformation.Salary = currentProfile.Salary;
+					model.ProfileInformation.HireDate = currentProfile.HireDate;
+					model.ProfileInformation.CreatedAt = currentProfile.CreatedAt;
+				}
+				return View(model);
+			}
+
+			var result = await _employeeService.UpdateEmployeeProfileAsync(userId, model.ProfileInformation);
+
+			if (!result.Succeeded)
+			{
+				foreach (var error in result.Errors)
+				{
+					switch (error.Code)
+					{
+						case "DuplicateEmail":
+						case "DuplicateUserName":
+							ModelState.AddModelError(
+								"ProfileInformation.Email",
+								"This email is already in use.");
+							break;
+
+						default:
+							ModelState.AddModelError(string.Empty, error.Description);
+							break;
+					}
+				}
+
+				var currentProfile = await _employeeService.GetEmployeeProfileAsync(userId);
+				if (currentProfile != null)
+				{
+					model.ProfileInformation.EmployeeId = currentProfile.EmployeeId;
+					model.ProfileInformation.Salary = currentProfile.Salary;
+					model.ProfileInformation.HireDate = currentProfile.HireDate;
+					model.ProfileInformation.CreatedAt = currentProfile.CreatedAt;
+				}
+
+				return View(model);
+			}
+
+			TempData["Success"] = "Your personal information has been successfully updated.";
+
+			return RedirectToAction("Profile");
 		}
 
 		[HttpPost]

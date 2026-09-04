@@ -759,37 +759,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const btnSaveEmpInfo = document.getElementById('btnSaveEmpInfo');
-    if (btnSaveEmpInfo) {
-        btnSaveEmpInfo.addEventListener('click', function () {
-            const firstName = document.getElementById('empEditFirstName')?.value || 'Staff';
-            const lastName = document.getElementById('empEditLastName')?.value || 'Officer';
-            const dob = document.getElementById('empEditDOB')?.value || '1990-05-12';
-            const phone = document.getElementById('empEditPhone')?.value || '+1 (555) 019-4412';
-            const address = document.getElementById('empEditAddress')?.value || '742 Evergreen Terrace, Springfield, OR';
 
-            const dispFirst = document.getElementById('dispEmpFirstName');
-            const dispLast = document.getElementById('dispEmpLastName');
-            const dispDob = document.getElementById('dispEmpDOB');
-            const dispPh = document.getElementById('dispEmpPhone');
-            const dispAddr = document.getElementById('dispEmpAddress');
-
-            if (dispFirst) dispFirst.textContent = firstName;
-            if (dispLast) dispLast.textContent = lastName;
-            if (dispDob) dispDob.textContent = dob;
-            if (dispPh) dispPh.textContent = phone;
-            if (dispAddr) dispAddr.textContent = address;
-
-            const modalEl = document.getElementById('editEmployeeProfileModal');
-            if (modalEl) {
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-            }
-            if (window.MoneyFlowToast) {
-                window.MoneyFlowToast.success('Employee personal information updated.');
-            }
-        });
-    }
 
     // -------------------------------------------------------------------------
     // 8. Account Status Modification Modal
