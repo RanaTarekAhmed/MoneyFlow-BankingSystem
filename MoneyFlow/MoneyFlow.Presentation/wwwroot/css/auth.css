@@ -183,6 +183,53 @@
   font-weight: 700;
 }
 
+.mf-auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0 1rem;
+  color: var(--mf-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.mf-auth-divider::before,
+.mf-auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(196, 198, 209, 0.6);
+}
+
+.mf-btn-google {
+  width: 100%;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--mf-navy);
+  background: #ffffff;
+  border: 1px solid var(--mf-border);
+  border-radius: var(--mf-radius);
+}
+
+.mf-btn-google:hover,
+.mf-btn-google:focus {
+  background: var(--mf-blue-light);
+  color: var(--mf-navy);
+}
+
+.mf-google-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .mf-auth-switch-link {
   margin-top: 1.75rem;
   padding-top: 1.5rem;

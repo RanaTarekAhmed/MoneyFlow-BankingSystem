@@ -40,6 +40,19 @@ namespace MoneyFlow.Presentation
 				options.LoginPath = "/Auth/Login";
 			});
 
+			var googleClientId = builder.Configuration["Authentication:Google:ClientId"];
+			var googleClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+
+			if (!string.IsNullOrWhiteSpace(googleClientId) &&
+				!string.IsNullOrWhiteSpace(googleClientSecret))
+			{
+				builder.Services.AddAuthentication().AddGoogle(options =>
+				{
+					options.ClientId = googleClientId;
+					options.ClientSecret = googleClientSecret;
+				});
+			}
+
 			// Business Services
 			builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<ITransactionService, TransactionService>();

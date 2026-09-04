@@ -49,6 +49,15 @@
 				</p>
 			</div>
 
+			@if (TempData["Success"] is string successMessage)
+			{
+				<div class="alert alert-success" role="alert">@successMessage</div>
+			}
+			@if (TempData["Error"] is string errorMessage)
+			{
+				<div class="alert alert-danger" role="alert">@errorMessage</div>
+			}
+
 			<!-- Validation Summary -->
 			<div asp-validation-summary="ModelOnly"
 				 class="text-danger"
@@ -238,20 +247,22 @@
 
 				</button>
 
-				<!-- Switch to Register -->
-				<div class="mf-auth-switch-link">
-
-					<span>Don't have an account?</span>
-
-					<a asp-controller="Auth"
-					   asp-action="Register"
-					   id="link-goto-register">
-						Create an account
-					</a>
-
-				</div>
-
 			</form>
+
+			<partial name="_GoogleSignInButton" />
+
+			<!-- Switch to Register -->
+			<div class="mf-auth-switch-link">
+
+				<span>Don't have an account?</span>
+
+				<a asp-controller="Auth"
+				   asp-action="Register"
+				   id="link-goto-register">
+					Create an account
+				</a>
+
+			</div>
 		</div>
 	</div>
 </div>

@@ -245,13 +245,15 @@
 			<button type="submit" class="btn mf-btn-primary mf-btn-auth-submit" id="btn-register-submit">
 				<span>Create Account</span>
 			</button>
-
-			<!-- Switch to Login Link -->
-			<div class="mf-auth-switch-link">
-				<span>Already have an account?</span>
-				<a asp-controller="Auth" asp-action="Login" id="link-goto-login">Login</a>
-			</div>
 		</form>
+
+		<partial name="_GoogleSignInButton" />
+
+		<!-- Switch to Login Link -->
+		<div class="mf-auth-switch-link">
+			<span>Already have an account?</span>
+			<a asp-controller="Auth" asp-action="Login" id="link-goto-login">Login</a>
+		</div>
 	</div>
 </div>
 
