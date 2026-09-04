@@ -46,7 +46,7 @@
                 <span>+ Open Bank Account</span>
             </button>
 
-            <a asp-controller="Employee" asp-action="Operations" class="mf-teller-btn mf-teller-btn-outline">
+            <a asp-controller="Account" asp-action="Operations" class="mf-teller-btn mf-teller-btn-outline">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="1" x2="12" y2="23" />
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
@@ -119,7 +119,7 @@
                                     </td>
 
                                     <td class="text-end">
-                                        <a asp-controller="Employee" asp-action="AccountDetails" asp-route-id="@account.Id"
+                                        <a asp-controller="Account" asp-action="EmployeeDetails" asp-route-id="@account.Id"
                                            class="btn btn-sm btn-outline-secondary">
                                             Details
                                         </a>
@@ -231,23 +231,7 @@
             </div>
         </div>
 
-        <!-- Staff Operational Notes -->
-        <div class="mf-card">
-            <h2 class="h6 fw-bold text-dark border-bottom pb-2 mb-3">Internal Staff Notes</h2>
-
-            <div class="p-2 bg-light rounded mb-3" style="font-size: 0.8rem;">
-                <div class="fw-bold text-dark">Staff Officer:</div>
-                <div class="text-muted">Customer visited counter to execute cash deposit.</div>
-                <div class="text-muted" style="font-size: 0.7rem;">Aug 28, 2026 11:20 AM</div>
-            </div>
-
-            <textarea class="form-control mf-form-control mb-2" rows="2" placeholder="Add an internal note..."></textarea>
-
-            <button type="button" class="btn btn-sm btn-outline-primary w-100 fw-bold"
-                    onclick="if(window.MoneyFlowToast) window.MoneyFlowToast.success('Staff note appended to customer log.');">
-                Add Note
-            </button>
-        </div>
+        
     </div>
 </div>
 

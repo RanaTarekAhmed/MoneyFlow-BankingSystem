@@ -180,7 +180,8 @@
 									<button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Manage</button>
 									<ul class="dropdown-menu dropdown-menu-end">
 										<li><a class="dropdown-item" asp-action="EmployeeDetails" asp-route-id="@account.Id">View Account Details</a></li>
-										<li><a class="dropdown-item" href="/Employee/Operations">Deposit / Withdraw</a></li>
+										<li><a class="dropdown-item"asp-controller="Account" asp-action="Operations"asp-route-accountNumber="@account.AccountNumber">Deposit / Withdraw</a>
+											</li>
 										<li><hr class="dropdown-divider"></li>
 										<li><button type="button" class="dropdown-item text-danger btn-open-update-status" data-account-id="@account.Id" data-account-number="@account.AccountNumber" data-account-status="@account.Status">Update Status</button></li>
 									</ul>
