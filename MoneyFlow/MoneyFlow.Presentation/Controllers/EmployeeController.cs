@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MoneyFlow.Business.Services.Interfaces;
 using MoneyFlow.Business.ViewModels.Authentication;
 using MoneyFlow.Business.ViewModels.Customer;
 using MoneyFlow.Business.ViewModels.Employee;
+using MoneyFlow.Data.Entities;
+using System.Net;
 using System.Security.Claims;
 
 
@@ -108,5 +111,86 @@ namespace MoneyFlow.Presentation.Controllers
 
 			return View(model);
 		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ChangePassword(EmployeeProfileVM model)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Clear any ProfileInformation validation errors as this post is only for ChangePassword
+            foreach (var key in ModelState.Keys.Where(k => k.StartsWith("ProfileInformation")).ToList())
+            {
+                ModelState.Remove(key);
+            }
+
+			if (!ModelState.IsValid)
+			{
+				var currentProfile = await _employeeService.GetEmployeeProfileAsync(userId);
+
+				if (currentProfile != null)
+				{
+					model.ProfileInformation.EmployeeId = currentProfile.EmployeeId;
+					model.ProfileInformation.Salary = currentProfile.Salary;
+					model.ProfileInformation.HireDate = currentProfile.HireDate;
+					model.ProfileInformation.CreatedAt = currentProfile.CreatedAt;
+					model.ProfileInformation.FirstName = currentProfile.FirstName;
+					model.ProfileInformation.LastName = currentProfile.LastName;
+					model.ProfileInformation.Email = currentProfile.Email ?? "";
+					model.ProfileInformation.Address = currentProfile.Address;
+					model.ProfileInformation.DateOfBirth = currentProfile.DateOfBirth;
+                }
+
+				return View("Profile", model);
+			}
+
+			var result = await _employeeService.ChangePasswordAsync(userId, model.ChangePassword);
+
+			if (!result.Succeeded)
+			{
+                foreach (var error in result.Errors)
+                {
+                    switch (error.Code)
+                    {
+                        case "PasswordTooShort":
+                        case "PasswordRequiresDigit":
+                        case "PasswordRequiresUpper":
+                        case "PasswordRequiresLower":
+                        case "PasswordRequiresNonAlphanumeric":
+                            ModelState.AddModelError(
+                                "ChangePassword.NewPassword",
+                                "Password does not meet the required criteria.");
+                            break;
+
+                        default:
+                            ModelState.AddModelError(
+                                "ChangePassword.CurrentPassword",
+                                error.Description);
+                            break;
+                    }
+                }
+
+                var currentProfile = await _employeeService.GetEmployeeProfileAsync(userId);
+
+                if (currentProfile != null)
+                {
+                    model.ProfileInformation.EmployeeId = currentProfile.EmployeeId;
+                    model.ProfileInformation.Salary = currentProfile.Salary;
+                    model.ProfileInformation.HireDate = currentProfile.HireDate;
+                    model.ProfileInformation.CreatedAt = currentProfile.CreatedAt;
+                    model.ProfileInformation.FirstName = currentProfile.FirstName;
+                    model.ProfileInformation.LastName = currentProfile.LastName;
+                    model.ProfileInformation.Email = currentProfile.Email ?? "";
+                    model.ProfileInformation.Address = currentProfile.Address;
+                    model.ProfileInformation.DateOfBirth = currentProfile.DateOfBirth;
+                }
+
+                return View("Profile", model);
+            }
+
+            TempData["Success"] = "Your password has been changed successfully.";
+
+            return RedirectToAction("Profile");
+        }
 	}
 }

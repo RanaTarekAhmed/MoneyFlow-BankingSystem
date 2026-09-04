@@ -740,27 +740,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const btnUpdateEmpPassword = document.getElementById('btnUpdateEmpPassword');
-    if (btnUpdateEmpPassword) {
-        btnUpdateEmpPassword.addEventListener('click', function () {
-            const current = document.getElementById('empCurrentPassword')?.value;
-            const newPass = document.getElementById('empNewPassword')?.value;
-            const confirm = document.getElementById('empConfirmPassword')?.value;
+    // Password live requirements validation
+    const newPassInput = document.getElementById('newPasswordInput');
+    const reqLength = document.getElementById('req-length');
+    const reqNumber = document.getElementById('req-number');
+    const reqSpecial = document.getElementById('req-special');
+    const reqUpper = document.getElementById('req-upper');
+    const reqLower = document.getElementById('req-lower');
 
-            if (!current || !newPass || !confirm) {
-                if (window.MoneyFlowToast) window.MoneyFlowToast.error('Please fill in all password fields.');
-                return;
-            }
-
-            if (newPass !== confirm) {
-                if (window.MoneyFlowToast) window.MoneyFlowToast.error('New password and confirm password do not match.');
-                return;
-            }
-
-            if (window.MoneyFlowToast) {
-                window.MoneyFlowToast.success('Employee credentials updated successfully.');
-                document.getElementById('empChangePasswordForm')?.reset();
-            }
+    if (newPassInput) {
+        newPassInput.addEventListener('input', function () {
+            const val = this.value;
+            if (reqLength) reqLength.classList.toggle('text-success', val.length >= 8);
+            if (reqNumber) reqNumber.classList.toggle('text-success', /\d/.test(val));
+            if (reqSpecial) reqSpecial.classList.toggle('text-success', /[^A-Za-z0-9]/.test(val));
+            if (reqUpper) reqUpper.classList.toggle('text-success', /[A-Z]/.test(val));
+            if (reqLower) reqLower.classList.toggle('text-success', /[a-z]/.test(val));
         });
     }
 
