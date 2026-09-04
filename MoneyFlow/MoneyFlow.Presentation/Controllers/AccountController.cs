@@ -340,8 +340,12 @@ namespace MoneyFlow.Presentation.Controllers
 
         [Authorize(Roles = "Employee, Admin")]
         [HttpGet]
-        public IActionResult Operations()
+        public IActionResult Operations(string? accountNumber)
         {
+            var model = new CashOperationVM
+            {
+                AccountNumber = accountNumber
+            };
             return View("~/Views/Employee/Operations.cshtml", new CashOperationVM());
         }
 
