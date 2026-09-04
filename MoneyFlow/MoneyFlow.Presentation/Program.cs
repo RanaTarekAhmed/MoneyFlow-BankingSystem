@@ -29,42 +29,43 @@ namespace MoneyFlow.Presentation
 			builder.Services.AddDbContext<MoneyFlowDbContext>(options =>
 				options.UseSqlServer(connectionString));
 
-            // Configure ASP.NET Core Identity and connect it to the database.
-            builder.Services
+			// Configure ASP.NET Core Identity and connect it to the database.
+			builder.Services
 				.AddIdentity<ApplicationUser, IdentityRole>()
 				.AddEntityFrameworkStores<MoneyFlowDbContext>()
 				.AddDefaultTokenProviders();
 
-            builder.Services.ConfigureApplicationCookie(options =>
-            {
-                options.LoginPath = "/Auth/Login";
-            });
+			builder.Services.ConfigureApplicationCookie(options =>
+			{
+				options.LoginPath = "/Auth/Login";
+			});
 
-            // Business Services
-            builder.Services.AddScoped<IAuthService, AuthService>();
+			// Business Services
+			builder.Services.AddScoped<IAuthService, AuthService>();
 			builder.Services.AddScoped<ITransactionService, TransactionService>();
-            builder.Services.AddScoped<IDashboardService, DashboardService>();
-            builder.Services.AddScoped<IAccountService, AccountService>();
+			builder.Services.AddScoped<IDashboardService, DashboardService>();
+			builder.Services.AddScoped<IAccountService, AccountService>();
 			builder.Services.AddScoped<ICustomerService, CustomerService>();
+			builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-            // Repositories
-            builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
-            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-            builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
-            
+			// Repositories
+			builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+			builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+			builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+			builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 
-            var app = builder.Build();
+			var app = builder.Build();
 
-            // Seed default Identity roles during application startup.
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
+			// Seed default Identity roles during application startup.
+			using (var scope = app.Services.CreateScope())
+			{
+				var services = scope.ServiceProvider;
 
-                await RoleSeeder.SeedAsync(services);
-            }
+				await RoleSeeder.SeedAsync(services);
+			}
 
-            // Configure the HTTP request pipeline.
-            if (!app.Environment.IsDevelopment())
+			// Configure the HTTP request pipeline.
+			if (!app.Environment.IsDevelopment())
 			{
 				app.UseExceptionHandler("/Home/Error");
 				// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
@@ -83,7 +84,7 @@ namespace MoneyFlow.Presentation
 				pattern: "{controller=Home}/{action=Index}/{id?}")
 				.WithStaticAssets();
 
-            await app.RunAsync();
-        }
+			await app.RunAsync();
+		}
 	}
 }

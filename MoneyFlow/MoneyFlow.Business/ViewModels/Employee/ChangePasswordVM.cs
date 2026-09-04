@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 
-namespace MoneyFlow.Business.ViewModels.Customer
+namespace MoneyFlow.Business.ViewModels.Employee
 {
     public class ChangePasswordVM
     {

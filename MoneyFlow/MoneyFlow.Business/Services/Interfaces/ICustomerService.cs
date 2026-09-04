@@ -12,7 +12,6 @@ namespace MoneyFlow.Business.Services.Interfaces
         Task<IdentityResult> UpdateCustomerProfileAsync(string? userId, ProfileInformationVM profileInformation);
         Task<IdentityResult> ChangePasswordAsync(string? userId, ChangePasswordVM model);
         Task<PagedResult<CustomerListVM>> GetCustomersPagedAsync(int pageNumber,int pageSize,string? search);
-
         Task<CustomerDetailsVM?> GetCustomerOverviewAsync(int id);
     }
 }
