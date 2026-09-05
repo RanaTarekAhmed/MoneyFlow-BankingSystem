@@ -70,7 +70,7 @@ namespace MoneyFlow.Data.Repositories
                 query = query.Where(filter);
             }
             var totalCount = await query.CountAsync();
-            var customers=await query.OrderBy(c => c.Id) .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            var customers=await query.OrderByDescending(c => c.CreatedAt).Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
             return (customers, totalCount);
         }
