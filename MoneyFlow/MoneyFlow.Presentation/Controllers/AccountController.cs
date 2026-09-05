@@ -340,15 +340,16 @@ namespace MoneyFlow.Presentation.Controllers
 
         [Authorize(Roles = "Employee, Admin")]
         [HttpGet]
-        public IActionResult Operations(string? accountNumber)
+        public IActionResult Operations(string? accountNumber, string? operationType)
         {
             var model = new CashOperationVM
             {
-                AccountNumber = accountNumber
+                AccountNumber = accountNumber,
+                OperationType = string.IsNullOrWhiteSpace(operationType) ? "Deposit" : operationType
             };
-            return View("~/Views/Employee/Operations.cshtml", new CashOperationVM());
+            return View("~/Views/Employee/Operations.cshtml", model);
         }
-
+        
         [Authorize(Roles = "Employee, Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
