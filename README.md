@@ -1,6 +1,7 @@
 # 💰 MoneyFlow – Online Banking Management System
 
 MoneyFlow is a secure and modern **Online Banking Management System** built with **ASP.NET Core MVC, Entity Framework Core, and SQL Server**. The system provides separate experiences for customers and bank employees, with role-based access, account management, transfers, cash operations, transaction tracking, customer management, and data-driven dashboards.
+
 <img width="1470" height="742" alt="Screenshot 2026-09-05 at 7 11 05 PM" src="https://github.com/user-attachments/assets/553d46e7-9dde-46f9-b73c-afd78cf63630" />
 <img width="1470" height="754" alt="Screenshot 2026-09-05 at 7 12 19 PM" src="https://github.com/user-attachments/assets/31f55e88-c07b-47ee-a5f0-4c5396df5519" />
 <img width="1470" height="754" alt="Screenshot 2026-09-05 at 7 12 52 PM" src="https://github.com/user-attachments/assets/84421a11-2be2-4b25-a0be-d6b252a884f1" />
