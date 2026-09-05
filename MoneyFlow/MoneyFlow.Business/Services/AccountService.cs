@@ -51,29 +51,11 @@ namespace MoneyFlow.Business.Services
 				OpenDate = a.OpenDate
 			}).ToList();
 
-			var accountIds = accounts
-				.Select(a => a.Id)
-				.ToList();
-
-			var transactions = await _transactionRepository.GetAllAsync(t => (t.SenderAccountId.HasValue && accountIds.Contains(t.SenderAccountId.Value)) || (t.ReceiverAccountId.HasValue && accountIds.Contains(t.ReceiverAccountId.Value)) );
-
-			var transactionVMs = transactions.Select(t => new TransactionVM
-			{
-				Id = t.Id,
-				TransactionNumber = t.TransactionNumber,
-				TransactionType = t.TransactionType,
-				Amount = t.Amount,
-				Status = t.Status,
-				TransactionDate = t.TransactionDate,
-				Description = t.Description,
-				SenderAccountId = t.SenderAccountId,
-				ReceiverAccountId = t.ReceiverAccountId
-			}).ToList();
-
+	
 			return new MyAccountsVM
 			{
 				Accounts = accountVMs,
-				Transactions = transactionVMs
+				
 			};
 		}
 
