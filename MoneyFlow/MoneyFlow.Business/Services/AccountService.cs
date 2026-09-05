@@ -13,6 +13,7 @@ namespace MoneyFlow.Business.Services
 		private readonly ITransactionRepository _transactionRepository;
 		private readonly ICustomerRepository _customerRepository;
 		private readonly ITransactionService _transactionService;
+
 		public AccountService(
 			IAccountRepository accountRepository,
 			ITransactionRepository transactionRepository,
@@ -444,38 +445,65 @@ namespace MoneyFlow.Business.Services
 			return (true,"Withdrawal completed successfully.",transaction);
 		}
 
-		public async Task<bool> OpenAccountAsync(OpenAccountVM model)
-		{
-			var customer = await _customerRepository.GetAsync(c => c.Id == model.CustomerId);
-			if (customer == null)
-			{
-				return false;
-			}
+        public async Task<bool> OpenAccountAsync(OpenAccountVM model)
+        {
+            var customer = await _customerRepository.GetAsync(c => c.Id == model.CustomerId);
 
-			if (model.AccountType != AccountType.Current && model.AccountType != AccountType.Savings)
-			{
-				return false;
-			}
+            if (customer == null)
+            {
+                return false;
+            }
 
-			if (model.InitialDeposit < 0)
-			{
-				return false;
-			}
+            if (model.AccountType != AccountType.Current &&
+                model.AccountType != AccountType.Savings)
+            {
+                return false;
+            }
 
-			var accountNumber = await GenerateAccountNumberAsync();
-			var account = new Account(accountNumber, model.AccountType, model.CustomerId);
+            if (model.InitialDeposit < 0)
+            {
+                return false;
+            }
 
-			if (model.InitialDeposit != 0)
-			{
-				account.Deposit(model.InitialDeposit);
-			}
+            var accountNumber = await GenerateAccountNumberAsync();
 
-			await _accountRepository.AddAsync(account);
+            var account = new Account(
+                accountNumber,
+                model.AccountType,
+                model.CustomerId
+            );
 
-			return true;
-		}
+            await _accountRepository.AddAsync(account);
 
-		private async Task<string> GenerateAccountNumberAsync()
+            Transaction? transaction = null;
+
+            if (model.InitialDeposit > 0)
+            {
+                account.Deposit(model.InitialDeposit);
+
+                var transactionNumber =
+                    await _transactionService.GenerateTransactionNumberAsync();
+
+                transaction = new Transaction(
+                    transactionNumber,
+                    TransactionType.Deposit,
+                    model.InitialDeposit,
+                    "Initial deposit",
+                    null,
+                    null,
+                    account.Id
+                );
+
+                transaction.UpdateStatus(TransactionStatus.Completed);
+
+                await _accountRepository.UpdateAsync(account);
+                await _transactionRepository.AddAsync(transaction);
+            }
+
+            return true;
+        }
+
+        private async Task<string> GenerateAccountNumberAsync()
 		{
 			string accountNumber;
 
