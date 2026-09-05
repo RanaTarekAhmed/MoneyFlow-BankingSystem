@@ -107,9 +107,18 @@
                                     </td>
 
                                     <td>
-                                        <span class="badge bg-success-subtle text-success fw-bold">
-                                            @account.Status
-                                        </span>
+								        @if (account.Status == AccountStatus.Active)
+								        {
+									        <span class="badge bg-success-subtle text-success fw-bold px-2 py-1">Active</span>
+								        }
+								        else if (account.Status == AccountStatus.Suspended)
+								        {
+									        <span class="badge bg-warning-subtle text-warning-emphasis fw-bold px-2 py-1">Suspended</span>
+								        }
+								        else
+								        {
+									        <span class="badge bg-danger-subtle text-danger fw-bold px-2 py-1">Closed</span>
+								        }
                                     </td>
 
                                     <td>
@@ -183,11 +192,18 @@
                                         @(transaction.TransactionType.ToString() == "Deposit" ? "+" : "-")$@transaction.Amount.ToString("N2")
                                     </td>
 
-                                    <td class="text-center">
-                                        <span class="badge bg-success text-white">
-                                            @transaction.Status
-                                        </span>
-                                    </td>
+                                    @if (transaction.Status == TransactionStatus.Completed)
+                                    {
+                                        <td class="text-center"><span class="badge bg-success text-white">Completed</span></td>
+                                    }
+                                    else if (transaction.Status == TransactionStatus.Pending)
+                                    {
+                                        <td class="text-center"><span class="badge bg-warning-subtle text-warning-emphasis fw-bold">Pending</span></td>
+                                    }
+                                    else
+                                    {
+                                        <td class="text-center"><span class="badge bg-danger-subtle text-danger fw-bold">@transaction.Status.ToString()</span></td>
+                                    }
                                 </tr>
                             }
                         }
