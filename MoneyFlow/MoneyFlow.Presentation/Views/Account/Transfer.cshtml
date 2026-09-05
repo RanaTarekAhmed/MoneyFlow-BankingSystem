@@ -57,12 +57,13 @@
                             </div>
 
                             <!-- Receiver Account -->
+                            <!-- Receiver Account -->
                             <div class="col-12">
                                 <label asp-for="ReceiverAccountNumber" class="mf-form-label">To Account / Recipient</label>
                                 <input asp-for="ReceiverAccountNumber"
-                                       class="form-control mf-form-control"
+                                       class="form-control mf-form-control text-uppercase"
                                        id="toAccountInput"
-                                       placeholder="Enter receiver account number"
+                                       placeholder="ENTER RECEIVER ACCOUNT NUMBER"
                                        autocomplete="off" />
                                 <span asp-validation-for="ReceiverAccountNumber" class="text-danger"></span>
                             </div>
@@ -340,7 +341,7 @@ else
             });
 
             // Input field error clearing on type
-            receiverInput.addEventListener("input", () => clearError(receiverValidationSpan));
+                    receiverInput.addEventListener("input", function () {clearError(receiverValidationSpan);this.value = this.value.toUpperCase();});
             amountInput.addEventListener("input", () => clearError(amountValidationSpan));
 
             // Review Transfer Button Click
