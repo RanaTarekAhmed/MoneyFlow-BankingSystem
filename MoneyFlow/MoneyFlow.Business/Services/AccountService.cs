@@ -174,61 +174,80 @@ namespace MoneyFlow.Business.Services
 		}
 
 
-		public async Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId,TransferVM model)
-		{
-			var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
+        public async Task<(bool Success, string Message, Transaction? Transaction)> TransferAsync(string userId,TransferVM model)
+        {
+            var customer = await _customerRepository.GetAsync(c => c.UserId == userId);
 
-			if (customer == null)
-			{
-				return (false, "Customer was not found.", null);
-			}
+            if (customer == null)
+            {
+                return (false, "Customer was not found.", null);
+            }
 
-			var senderAccount = await _accountRepository.GetAsync(a =>a.Id == model.SenderAccountId &&a.CustomerId == customer.Id);
+            var senderAccount = await _accountRepository.GetAsync(a =>a.Id == model.SenderAccountId &&a.CustomerId == customer.Id);
 
-			if (senderAccount == null)
-			{
-				return (false,"The selected sender account does not belong to you.",null);
-			}
+            if (senderAccount == null)
+            {
+                return (false,"The selected sender account does not belong to you.",null);
+            }
 
-			if (string.IsNullOrWhiteSpace(model.ReceiverAccountNumber))
-			{
-				return (false,"Please enter the receiver account number.",null);
-			}
+            if (string.IsNullOrWhiteSpace(model.ReceiverAccountNumber))
+            {
+                return (false,"Please enter the receiver account number.",null);
+            }
 
-			var receiverAccount = await _accountRepository.GetAsync(a => a.AccountNumber == model.ReceiverAccountNumber.Trim());
+            var receiverAccount = await _accountRepository.GetAsync(a => a.AccountNumber == model.ReceiverAccountNumber.Trim());
 
-			if (receiverAccount == null)
-			{
-				return (false,"The receiver account was not found.",null);
-			}
+            if (receiverAccount == null)
+            {
+                return (false,"The receiver account was not found.",null);
+            }
 
-			try
-			{
-				senderAccount.Transfer(receiverAccount,model.Amount);
-			}
-			catch (ArgumentException ex)
-			{
-				return (false, ex.Message, null);
-			}
-			catch (InvalidOperationException ex)
-			{
-				return (false, ex.Message, null);
-			}
+            // Check sender account status
+            if (senderAccount.Status != AccountStatus.Active)
+            {
+                return (false, "The sender account is inactive.", null);
+            }
 
-			var transactionNumber = await _transactionService.GenerateTransactionNumberAsync();
+            // Check receiver account status
+            if (receiverAccount.Status != AccountStatus.Active)
+            {
+                return (false, "The receiver account is inactive.", null);
+            }
 
-			var transaction = new Transaction(transactionNumber,TransactionType.Transfer,model.Amount,model.Description,null,senderAccount.Id,receiverAccount.Id);
+            try
+            {
+                senderAccount.Transfer(receiverAccount, model.Amount);
+            }
+            catch (ArgumentException ex)
+            {
+                return (false, ex.Message, null);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return (false, ex.Message, null);
+            }
 
-			transaction.UpdateStatus(TransactionStatus.Completed);
+            var transactionNumber = await _transactionService.GenerateTransactionNumberAsync();
 
-			await _accountRepository.UpdateAsync(senderAccount);
-			await _accountRepository.UpdateAsync(receiverAccount);
-			await _transactionRepository.AddAsync(transaction);
+            var transaction = new Transaction(
+                transactionNumber,
+                TransactionType.Transfer,
+                model.Amount,
+                model.Description,
+                null,
+                senderAccount.Id,
+                receiverAccount.Id);
 
-			return (true,"Transfer completed successfully.",transaction);
-		}
+            transaction.UpdateStatus(TransactionStatus.Completed);
 
-		public async Task<PagedResult<EmployeeAccountVM>> GetAllAccountsPagedAsync(int pageNumber, int pageSize, AccountQueryVM? query)
+            await _accountRepository.UpdateAsync(senderAccount);
+            await _accountRepository.UpdateAsync(receiverAccount);
+            await _transactionRepository.AddAsync(transaction);
+
+            return (true,"Transfer completed successfully.",transaction);
+        }
+
+        public async Task<PagedResult<EmployeeAccountVM>> GetAllAccountsPagedAsync(int pageNumber, int pageSize, AccountQueryVM? query)
 		{
 			Expression<Func<Account, bool>>? filter = null;
 
