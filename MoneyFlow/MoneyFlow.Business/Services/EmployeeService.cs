@@ -46,19 +46,14 @@ namespace MoneyFlow.Business.Services
 			{
 				return null;
 			}
-
 			var employee = await _employeeRepository.GetAsync(e => e.UserId == userId);
-			if (employee == null)
-			{
-				return null;
-			}
 
 			return new ProfileInformationVM
 			{
-				EmployeeId = employee.Id,
-				Salary = employee.Salary,
-				HireDate = employee.HireDate,
-				CreatedAt = employee.CreatedAt,
+				EmployeeId = employee?.Id,
+				Salary = employee?.Salary,
+				HireDate = employee?.HireDate,
+				CreatedAt = employee?.CreatedAt,
 				FirstName = user.FirstName,
 				LastName = user.LastName,
 				Email = user.Email ?? "",
@@ -72,12 +67,6 @@ namespace MoneyFlow.Business.Services
 			if (string.IsNullOrEmpty(userId))
 			{
 				return IdentityResult.Failed(new IdentityError { Description = "User ID is required." });
-			}
-
-			var employee = await _employeeRepository.GetAsync(e => e.UserId == userId);
-			if (employee == null)
-			{
-				return IdentityResult.Failed(new IdentityError { Description = "Employee not found." });
 			}
 
 			var user = await _userManager.FindByIdAsync(userId);

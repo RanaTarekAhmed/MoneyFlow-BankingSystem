@@ -1,6 +1,13 @@
 @{
 	Layout = "_EmployeeLayout";
 	ViewData["Title"] = "Staff Profile";
+
+	var firstName = Model?.ProfileInformation?.FirstName ?? string.Empty;
+	var lastName = Model?.ProfileInformation?.LastName ?? string.Empty;
+	var employeeInitials = string.Concat(
+		string.IsNullOrWhiteSpace(firstName) ? "" : char.ToUpperInvariant(firstName[0]).ToString(),
+		string.IsNullOrWhiteSpace(lastName) ? "" : char.ToUpperInvariant(lastName[0]).ToString());
+	if (string.IsNullOrWhiteSpace(employeeInitials)) employeeInitials = "E";
 }
 
 @model EmployeeProfileVM
@@ -28,7 +35,7 @@
 		<!-- Staff Identity Hero Card -->
 		<div class="mf-card mb-4">
 			<div class="text-center pb-3 border-bottom">
-				<div class="mf-lookup-avatar mx-auto mb-3" style="width: 84px; height: 84px; font-size: 2rem; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">@($"{char.ToUpper(Model.ProfileInformation.FirstName[0])}{char.ToUpper(Model.ProfileInformation.LastName[0])}")</div>
+				<div class="mf-lookup-avatar mx-auto mb-3" style="width: 84px; height: 84px; font-size: 2rem; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">@employeeInitials</div>
 				<h2 class="h5 fw-bold text-dark mb-0">@($"{Model.ProfileInformation.FirstName} {Model.ProfileInformation.LastName}")</h2>
 				<div class="text-muted small mb-2">@($"@{Model.ProfileInformation.FirstName.ToLower()}.{Model.ProfileInformation.LastName.ToLower()}")</div>
 				<div class="badge bg-primary-subtle text-primary fw-bold px-3 py-1 mb-2">Bank Staff / Teller</div>
@@ -39,19 +46,28 @@
 				<h3 class="text-muted small text-uppercase fw-bold mb-3" style="letter-spacing: 0.05em;">Employment Details</h3>
 				<div class="d-flex justify-content-between py-2 border-bottom">
 					<span class="text-muted small">Employee ID</span>
-					<span class="fw-bold text-dark">EMP-@Model.ProfileInformation.EmployeeId</span>
+					<span class="fw-bold text-dark">@(Model.ProfileInformation.EmployeeId.HasValue ? $"EMP-{Model.ProfileInformation.EmployeeId.Value}" : "Not assigned")</span>
 				</div>
 				<div class="d-flex justify-content-between py-2 border-bottom">
 					<span class="text-muted small">Monthly Base Salary</span>
-					<span class="fw-bold text-success fs-6">$@Model.ProfileInformation.Salary.ToString("N2") <span class="text-muted small fw-normal">($@((12 * Model.ProfileInformation.Salary).ToString("N2"))/yr)</span></span>
+					<span class="fw-bold text-success fs-6">
+					@if (Model.ProfileInformation.Salary.HasValue)
+					{
+						<span>$@Model.ProfileInformation.Salary.Value.ToString("N2") <span class="text-muted small fw-normal">($@((12 * Model.ProfileInformation.Salary.Value).ToString("N2"))/yr)</span></span>
+					}
+					else
+					{
+						<span class="text-muted">Not assigned</span>
+					}
+				</span>
 				</div>
 				<div class="d-flex justify-content-between py-2 border-bottom">
 					<span class="text-muted small">Hire Date</span>
-					<span class="fw-bold text-dark">@Model.ProfileInformation.HireDate.ToString("dd MMM yyyy")</span>
+					<span class="fw-bold text-dark">@(Model.ProfileInformation.HireDate?.ToString("dd MMM yyyy") ?? "Not assigned")</span>
 				</div>
 				<div class="d-flex justify-content-between py-2 border-bottom">
 					<span class="text-muted small">System Created At</span>
-					<span class="text-dark fw-semibold">@Model.ProfileInformation.CreatedAt.ToString("dd MMM yyyy, hh: mm tt")</span>
+					<span class="text-dark fw-semibold">@(Model.ProfileInformation.CreatedAt?.ToString("dd MMM yyyy, hh:mm tt") ?? "Not available")</span>
 				</div>
 				<div class="d-flex justify-content-between py-2">
 					<span class="text-muted small">Employment Status</span>
